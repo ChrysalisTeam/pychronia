@@ -4,22 +4,31 @@ from pychronia_common.common_settings import *
 
 TEMPLATES[0]["OPTIONS"]["context_processors"].append("pychronia_game.context_processors.pychronia_template_context")
 
+'''
 _old_middlewares = list(MIDDLEWARE)
 if "debug_toolbar.middleware.DebugToolbarMiddleware" in _old_middlewares:
     # Django Debug Toolbar bugs on pychronia_game, troubles with ZODB late access...
     _old_middlewares.remove("debug_toolbar.middleware.DebugToolbarMiddleware")
+'''
 
 # beware of ordering here
 # no need for CSRF in pychronia_game, data is not sensitive
-MIDDLEWARE = (tuple(_old_middlewares) +
-                      ('pychronia_game.middlewares.ZodbTransactionMiddleware',
+MIDDLEWARE = (tuple(MIDDLEWARE) +
+                      (
+                          'pychronia_game.middlewares.ZodbTransactionMiddleware',
                        'pychronia_game.middlewares.AuthenticationMiddleware',
                        'pychronia_game.middlewares.PeriodicProcessingMiddleware',
                        'django_cprofile_middleware.middleware.ProfilerMiddleware', # use in DEBUG mode with '?prof' at the end of URL
                        ))
 
+#print(">>>>>>>>>>>>>>>>", MIDDLEWARE)
+
 INSTALLED_APPS += [
     'pychronia_game',
+
+    'django.contrib.admin',
+
+    'debug_toolbar',
 ]
 
 ############# DJANGO-APP CONFS ############
@@ -341,8 +350,8 @@ def generate_auction_settings(chrysalis_data_dir):
         msg_id2 = dm.post_message(sender_email=email_guy2, recipient_emails=email_guy1, subject="RE:%s" % msg1["subject"],
                                   body="hello world", parent_id=msg_id1)
         msg2 = dm.get_dispatched_message_by_id(msg_id2)
-        msg_id3 = dm.post_message(sender_email=email_guy1, recipient_emails=email_guy2, subject="Bis:%s" % msg2["subject"],
-                                  body="hello hello", parent_id=msg_id2)
+        dm.post_message(sender_email=email_guy1, recipient_emails=email_guy2, subject="Bis:%s" % msg2["subject"],
+                        body="hello hello", parent_id=msg_id2)
 
         msg_id4 = dm.post_message(sender_email=email_guy1, recipient_emails=email_external, subject="Ask master TEST",
                                   body="for something")
@@ -350,8 +359,8 @@ def generate_auction_settings(chrysalis_data_dir):
         msg_id5 = dm.post_message(sender_email=email_external, recipient_emails=email_guy1,
                                   subject="RE:%s TEST" % msg4["subject"], body="answer something", parent_id=msg_id4)
         msg5 = dm.get_dispatched_message_by_id(msg_id5)
-        msg_id6 = dm.post_message(sender_email=email_guy1, recipient_emails=email_external,
-                                  subject="Bis:%s TEST" % msg5["subject"], body="ask for something", parent_id=msg_id5)
+        dm.post_message(sender_email=email_guy1, recipient_emails=email_external,
+                        subject="Bis:%s TEST" % msg5["subject"], body="ask for something", parent_id=msg_id5)
 
         msg_id7 = dm.post_message(sender_email=email_guy3, recipient_emails=email_guy4, subject="Vol de Tapis",
                                   body="Je pense qu'on doit voler les tapis de guy1")
@@ -359,9 +368,8 @@ def generate_auction_settings(chrysalis_data_dir):
 
         time.sleep(1)
 
-        msg_id8 = dm.post_message(sender_email=email_guy4, recipient_emails=[email_guy3], subject="RE:%s" % msg7["subject"],
-                                  body="T'as raison ils sont si doux", parent_id=msg_id7)
-        msg8 = dm.get_dispatched_message_by_id(msg_id8)
+        dm.post_message(sender_email=email_guy4, recipient_emails=[email_guy3], subject="RE:%s" % msg7["subject"],
+                        body="T'as raison ils sont si doux", parent_id=msg_id7)
 
         tpl = dm.get_message_template("feedback_akaris_threats_geoip")
         assert tpl["transferred_msg"] is None
@@ -382,3 +390,19 @@ def generate_auction_settings(chrysalis_data_dir):
 
 
     return (GAME_INITIAL_DATA_PATH, GAME_INITIAL_FIXTURE_SCRIPT)
+
+
+INTERNAL_IPS = ("127.0.0.1",)
+
+
+def show_toolbar_to_superusers_only(request):
+    return False  # DISABLE DUE TO ZODB
+
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': show_toolbar_to_superusers_only,  # only show toolbar to authenticated users
+    'SHOW_COLLAPSED': False,
+}
+
+import mimetypes
+mimetypes.add_type("application/javascript", ".js", True)

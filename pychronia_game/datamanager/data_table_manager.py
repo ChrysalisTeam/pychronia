@@ -24,7 +24,6 @@ class DataTableManager(object):
 
     def _check_database_coherence(self, **kwargs):
         # NO NEED TO CALL UPPER CLASS !
-        strict = kwargs.get("strict", False)
         for key, value in list(self._table.items()):
             self._check_item_validity(key, value)
 
@@ -83,13 +82,6 @@ class DataTableManager(object):
         if key not in table:
             raise AbnormalUsageError(
                 _("Couldn't find %(type)s item with key %(key)s") % SDICT(type=cls.TRANSLATABLE_ITEM_NAME, key=key))
-
-    @classmethod
-    def _check_item_is_not_in_table(cls, table, key):
-        if key in table:
-            raise AbnormalUsageError(
-                _("Items of type %(type)s with key %(key)s already exists") % SDICT(type=cls.TRANSLATABLE_ITEM_NAME,
-                                                                                    key=key))
 
     @readonly_method
     def get_all_data(self, as_sorted_list=False, mutability=None):

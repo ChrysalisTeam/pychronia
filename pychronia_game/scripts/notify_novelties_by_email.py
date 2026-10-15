@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os
-import sys
 import logging
 import setup_pychronia_env
 
@@ -81,14 +79,14 @@ def execute():
                         """Sending novelty notification from '%(from_email)s' to %(recipient_list)r : "%(subject)s"\n%(message)s""",
                         params)
                     send_mail(**params)
-                except (SMTPException, EnvironmentError) as e:
+                except (SMTPException, EnvironmentError):
                     logging.error("Couldn't send external notification email to %s", real_email, exc_info=True)
                     errors += 1
                 else:
                     logging.info("Properly sent external notification email to %s", real_email)
                     successes += 1
 
-        except Exception as e:
+        except Exception:
             logging.critical("Pathological error during external notifications processing on game instance '%s'",
                              instance_id, exc_info=True)
 

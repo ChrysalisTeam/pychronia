@@ -4,7 +4,6 @@
 
 from pychronia_game.common import *
 from pychronia_game.datamanager import AbstractGameView, register_view, transaction_watcher
-from pychronia_game import forms
 from django.http import Http404, HttpResponse
 import json
 from pychronia_game.forms import (MoneyTransferForm, GemsTransferForm, ArtefactTransferForm)
@@ -368,7 +367,7 @@ def ajax_chat(request):
                 msg["time"] - previous_msg_timestamp) > chatroom_timestamp_display_threshold:
                 record = {"username": None,
                           "color": "grey",
-                          "message": utctolocal(msg["time"]).strftime(time_format)}
+                          "message": utc_to_local(msg["time"]).strftime(time_format)}
                 text_lines.append(record)
             if msg["username"] in usernames:
                 official_name = msg["username"]

@@ -9,7 +9,7 @@ from .datamanager_tools import readonly_method, transaction_watcher
 from .abstract_game_view import GameViewMetaclass, AbstractGameView
 from .action_middlewares import ACTION_MIDDLEWARES
 
-from pychronia_game.utilities import resolving_decorator
+import rsdecorator
 
 
 class AbilityMetaclass(GameViewMetaclass, type):
@@ -70,8 +70,8 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         if __debug__: self.notify_event("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES")
 
         # we transform the callback method so that it only expects keyword arguments (easier to deal with, in middleware chain)
-        flattened_method = resolving_decorator.flatten_function_signature(method)
-        params = resolving_decorator.resolve_call_args(flattened_method, *args, **kwargs)
+        flattened_method = rsdecorator.flatten_function_signature(method)
+        params = rsdecorator.resolve_call_args(flattened_method, *args, **kwargs)
 
         return self.process_action_through_middlewares(action_name=action_name, method=flattened_method, params=params)
 

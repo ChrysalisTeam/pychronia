@@ -26,9 +26,8 @@ from pychronia_game.datamanager.abstract_game_view import AbstractGameView, regi
 # do NOT use the django.test.TestCase version, with SQL session management
 #from django.utils.unittest.case import TestCase
 #from django.test.testcases import TransactionTestCase as TestCase
-from django.test import TestCase, TransactionTestCase
+from django.test import TransactionTestCase
 from django.test.client import Client, RequestFactory
-from django.core.handlers.base import BaseHandler
 import django.utils.translation
 
 if not config.ZODB_RESET_ALLOWED:
@@ -50,12 +49,6 @@ def neutral_url_reverse(view, **more_kwargs):
 def dummyfunc(*args, **kwargs):
     assert args
     assert kwargs
-
-
-class dummyclass(object):
-    def dummyfunc(self, *args, **kwargs):
-        assert args
-        assert kwargs
 
 
 # trackers to eventually ensure every module is well tested
@@ -104,8 +97,6 @@ logging.disable(logging.DEBUG)  # to be commented if more output is wanted !!!
 class RequestMock(RequestFactory):
     def request(self, **request_args):
         """Constructs a generic request object, INCLUDING middleware modifications."""
-
-        from django.core import urlresolvers
 
         request = RequestFactory.request(self, **request_args)
         ###pprint.pprint(request)
@@ -336,7 +327,6 @@ class BaseGameTestCase(TransactionTestCase):  # one day, use pytest-django modul
     def _reset_django_db(self, really=False):
         if not really:
             return  # PASCAL HACK TODO BEWARE
-        from django.test.utils import setup_test_environment
         from django.core import management
         management.call_command('migrate', verbosity=1, interactive=False)
         management.call_command('flush', verbosity=0,

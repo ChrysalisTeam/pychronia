@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os
 import sys
-import pprint
-import logging
 import setup_pychronia_env
 
 import pychronia_game.models  # initializes everything
-from pychronia_game.datamanager.datamanager_administrator import UsageError, retrieve_game_instance
+from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance
 from pychronia_game import utilities
 
 

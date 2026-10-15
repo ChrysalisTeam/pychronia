@@ -5,15 +5,13 @@
 ### NO import from pychronia_game.common, else circular import !! ###
 
 import io
-import sys, os, collections.abc, logging, inspect, types, traceback, re, glob, copy
-import yaml, random, contextlib
+import os, collections.abc, logging, inspect, traceback, re, glob, copy
+import yaml
 from collections.abc import Callable
 from collections import Counter, OrderedDict
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import ZODB  # must be first !
-import transaction
-from persistent import Persistent
 from persistent.mapping import PersistentMapping
 from persistent.list import PersistentList
 
@@ -72,7 +70,7 @@ def normalize(v):
     if hasattr(v, "strip"):
         v = v.strip(" \t")  # we LET extra newlines, might be necessary for RST markups
         v = v.replace("\r\n", "\n")  # all UNIX newlines
-        v = re.sub("[ \t]+\n", "\n", v, flags=re.MULTILINE)  # remove trailing spaces/tabs at ends of regular lines
+        v = re.sub(r"[ \t]+\n", "\n", v, flags=re.MULTILINE)  # remove trailing spaces/tabs at ends of regular lines
     return v
 
 
@@ -296,7 +294,7 @@ def sanitize_query_dict(query_dict):
     
     *query_dict* must be mutable.
     """
-    for key in query_dict:
+    for key in list(query_dict.keys()):
         if key.endswith("[]"):  # standard js/php array notation
             new_key = key[:-2]
             query_dict[new_key] = query_dict.getlist(key)
@@ -313,7 +311,7 @@ def adapt_parameters_to_func(all_parameters, func):
     Returns a dict of relevant parameters, or raises common signature exceptions.
     """
 
-    (args, _varargs, keywords, _defaults) = inspect.getargspec(func)
+    (args, _varargs, keywords, _defaults, _kwonlyargs, _kwonlydefaults, _annotations) = inspect.getfullargspec(func)
     ##print("########>>>", func, all_parameters, args)
 
     if keywords is not None:
@@ -324,7 +322,7 @@ def adapt_parameters_to_func(all_parameters, func):
     try:
         #print("#<<<<<<<", func, relevant_args)
         inspect.getcallargs(func, **relevant_args)
-    except (TypeError, ValueError) as e:
+    except (TypeError, ValueError):
         raise  # signature problem, probably
 
     return relevant_args
@@ -658,17 +656,6 @@ def find_game_file_or_url(*rel_path_globs):
     return find_game_file(*rel_path_globs)
 
 
-def ___complete_game_file_path(filename, *elements):
-    """
-    Now SUPERSEDED by find_game_file().
-    """
-    assert filename
-    basename = os.path.basename(filename)
-    if basename == filename:
-        return os.path.join(*(elements + (filename,)))
-    return filename  # already contains dirs...
-
-
 def _make_elements_hashable(sequence):
     # mass conversion here, eg. for gems that are sequences of unhashable lists
     return [tuple(i) if isinstance(i, (list, PersistentList)) else i for i in sequence]
@@ -830,18 +817,6 @@ def load_yaml_fixture(yaml_fixture):
     return data
 
 
-### Date operations ###
-
-def utc_to_local(utc_time):
-    timedelta = datetime.now() - datetime.utcnow()
-    return utc_time + timedelta
-
-
-def is_past_datetime(dt):
-    # WARNING - to compute delays, we always work in UTC TIME
-    return (dt <= datetime.utcnow())
-
-
 def render_template_string(string, ctx):
     """
     Render a string using django templates and the provided context dict.
@@ -849,33 +824,6 @@ def render_template_string(string, ctx):
     t = Template(string)
     c = Context(ctx)
     return t.render(c)
-
-
-def make_bi_usage_decorator(decorator):
-    """
-    Transforms a decorator taking default arguments, into a decorator that can both
-    be applied directly to a callable, or first parameterized with keyword arguments and then applied.
-    
-    i.e:
-    
-        @decorator(a=3, b=5)
-        def myfunc...
-        
-        OR
-        
-        @decorator # default arguments are applied
-        def myfunc...
-        
-    The trouble is that static code analysis loses track of decorator signature...
-    """
-
-    def bidecorator(object=None, **kwargs):
-        factory = lambda x: decorator(x, **kwargs)
-        if object:
-            return factory(object)
-        return factory
-
-    return bidecorator
 
 
 def make_request_querydicts_mutable(request):
@@ -940,20 +888,17 @@ class TechnicalEventsMixin(object):
 ## conversions between variable naming conventions ##
 
 def to_snake_case(text):
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', text)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    s1 = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', text)
+    return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 
 def to_pascal_case(text):
     if "_" in text:
         callback = lambda pat: pat.group(1).lower() + pat.group(2).upper()
-        text = re.sub("(\w)_(\w)", callback, text)
+        text = re.sub(r"(\w)_(\w)", callback, text)
         if text[0].islower():
             text = text[0].upper() + text[1:]
         return text
     return text[0].upper() + text[1:]
 
 
-def to_camel_case(text):
-    text = to_pascal_case(text)
-    return text[0].lower() + text[1:]

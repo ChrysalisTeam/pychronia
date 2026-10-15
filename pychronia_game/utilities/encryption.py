@@ -2,7 +2,6 @@
 
 
 
-import os, sys
 import binascii
 
 from Crypto.Cipher import AES

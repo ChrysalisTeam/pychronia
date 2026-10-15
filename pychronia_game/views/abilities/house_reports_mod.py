@@ -4,7 +4,7 @@
 
 from pychronia_game.forms import HouseReportForm
 from pychronia_game.common import *
-from pychronia_game.datamanager.abstract_ability import AbstractAbility, AbstractPartnershipAbility
+from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility
 from pychronia_game.datamanager.abstract_game_view import register_view
 from pychronia_game.datamanager import readonly_method, \
     transaction_watcher

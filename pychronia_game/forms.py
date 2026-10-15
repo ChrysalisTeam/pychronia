@@ -2,8 +2,6 @@
 
 
 
-import json
-
 from django import forms
 
 from pychronia_game.common import *
@@ -191,10 +189,6 @@ class CharacterProfileForm(AbstractGameForm):
         self.fields['permissions'].choices = permissions_choices
 
 
-class SimplePasswordForm(SimpleForm):
-    simple_password = forms.CharField(label=ugettext_lazy("Password"), required=True, widget=forms.PasswordInput)
-
-
 class CleartextPasswordForm(SimpleForm):
     simple_password = forms.CharField(label=ugettext_lazy("Password"), required=True,
                                       widget=forms.TextInput(attrs={"autocomplete": "off"}))
@@ -310,16 +304,6 @@ class ArmedInterventionForm(SimpleForm):
         # dynamic fields here ...
         available_locations_choices = [(name, name.capitalize()) for name in available_locations]
         self.fields["city_name"] = forms.ChoiceField(label=_("Location"), choices=available_locations_choices)
-
-
-class ___TelecomInvestigationForm(SimpleForm):
-    def __init__(self, datamanager, user, *args, **kwargs):
-        super(TelecomInvestigationForm, self).__init__(*args, **kwargs)
-        # dynamic fields here ...
-
-        others = datamanager.get_other_known_characters()
-        others_choices = datamanager.build_select_choices_from_character_usernames(others)
-        self.fields["official_name"] = forms.ChoiceField(label=_("Name"), choices=others_choices)
 
 
 class ArtefactForm(AbstractGameForm):

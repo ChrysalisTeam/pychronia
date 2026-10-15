@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, os, warnings, logging
+import sys, os, logging
 
 root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))  # CHRYSALIS/ root dir
 sys.path.insert(0, root)
@@ -36,7 +36,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     elif "reset_zodb" in arguments:
-        if os.path.exists(settings.ZODB_FILE):
+        if settings.ZODB_FILE and os.path.exists(settings.ZODB_FILE):
             os.remove(settings.ZODB_FILE)
         import pychronia_game.models  # initializes everything
         from pychronia_game.datamanager.datamanager_administrator import reset_zodb_structure, create_game_instance

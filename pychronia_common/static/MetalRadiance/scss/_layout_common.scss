@@ -2,7 +2,8 @@
 .grey_layer {
     margin: 0;
     padding: 0;
-    background: transparent url("#{$IMGS}backgrounds/vertical_grey_2x2.png") repeat scroll 0 0;
+    // wide vertical stripes rather than a 1px-pitch image, which causes moire/flickering when the page is scaled
+    background: transparent repeating-linear-gradient(to right, rgba(127, 127, 127, 0.99) 0, rgba(127, 127, 127, 0.99) 2px, transparent 2px, transparent 4px);
     position: relative; // important to appear in front of absolutely positioned parallax divs
 }
 

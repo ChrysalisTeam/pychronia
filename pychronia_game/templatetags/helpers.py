@@ -2,35 +2,28 @@
 
 
 
-import sys, re, logging, random, logging, json, hashlib
-from datetime import datetime
+import re, logging, random, json
 
 from pychronia_game.utilities import (mediaplayers, autolinker,
                                       rst_directives, is_absolute_url)  # important to register RST extensions
 from pychronia_game.common import exception_swallower, game_file_url as real_game_file_url, determine_asset_url, \
-    reverse, game_view_url, _
+    game_view_url, utc_to_local
 
 import django.template
 from django.template.defaulttags import url as default_url_tag
 from django.utils.safestring import mark_safe
-from django.utils.html import escape
-from django.utils.http import urlencode
 from django.core.serializers import serialize
 from django.db.models.query import QuerySet
 from django.template.defaultfilters import stringfilter
 from django.template.defaultfilters import linebreaks
 from django.core.cache import cache
 
-from cmsplugin_rst.utils import french_insecable
-
 import urllib.request, urllib.parse, urllib.error
-from textwrap import dedent
-from easy_thumbnails.templatetags.thumbnail import thumbnail_url
-from easy_thumbnails.files import get_thumbnailer
-from pychronia_game.storage import protected_game_file_system_storage, \
-    get_game_thumbnailer
-from pychronia_game.common import config, utctolocal
+from pychronia_game.storage import get_game_thumbnailer
+from pychronia_game.common import config
 from django.template.loader import render_to_string
+
+from pychronia_game.utilities.typography import french_insecable
 
 register = django.template.Library()  # IMPORTANT, module-level object used by templates !
 
@@ -44,9 +37,12 @@ def _try_generating_thumbnail_url(rel_path, alias=None):
     Falls back to original fail url if thumbnail generation fails, or if no alias is provided.
     """
     if alias:
+        #print(">>>>>>>>> WE _try_generating_thumbnail_url", rel_path, "alias=", alias)
         try:
             thumb = get_game_thumbnailer(rel_path)[alias]  # we enforce the GAME_FILES storage here!
-            return thumb.url
+            res = thumb.url
+            #print(">>>>>>>>> _try_generating_thumbnail_url GAVE", res)
+            return res
         except Exception as e:
             logging.warning("Error generating game_file_img %s (alias=%s): %r", rel_path, alias, e)
             pass  # fallback to plain file
@@ -196,7 +192,7 @@ def _generate_messaging_links(html_snippet, datamanager):
     """
     Generates "new message" links for emails identified, provided they have had their @ escapes with a backslash
     (else they end up as standard mailto links because of docutils systems).
-    
+
     ATM we also generate links for current user, but it's not a problem.
     """
     if __debug__: datamanager.notify_event("GENERATE_MESSAGING_LINKS")
@@ -255,14 +251,14 @@ def advanced_restructuredtext(value,
                               warning_stream=None):  # sys.stderr by default
     '''
     *value* is the text to parse as restructuredtext.
-    
+
     initial-header-level
         Specify the initial header level.  Default is 1 for
         "<h1>".  Does not affect document title & subtitle
         (see --no-doc-title).
-                        
+
     report_level
-        Report system messages at or higher than <level> - 
+        Report system messages at or higher than <level> -
         "info" or "1", "warning"/"2" (default), "error"/"3",
         "severe"/"4", "none"/"5" (ONLY INTEGERS WORK ATM).
     '''
@@ -300,7 +296,7 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
                          text_format=None):
     """
     Converts RST content to HTML and adds encyclopedia links.
-    
+
     *excluded_link* is the ENCYCLOPEDIA article_id in which we currently are, if any.
     """
     assert isinstance(content, str)
@@ -352,7 +348,7 @@ def render_restructuredtext(context, content, initial_header_level=None, report_
 def rich_text(context, content, initial_header_level=None, report_level=None, excluded_link=None, text_format=None):
     """
     Converts to enriched html the restructuredtext content of the variable.
-    
+
     Note that "excluded_link" is the ID of the excluded article.
     """
     request = context.get('request')
@@ -504,7 +500,7 @@ def list_append_to_each(value, suffix):
 
 register.filter('list_append_to_each', list_append_to_each)
 
-register.filter('utctolocal', utctolocal)
+register.filter('utctolocal', utc_to_local)
 
 
 def _determine_asset_url(properties):

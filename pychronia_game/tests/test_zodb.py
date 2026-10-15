@@ -3,12 +3,10 @@
 
 
 import unittest, copy, time, random
-import traceback
 from unittest import TestCase
 import multiprocessing.pool
 
 
-import ZODB
 from ZODB import DB, FileStorage
 from ZODB.PersistentList import PersistentList
 from ZODB.PersistentMapping import PersistentMapping
@@ -231,7 +229,7 @@ class TestZODB(TestCase):
 
         root.ex = 8
 
-        s3 = conn.savepoint()
+        conn.savepoint()
 
         root.ex = 9
 

@@ -215,6 +215,13 @@ body {
     display: none;
 }
 
+// small-print notes inside footers, kept above Google's 12px legibility threshold
+.footer_note {
+    font-size: 14px;
+    line-height: 1.3em;
+    margin: 4px 10px;
+}
+
 /** POTENTIALLY USELESS STUFFS ?? **/
 
 /*

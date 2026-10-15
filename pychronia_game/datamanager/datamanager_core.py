@@ -87,7 +87,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
                 except AttributeError:
                     try:
                         return getattr(datamanager_instance, name)
-                    except AttributeError as e:
+                    except AttributeError:
                         return "<none>"
 
             def __iter__(self):

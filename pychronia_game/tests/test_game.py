@@ -7,7 +7,6 @@ from textwrap import dedent
 import tempfile
 import shutil
 import inspect
-from pprint import pprint
 from types import *
 
 from ._test_tools import *
@@ -31,20 +30,17 @@ from pychronia_game.utilities import autolinker, to_snake_case, load_yaml_fixtur
 from django.test.client import RequestFactory
 from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance, \
     _get_zodb_connection, GameDataManager, get_all_instances_metadata, \
-    delete_game_instance, check_zodb_structure, change_game_instance_status, \
+    delete_game_instance, change_game_instance_status, \
     GAME_STATUSES, list_backups_for_game_instance, backup_game_instance_data, \
     _get_backup_folder
 from pychronia_game.tests._test_tools import temp_datamanager
-from django.forms.fields import Field
-from django.core.urlresolvers import resolve, NoReverseMatch
 from pychronia_game.views import friendship_management
 from pychronia_game.views.abilities import house_locking, house_reports,\
-    wiretapping_management, runic_translation, artificial_intelligence_mod, telecom_investigation_mod
+    wiretapping_management, runic_translation, artificial_intelligence_mod
 from pychronia_game.views.messaging_views import _filter_messages
 from django.contrib.auth.models import User
 from pychronia_game.authentication import clear_all_sessions
 from pychronia_game.utilities.mediaplayers import generate_image_viewer
-from django.core.urlresolvers import RegexURLResolver
 from pychronia_game.datamanager.abstract_form import AbstractGameForm, GemPayementFormMixin
 from ZODB.POSException import POSError
 from pychronia_game.meta_administration_views import compute_game_activation_token, \
@@ -60,8 +56,6 @@ class TestUtilities(BaseGameTestCase):
     def test_restructuredtext_handling(self):
 
         self._reset_django_db()  # to have thumbnails tables
-
-        from docutils.utils import SystemMessage
 
         restructuredtext = advanced_restructuredtext  # we use our own version
 
@@ -178,6 +172,7 @@ class TestUtilities(BaseGameTestCase):
                                 report_level=1)
         ## print (">>>>>>>>>>", html)
         assert "<h2" in html
+        assert "<p>" in html
         assert "System Message" in html  # specific error divs
         assert 'class="problematic"' in html  # spans around faulty strings
 
@@ -186,8 +181,9 @@ class TestUtilities(BaseGameTestCase):
                                 report_level=4)
         ## print (">>>>>>>>>>", html)
         assert "<h2" in html
+        assert "<p>" in html
         assert "System Message" not in html  # no additional error divs
-        assert 'class="problematic"' in html  # spans remain though
+        assert 'class="problematic"' not in html  # no additional error spans
 
     def test_rich_text_tag_caching(self):
 
@@ -224,7 +220,7 @@ class TestUtilities(BaseGameTestCase):
         assert delay2 > 10 * delay_cache_hits2
 
     def test_sphinx_publisher_settings(self):
-        from django.utils.encoding import smart_str, force_str
+        from django.utils.encoding import smart_str
         from docutils.core import publish_parts
         docutils_settings = {"initial_header_level": 3,
                              "doctitle_xform": False,
@@ -254,21 +250,24 @@ class TestUtilities(BaseGameTestCase):
         <head><title>Page title one</title></head>
         <body>
         <div>Hi</div>
-        <p id="firstpara" class="one red" align="center">This is one paragraph <b>ones</b>.</a>
+        <p id="firstpara" class="one red" align="center">This is one paragraph <b>ones</b>.</p>
         <a href="http://aaa">This is one paragraph <b>one</b>.</a>
+        </body>
         </html>''')
 
         res = autolinker.generate_links(input, "ones?", lambda x: dict(href="TARGET_" + x.group(0), title="mytitle"))
 
-        #print(">>>", res)
+        print(">>>>>>>>>", res)
 
         assert res.strip() == dedent('''
         <html>
         <head><title>Page title one</title></head>
         <body>
         <div>Hi</div>
-        <p align="center" class="one red" id="firstpara">This is <a href="TARGET_one" title="mytitle">one</a> paragraph <b><a href="TARGET_ones" title="mytitle">ones</a></b>.</p></body></html>
-        <a href="http://aaa">This is one paragraph <b>one</b>.</a>''').strip()
+        <p align="center" class="one red" id="firstpara">This is <a href="TARGET_one" title="mytitle">one</a> paragraph <b><a href="TARGET_ones" title="mytitle">ones</a></b>.</p>
+        <a href="http://aaa">This is one paragraph <b>one</b>.</a>
+        </body>
+        </html>''').strip()
 
     def test_generate_image_viewer(self):
 
@@ -748,7 +747,7 @@ class TestMetaAdministration(unittest.TestCase):  # no django setup required ATM
             change_game_instance_status("sqdqsd", GAME_STATUSES.aborted)
 
         change_game_instance_status(game_instance_id, GAME_STATUSES.aborted,
-                                    maintenance_until=datetime.utcnow() + timedelta(seconds=1))
+                                    maintenance_until=get_utc_now() + timedelta(seconds=1))
         with pytest.raises(GameMaintenanceError):
             retrieve_game_instance(game_instance_id)
         retrieve_game_instance(game_instance_id, metadata_checker=None)  # disable maintenance check
@@ -1017,19 +1016,19 @@ class TestDatamanager(BaseGameTestCase):
         for value in [0.025 / game_length,
                       (0.02 / game_length, 0.03 / game_length)]:  # beware of the rounding to integer seconds...
 
-            now = datetime.utcnow()
+            now = get_utc_now()
             dt = self.dm.compute_effective_remote_datetime(value)
             assert now + timedelta(seconds=1) <= dt <= now + timedelta(seconds=2), (now, dt)
 
-            self.assertEqual(utilities.is_past_datetime(dt), False)
+            self.assertEqual(is_past_datetime(dt), False)
             time.sleep(0.5)
-            self.assertEqual(utilities.is_past_datetime(dt), False)
+            self.assertEqual(is_past_datetime(dt), False)
             time.sleep(2)
-            self.assertEqual(utilities.is_past_datetime(dt), True)
+            self.assertEqual(is_past_datetime(dt), True)
 
-            utc = datetime.utcnow()
-            now = datetime.now()
-            now2 = utilities.utc_to_local(utc)
+            utc = get_utc_now()
+            now = datetime.now(tz=UTC)
+            now2 = utc_to_local(utc)
             self.assertTrue(now - timedelta(seconds=1) < now2 < now + timedelta(seconds=1))
 
         dt = self.dm.compute_effective_remote_datetime(delay_mn=(-10, 10))
@@ -1285,8 +1284,8 @@ class TestDatamanager(BaseGameTestCase):
         key_bis, params_bis = dm.get_friendship_params("guy2", "guy1")
         assert key == key_bis == ("guy2", "guy1")  # order OK
         assert params == params_bis
-        assert datetime.utcnow() - timedelta(seconds=5) <= params["proposal_date"] <= datetime.utcnow()
-        assert datetime.utcnow() - timedelta(seconds=5) <= params["acceptance_date"] <= datetime.utcnow()
+        assert get_utc_now() - timedelta(seconds=5) <= params["proposal_date"] <= get_utc_now()
+        assert get_utc_now() - timedelta(seconds=5) <= params["acceptance_date"] <= get_utc_now()
         assert params["proposal_date"] < params["acceptance_date"]
 
         with pytest.raises(UsageError):
@@ -2700,7 +2699,7 @@ class TestDatamanager(BaseGameTestCase):
         game_length_days = self.dm.get_global_parameter("game_theoretical_length_days")
         assert game_length_days == 45.3
 
-        utcnow = datetime.utcnow()
+        utcnow = get_utc_now()
 
         fixed_dt_past = utcnow.replace(microsecond=0) + timedelta(hours=random.randint(-1000, -100))
         fixed_dt_future = utcnow.replace(microsecond=0) + timedelta(hours=random.randint(100, 1000))
@@ -2792,10 +2791,10 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.get_confidentiality_protection_status(my_user1)
         assert not self.dm.get_confidentiality_protection_status(my_user2)
 
-        start = datetime.utcnow()
+        start = get_utc_now()
         self.dm.set_confidentiality_protection_status(my_user1,
                                                       has_confidentiality=True)  # my_user1 is PROTECTED against interceptions!!
-        end = datetime.utcnow()
+        end = get_utc_now()
 
         activation_date = self.dm.get_confidentiality_protection_status(my_user1)
         assert activation_date and (start <= activation_date <= end)
@@ -3008,8 +3007,8 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 0)
         queued_msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(queued_msgs), 1)
-        # print datetime.utcnow(), " << ", queued_msgs[0]["sent_at"]
-        self.assertTrue(datetime.utcnow() < queued_msgs[0]["sent_at"] < datetime.utcnow() + timedelta(minutes=0.22))
+        # print get_utc_now(), " << ", queued_msgs[0]["sent_at"]
+        self.assertTrue(get_utc_now() < queued_msgs[0]["sent_at"] < get_utc_now() + timedelta(minutes=0.22))
 
         self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment="/my/dummy/url",
                              transferred_msg=queued_msgs[0]["id"],
@@ -3018,8 +3017,8 @@ class TestDatamanager(BaseGameTestCase):
         queued_msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(queued_msgs), 2)
         self.assertEqual(queued_msgs[1]["subject"], "yowh2", queued_msgs)
-        # print datetime.utcnow(), " >> ", queued_msgs[1]["sent_at"]
-        self.assertTrue(datetime.utcnow() < queued_msgs[1]["sent_at"] < datetime.utcnow() + timedelta(minutes=0.06))
+        # print get_utc_now(), " >> ", queued_msgs[1]["sent_at"]
+        self.assertTrue(get_utc_now() < queued_msgs[1]["sent_at"] < get_utc_now() + timedelta(minutes=0.06))
 
         # delayed message processing
 
@@ -3035,7 +3034,7 @@ class TestDatamanager(BaseGameTestCase):
         time.sleep(0.8)  # one message OK
 
         res = self.dm.process_periodic_tasks()
-        # print self.dm.get_all_dispatched_messages(), datetime.utcnow()
+        # print self.dm.get_all_dispatched_messages(), get_utc_now()
         self.assertEqual(res["messages_dispatched"], 1)
         self.assertEqual(res["actions_executed"], 0)
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 1)
@@ -4170,7 +4169,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(events[1]["username"], "master")
         self.assertEqual(events[1]["url"], "/my/url/")
 
-        utcnow = datetime.utcnow()
+        utcnow = get_utc_now()
         for event in events:
             self.assertTrue(utcnow - timedelta(seconds=2) < event["time"] <= utcnow)
 
@@ -5232,7 +5231,7 @@ class TestGameViewSystem(BaseGameTestCase):
                 callback_name = action_properties["callback"]
                 callback = getattr(game_view, callback_name)
 
-                (args, varargs, varkw, defaults) = inspect.getargspec(
+                (args, varargs, varkw, defaults, _kwonlyargs, _kwonlydefaults, _annotations) = inspect.getfullargspec(
                     callback)  # will fail if keyword-only arguments are used, in the future
 
                 if action_name in game_view.GAME_ACTIONS and game_view.ACCESS in (

@@ -23,7 +23,7 @@ It also contains a Django-CMS application with a blog, meant to present games cr
 
 See the "docs/" folder for more information on installing, contributing, licenses, etc.
 
-**Beware, python sources are available under BSD license, but embedded javascript and css libraries have licenses of their own. Also note that the included webdesign "Metal radiance" is licensed as "Creative Commons Attribution Non-Commercial 2.0". Contact us if you want to use it for a commercial project.**
+**Beware, python sources are available under MIT license (see LICENSE file), but embedded javascript and css libraries have licenses of their own. Also note that the included webdesign "Metal radiance" is licensed as "Creative Commons Attribution Non-Commercial 2.0". Contact us if you want to use it for a commercial project.**
 
 
 Chrysalis RPG Campaign

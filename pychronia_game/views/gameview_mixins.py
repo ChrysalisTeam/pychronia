@@ -2,18 +2,9 @@
 
 
 
-import inspect
-import json
-
-from django.http import Http404, HttpResponseRedirect, HttpResponse, \
-    HttpResponseForbidden, HttpResponseBadRequest
 from django.shortcuts import render
-from django.template import RequestContext, loader
 
-from ..datamanager import GameDataManager
-from ..forms import AbstractGameForm
 from pychronia_game.common import *
-from pychronia_game.datamanager.datamanager_tools import transaction_watcher
 from pychronia_game.datamanager.abstract_game_view import AbstractGameView, register_view
 
 

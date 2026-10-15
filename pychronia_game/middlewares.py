@@ -5,8 +5,6 @@
 from pychronia_game.common import *
 from django.http import Http404, HttpResponse
 import django.core.mail as mail
-from django.utils.cache import patch_vary_headers
-from django.core.exceptions import MiddlewareNotUsed
 from django.utils.deprecation import MiddlewareMixin
 
 from . import authentication

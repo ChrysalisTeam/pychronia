@@ -18,7 +18,6 @@ def begin_transaction_with_autoreconnect():
     for i in range(10):
         try:
             return transaction.begin()
-            break  ## OK done
         except disconnected_exceptions:
             pass  # maybe SQL connection timed out in relstorage...
     else:
@@ -96,7 +95,7 @@ def _call_with_transaction_watcher(datamanager, always_writable, func, args, kwa
             datamanager.check_no_pending_transaction()  # on real commit
         return res
 
-    except Exception as e:
+    except Exception:
         #logger.warning("ROLLING BACK", exc_info=True)
         datamanager.rollback(savepoint)
         if not savepoint:
@@ -190,6 +189,6 @@ def zodb_transaction(func, *args, **kwargs):
             else:
                 transaction.commit()
                 return res
-        except ConflictError as e:
+        except ConflictError:
             time.sleep(0.5)
     raise AbnormalUsageError(_("Couldn't solve 'concurrent access' conflict on the resource"))

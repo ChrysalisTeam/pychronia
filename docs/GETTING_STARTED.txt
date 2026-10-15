@@ -5,7 +5,7 @@ PYCHRONIA README
 Prerequisites
 =================
 
-- You need to have Python3.5+ installed on your system
+- You need to have Python 3.11+ installed on your system
 - Setup and activate a python3 virtual environment, if you wish
 
 - On a debian/ubuntu, install additional dev files:
@@ -20,17 +20,26 @@ Prerequisites
 Installing dependencies and creating game DBs
 ==============================================
 
-The quick way to setup the engine is to launch "python BOOTSTRAP.py" from the root of the depot (provided that you don't need admin rights to install python packages).
+Python dependencies are declared in "pyproject.toml" and pinned in "uv.lock", they are installed with uv (https://docs.astral.sh/uv/).
+
+The quick way to setup the engine is to launch "python BOOTSTRAP.py" from the root of the depot, with the python executable of your virtualenv.
 
 If no errors occur (except some deprecation warnings), then the game portal is ready for use.
 
 Else::
 
-	With or without sudo (depending on whether you use a system python or a virtualenv):
+	Install the dependencies into your own virtualenv (by default, uv would create a ".venv" folder instead):
 
-	$ pip install -r  requirements.txt
+	$ export UV_PROJECT_ENVIRONMENT=/path/to/your/virtualenv     (on windows: set UV_PROJECT_ENVIRONMENT=C:\path\to\your\virtualenv)
+	$ uv sync --frozen --inexact
 
-	On windows : if some C-backed python modules fail at installing (ex. because VC++ environment is not setup), then comment the problematic modules out of the requirements.txt, and install them via precompiled packages (*.msi, *.exe...)
+	Or, if your virtualenv is activated:
+
+	$ uv sync --active --frozen --inexact
+
+	"--inexact" keeps the other packages already installed in your virtualenv.
+	Add "--extra cms" to also install the (currently broken) Django-CMS dependencies of the "pychronia_cms" package.
+	Use "uv lock --upgrade-package <name>" to upgrade a pinned dependency.
 
 	Then reset both Mysql DB and Zope Object DB for the game portal, using the "runner.py" described below.
 

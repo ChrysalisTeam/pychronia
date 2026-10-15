@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, sys, warnings
+import os
 
 # equivalent of "set DJANGO_SETTINGS_MODULE=pychronia_game.tests.persistent_mode_settings" on windows shell
 os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = \

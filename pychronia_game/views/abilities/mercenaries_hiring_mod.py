@@ -2,7 +2,6 @@
 
 
 
-import json
 from django import forms
 
 from pychronia_game.common import *

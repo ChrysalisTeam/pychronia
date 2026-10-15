@@ -10,14 +10,14 @@ from ZODB.POSException import POSError  # parent of ConflictError
 from pychronia_game.common import *
 from pychronia_game.common import _undefined  # for static checker...
 
-from django.http import Http404, HttpResponseRedirect, HttpResponse, \
+from django.http import HttpResponseRedirect, HttpResponse, \
     HttpResponseForbidden, HttpResponseBadRequest
 from django.core import urlresolvers
 from django.utils.functional import Promise  # used eg. for lazy-translated strings
 from django.shortcuts import redirect
 
 from ..datamanager import GameDataManager
-from .abstract_form import AbstractGameForm, SimpleForm, UninstantiableFormError
+from .abstract_form import SimpleForm, UninstantiableFormError
 from .datamanager_tools import transaction_watcher, readonly_method
 
 

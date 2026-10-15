@@ -4,7 +4,6 @@
 
 from pychronia_game.common import *
 
-from .abstract_form import AbstractGameForm
 from .abstract_game_view import AbstractGameView
 from .datamanager_tools import readonly_method
 

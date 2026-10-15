@@ -2,32 +2,15 @@
 
 
 
-import sys
 import os
-from datetime import datetime, timedelta
-import json
-import traceback
-import collections
-import copy
 import fileservers
 
-from contextlib import contextmanager
-from django.conf import settings
-
 from django.core.mail import mail_admins
-from django.http import Http404, HttpResponseRedirect, HttpResponse, \
-    HttpResponseForbidden
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
-from django.template import RequestContext
-from django.utils.html import escape
-from django.utils.translation import ugettext as _, ugettext_lazy, ungettext
+from django.utils.translation import ugettext as _, ugettext_lazy
 from pychronia_game.common import *
-from .. import forms  # AFTER common, to replace django.forms
-from pychronia_game.datamanager import AbstractGameView, register_view
-from ..authentication import try_authenticating_with_credentials, logout_session
-from .. import datamanager as dm_module
-from pychronia_game.utilities import mediaplayers
-from pychronia_game.datamanager import GameDataManager
+from pychronia_game.datamanager import register_view
 
 from .auction_views import (_build_display_data_from_viewer_settings, homepage, view_characters,
                             view_sales, auction_items_slideshow, personal_items_slideshow, item_3d_view, ajax_chat,

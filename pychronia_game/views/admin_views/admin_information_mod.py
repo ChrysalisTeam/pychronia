@@ -2,12 +2,8 @@
 
 
 
-from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
-from pychronia_game.datamanager.datamanager_modules import StaticPages, Encyclopedia
 from pychronia_game.common import *
-from pychronia_game.datamanager import register_view, AbstractGameForm, AbstractDataTableManagement, DataTableForm
-from pychronia_game.utilities.select2_extensions import Select2TagsField
-from django import forms
+from pychronia_game.datamanager import register_view
 from pychronia_game.datamanager.abstract_game_view import AbstractGameView
 
 

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-from datetime import datetime
 
 from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility
@@ -9,7 +8,6 @@ from pychronia_game.datamanager.abstract_game_view import register_view
 from pychronia_game.datamanager.datamanager_tools import readonly_method, \
     transaction_watcher
 from pychronia_game.forms import OtherKnownCharactersForm
-from django.utils.html import strip_tags
 from django.utils import formats as django_formats
 from django.template.loader import render_to_string
 

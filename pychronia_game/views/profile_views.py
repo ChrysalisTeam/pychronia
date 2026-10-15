@@ -337,7 +337,6 @@ def game_events(request, template_name='administration/game_events.html'):
 @register_view(access=UserAccess.character, requires_global_permission=False, title=ugettext_lazy("Instructions"))
 def ___instructions(request, template_name='profile/instructions.html'):  # TODO - remove that ?????
 
-    user = request.datamanager.user
     intro_data = request.datamanager.get_game_instructions()
 
     return render(request,
