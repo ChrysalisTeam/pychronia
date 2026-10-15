@@ -333,12 +333,16 @@ wheels = [
 [[package]]
 name = "cmsplugin-rst"
 version = "0.3"
-source = { git = "https://github.com/pakal/cmsplugin-rst#9e5d6cfdc0773cb14fda670286fa6c65e87a9980" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.1.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "django-cms" },
     { name = "docutils" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/96/70/71d6b08856635de5cf3be1c8953be4c9258bc1bb6e1c1419a41a8bd5b697/cmsplugin_rst-0.3.tar.gz", hash = "sha256:891d5952470a5166af9c0b69dd74e3464057d536d605cd7f5046301340e2afda", size = 22411, upload-time = "2026-10-15T19:36:39.17Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5c/9c/bb8f032fa1a24652cdf82b4cf13bceb2c959e1d887bef9a799749f3de273/cmsplugin_rst-0.3-py3-none-any.whl", hash = "sha256:36983fe56ec1a186b135781653896437852ea24e8e18b9b3e296ed7246f0c30b", size = 19512, upload-time = "2026-10-15T19:36:38.179Z" },
 ]
 
 [[package]]
@@ -1617,7 +1621,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.11.1" },
-    { name = "cmsplugin-rst", marker = "extra == 'cms'", git = "https://github.com/pakal/cmsplugin-rst" },
+    { name = "cmsplugin-rst", marker = "extra == 'cms'", specifier = ">=0.3" },
     { name = "cmsplugin-simple-gallery", marker = "extra == 'cms'", git = "https://github.com/pakal/cmsplugin-simple-gallery.git" },
     { name = "cmsplugin-zinnia", marker = "extra == 'cms'", git = "https://github.com/pakal/cmsplugin-zinnia.git?rev=76f8de72a37b0525a8a5f65e99f0412d0a55563c" },
     { name = "compat-patcher-core", specifier = ">=2.4" },
