@@ -41,11 +41,8 @@ INSTALLED_APPS += [
     'djangocms_rawhtml',
 
     'filer',
-    'cmsplugin_filer_file',
-    'cmsplugin_filer_folder',
-    'cmsplugin_filer_image',
-    'cmsplugin_filer_teaser',
-    'cmsplugin_filer_video',
+    'djangocms_picture',  # replaces cmsplugin_filer_image (data migrated, see cms4_data_fix_migrate_filer_image_video.py)
+    'djangocms_video',  # replaces cmsplugin_filer_video (data migrated, see cms4_data_fix_migrate_filer_image_video.py)
 
     'jplayer',
 
@@ -100,7 +97,7 @@ DEBUG_TOOLBAR_CONFIG = {
 DEBUG_TOOLBAR_PATCH_SETTINGS = False  # let us configure MANUALLY
 
 FILER_IMAGE_USE_ICON = True  # use django-filer icons for plugins
-TEXT_SAVE_IMAGE_FUNCTION = 'cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
+TEXT_SAVE_IMAGE_FUNCTION = 'djangocms_text_ckeditor.picture_save.create_picture_plugin'
 
 ## DJANGO-REQUEST STATS CONF ##
 # most settings only work with dev version of module, as of 2013/06
@@ -164,8 +161,19 @@ CMS_CACHE_DURATIONS = {  # in seconds
 }
 
 CMS_CACHE_PREFIX = "chryscms-"  # useful if multiple CMS installations
-CMS_PAGE_CACHE = True
-CMS_PLACEHOLDER_CACHE = True
+# Disabled (rung 11, cms 3.11.11->5.0.13): with BOTH page and placeholder caching on,
+# cms.views.details()'s cache-hit path does `response.headers = headers` with a headers
+# object pulled back out of the cache (cms/views.py, combined with cms/cache/page.py's
+# set_page_cache() persisting get_response_headers(response) i.e. response.headers
+# alongside placeholder-cache entries under the same locmem cache). The second real HTTP
+# request to any given cached CMS page then fails at the WSGI layer with
+# `AssertionError: Header names/values must be of type str` while serializing the
+# reconstructed response - reproducible via raw HTTP (curl) against runserver, NOT via
+# Django's test Client, and only when both settings are True together (confirmed neither
+# flag alone reproduces it). No upstream fix identified yet; disabling both avoids the
+# broken code path entirely until this is revisited.
+CMS_PAGE_CACHE = False
+CMS_PLACEHOLDER_CACHE = False
 CMS_PLUGIN_CACHE = True
 
 CMS_MAX_PAGE_HISTORY_REVERSIONS = 15
