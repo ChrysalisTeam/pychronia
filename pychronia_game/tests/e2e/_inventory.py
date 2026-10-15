@@ -93,7 +93,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Callable, Optional, Tuple
 
-from pychronia_game.common import UserAccess, AccessResult
+from pychronia_game.common import AccessResult
 from pychronia_game.urls import inner_game_urlpatterns
 
 from . import _configs
@@ -135,6 +135,12 @@ EXTRA_NON_HTML_NAMES = frozenset([
 FORCED_PARAMETRIZED_ENTRY_IDS = frozenset([
     "view_hidden_clue",   # clues/ -- POST clue_category/clue_code to see real content
 ])
+
+# Per-page caveats NOT modeled by compute_access_result() (see the module docstring's
+# final section): shared here so test_pages_player.py / test_pages_superuser.py apply
+# them identically instead of maintaining their own copies.
+ITEM_3D_VIEW_ENTRY_ID = "item_3d_view__item"
+ALWAYS_AVAILABLE_ENTRY_IDS = frozenset(["view_hidden_clue"])
 
 
 # --------------------------------------------------------------------------------------
@@ -382,9 +388,12 @@ def entries_by_category(category):
 # --------------------------------------------------------------------------------------
 
 def compute_access_result(entry, username, dm):
-    """Faithfully mirrors AbstractGameView.get_access_token() (abstract_game_view.py),
-    WITHOUT mutating dm.user, for an arbitrary *username* (eg. "master", "guy1", "guy2",
-    or dm.anonymous_login == "guest").
+    """Delegates to the real AbstractGameView.get_access_token_for_username() (see
+    abstract_game_view.py), WITHOUT mutating dm.user, for an arbitrary *username* (eg.
+    "master", "guy1", "guy2", or dm.anonymous_login == "guest"). This calls the exact
+    same code path the app itself uses (get_access_token() is just
+    get_access_token_for_username(dm, dm.user.username)), so the e2e suite can never
+    silently drift from the real access-control logic.
 
     Returns one of the pychronia_game.common.AccessResult values:
       - AccessResult.available: expect HTTP 200 (barring page-specific 404s, see notes).
@@ -399,33 +408,7 @@ def compute_access_result(entry, username, dm):
         (and no character-permission override applies) -- redirect, even for master... wait,
         no: master always short-circuits to `available` before this is reached.
     """
-    is_master = dm.is_master(username)
-    is_character = dm.is_character(username)
-    is_authenticated = dm.is_authenticated(username)
-
-    if ((entry.access == UserAccess.master and not is_master) or
-            (entry.access == UserAccess.authenticated and not is_authenticated) or
-            (entry.access == UserAccess.character and not is_character)):
-        return AccessResult.authentication_required
-
-    if is_master:
-        return AccessResult.available
-
-    view_is_globally_available = True
-    if entry.requires_activation:
-        if not dm.is_game_view_activated(entry.name):
-            view_is_globally_available = False
-
-    if entry.requires_permission:
-        if dm.has_permission(username=username, permission=entry.access_permission_name):
-            return AccessResult.available
-        elif view_is_globally_available:
-            return AccessResult.permission_required
-
-    if not view_is_globally_available:
-        return AccessResult.globally_forbidden
-
-    return AccessResult.available
+    return entry.view_class.get_access_token_for_username(dm, username)
 
 
 def expect_available(entry, username, dm):
@@ -433,3 +416,37 @@ def expect_available(entry, username, dm):
     of *entry* by *username* is expected to render (HTTP 200), False if a redirect is
     expected instead (see compute_access_result's docstring for which redirect target)."""
     return compute_access_result(entry, username, dm) == AccessResult.available
+
+
+# --------------------------------------------------------------------------------------
+# Shared "visit every page" helpers (test_pages_player.py / test_pages_superuser.py)
+# --------------------------------------------------------------------------------------
+
+NAVIGABLE_ENTRIES = [
+    entry for entry in list(iter_inventory_entries(CATEGORY_PLAIN_GET))
+    + list(iter_inventory_entries(CATEGORY_PARAMETRIZED))
+    if entry.entry_id != "view_single_message__msg_id"  # covered separately, needs a live dm for its sample
+]
+NAVIGABLE_ENTRY_IDS = [entry.entry_id for entry in NAVIGABLE_ENTRIES]
+
+
+def url_for(base_url, game_id, username, sample):
+    """Builds the full URL for a SamplePath: `{base_url}/{game_id}/{username}/{path}`."""
+    return "%s/%s/%s/%s" % (base_url, game_id, username, sample.path)
+
+
+def expect_available_for_page_visit(entry, username, dm, *, owns_sample_item):
+    """expect_available(), plus the two per-page caveats compute_access_result() can't
+    model from ACCESS/permission rules alone (see ITEM_3D_VIEW_ENTRY_ID /
+    ALWAYS_AVAILABLE_ENTRY_IDS and the module docstring's final section):
+      - ALWAYS_AVAILABLE_ENTRY_IDS: always 200s on a bare GET, regardless of identity.
+      - ITEM_3D_VIEW_ENTRY_ID: 200s only if *owns_sample_item* (real item ownership, not
+        an ACCESS-tier rule) -- callers visiting as an identity that does NOT own the
+        sample item must skip that entry instead of calling this helper for it, since the
+        real outcome is a 404, not a redirect (see test_item_3d_view_404s_for_non_owner).
+    """
+    if entry.entry_id in ALWAYS_AVAILABLE_ENTRY_IDS:
+        return True
+    if entry.entry_id == ITEM_3D_VIEW_ENTRY_ID:
+        return owns_sample_item
+    return expect_available(entry, username, dm)

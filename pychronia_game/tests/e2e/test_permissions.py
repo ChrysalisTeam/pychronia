@@ -63,6 +63,8 @@ import pytest
 
 from pychronia_game.tests.e2e import _configs, _pages
 
+pytestmark = pytest.mark.usefixtures("fresh_zodb")
+
 GAME_ID = _configs.GAME_ID
 
 # Representative sample of REQUIRES_CHARACTER_PERMISSION=True views: a mix of

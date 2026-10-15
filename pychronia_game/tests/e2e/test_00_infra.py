@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from pychronia_game.tests.e2e import _configs, _pages
+import pytest
+from django.conf import settings as django_settings
+
+from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance
+from pychronia_game.tests.e2e import _configs, _pages, _server, _zodb_snapshot
+from pychronia_game.tests.e2e.conftest import PRISTINE_DIR
+
+pytestmark = pytest.mark.usefixtures("fresh_zodb")
 
 GAME_ID = _configs.GAME_ID
 
@@ -38,10 +45,24 @@ def test_superuser_impersonates_player_via_url(superuser_page, base_url):
     _pages.assert_page_ok(superuser_page, response)
 
 
-def test_zodb_restore_isolation_step1_writes(game):
-    assert game.get_global_parameter("game_theoretical_length_days") != 999999
-    game.set_global_parameter("game_theoretical_length_days", 999999)
+def test_zodb_restore_isolation(base_url):
+    """Proves, within a single test (rather than relying on undeclared pytest execution
+    order across two separate tests), that the restore the `fresh_zodb` fixture performs
+    before each test (see this module's `pytestmark`) actually resets ZODB state: writes
+    a sentinel value, runs that exact restore call directly, then re-opens a fresh
+    connection and checks the sentinel is gone."""
+    dm = retrieve_game_instance(_configs.GAME_ID)
+    pristine_value = dm.get_global_parameter("game_theoretical_length_days")
+    assert pristine_value != 999999
+    dm.set_global_parameter("game_theoretical_length_days", 999999)
+    dm.commit()
+    dm.close()
 
+    _server.wait_for_idle_server()
+    _zodb_snapshot.restore_zodb(django_settings.ZODB_FILE, PRISTINE_DIR)
 
-def test_zodb_restore_isolation_step2_sees_pristine_state(game):
-    assert game.get_global_parameter("game_theoretical_length_days") != 999999
+    dm = retrieve_game_instance(_configs.GAME_ID)
+    try:
+        assert dm.get_global_parameter("game_theoretical_length_days") == pristine_value
+    finally:
+        dm.close()

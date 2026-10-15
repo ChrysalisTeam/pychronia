@@ -30,13 +30,10 @@ Useful pytest-playwright options come for free: `--headed`, `--slowmo <ms>`,
 
 ### Debug / headed mode
 
-Two conveniences are layered on top in `conftest.py`:
+One convenience is layered on top in `conftest.py`:
 
 - `--e2e-debug`: shortcut for `--headed --slowmo 500` (so you can actually watch the
   browser work through a test).
-- `--e2e-full-matrix`: opts into the full page x identity x config-variant matrix
-  instead of the smaller, bounded default set (see the `e2e_full_matrix` fixture and
-  how `test_pages_player.py` / `test_pages_superuser.py` use it).
 
 Environment variable equivalents, handy for IDE run configurations (checked in
 `pytest_configure`, so they apply even without passing CLI flags):
@@ -52,10 +49,25 @@ in-process live server + ZODB file are shared process-global state).
 
 A pristine ZODB snapshot is built once per test session (fresh fixture data, game
 started, boosted-player permissions granted, sample messages/friendships/items -- see
-`_configs.apply_baseline_tweaks`); before every single test, `fresh_zodb` (autouse)
-closes the live server's open ZODB connection and overwrites the active `gamedata.fs`
-with a copy of that pristine snapshot, so each test starts from the exact same game
-state regardless of what earlier tests wrote or committed.
+`_configs.apply_baseline_tweaks`). The `fresh_zodb` fixture (in `conftest.py`) closes
+the live server's open ZODB connection and overwrites the active `gamedata.fs` with a
+copy of that pristine snapshot, so a test using it starts from the exact same game state
+regardless of what earlier tests wrote or committed.
+
+`fresh_zodb` is **not autouse**: it's a real cost (a `FileStorage` file copy plus an
+idle-server poll) worth paying only for tests that actually touch the live server/ZODB.
+Every test module that does opts in at the top of the file with:
+
+```python
+pytestmark = pytest.mark.usefixtures("fresh_zodb")
+```
+
+(`test_01_inventory.py` is the one exception -- its tests are pure-Python checks over
+`_inventory.py`'s static classification and never touch the browser or ZODB, aside from
+one test that requests the `game` fixture directly, which itself depends on
+`fresh_zodb`.) When adding a new test module that drives the browser or a `game`/
+datamanager, add that same `pytestmark` line rather than relying on test file
+ordering for isolation.
 
 ## Adding a new page to the inventory
 

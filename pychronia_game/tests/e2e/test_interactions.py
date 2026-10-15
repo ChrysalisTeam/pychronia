@@ -66,7 +66,11 @@ while writing this file (the plan's draft only sketched the intent):
   ``other_username=guy3``).
 """
 
+import pytest
+
 from pychronia_game.tests.e2e import _configs, _pages
+
+pytestmark = pytest.mark.usefixtures("fresh_zodb")
 
 GAME_ID = _configs.GAME_ID
 

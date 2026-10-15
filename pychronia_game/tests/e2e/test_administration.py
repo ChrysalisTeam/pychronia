@@ -13,6 +13,8 @@ from pychronia_game.meta_administration_views import (
 )
 from pychronia_game.tests.e2e import _configs, _pages
 
+pytestmark = pytest.mark.usefixtures("fresh_zodb")
+
 GAME_ID = _configs.GAME_ID
 SECONDARY_GAME_ID = _configs.SECONDARY_GAME_ID
 

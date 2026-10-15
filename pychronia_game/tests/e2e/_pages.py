@@ -42,3 +42,14 @@ def assert_page_ok(page, response=None, expected_status=200):
     content = page.content()
     for marker in ERROR_PAGE_MARKERS:
         assert marker not in content, (page.url, marker)
+
+
+def assert_redirects_to_own_homepage(response, game_id, username):
+    """Checks that a denied-access redirect (301/302) actually targets *username*'s own
+    homepage ("/<game_id>/<username>/"), not e.g. the login page -- see
+    transform_usage_error() in abstract_game_view.py: a non-anonymous (already
+    authenticated/impersonating) user denied access is bounced to their own homepage,
+    never to login (only a truly anonymous, non-impersonated visitor would be)."""
+    location = response.headers.get("location", "")
+    expected_fragment = "/%s/%s/" % (game_id, username)
+    assert expected_fragment in location, (response.url, location, expected_fragment)

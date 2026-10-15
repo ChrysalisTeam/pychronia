@@ -32,8 +32,6 @@ PRISTINE_DIR = os.path.join(E2E_WORK_DIR, "pristine")
 def pytest_addoption(parser):
     parser.addoption("--e2e-debug", action="store_true", default=False,
                      help="Shortcut for --headed --slowmo 500")
-    parser.addoption("--e2e-full-matrix", action="store_true", default=False,
-                     help="Run every page x identity x config-variant combination, not just the bounded default set")
 
 
 def pytest_configure(config):
@@ -53,11 +51,6 @@ def pytest_configure(config):
 def pytest_collection_modifyitems(config, items):
     for item in items:
         item.add_marker(pytest.mark.e2e)
-
-
-@pytest.fixture(scope="session")
-def e2e_full_matrix(request):
-    return request.config.getoption("--e2e-full-matrix")
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -97,8 +90,14 @@ def base_url(e2e_environment):
     return e2e_environment
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def fresh_zodb(e2e_environment):
+    """Restores the pristine ZODB snapshot before the test runs. NOT autouse: it's costly
+    (a FileStorage file copy plus an idle-server poll) and most of the suite's ~250
+    page-visit parametrizations are read-only, so modules that actually need a clean
+    per-test game state opt in with `pytestmark = pytest.mark.usefixtures("fresh_zodb")`
+    at the top of the file (or request the `game` fixture, which already depends on this
+    one) instead of paying this cost for every single test unconditionally."""
     _server.wait_for_idle_server()
     _zodb_snapshot.restore_zodb(django_settings.ZODB_FILE, PRISTINE_DIR)
     yield

@@ -18,57 +18,44 @@ import pytest
 
 from pychronia_game.tests.e2e import _configs, _inventory, _pages
 
+pytestmark = pytest.mark.usefixtures("fresh_zodb")
+
 GAME_ID = _configs.GAME_ID
 BOOSTED_PLAYER = _configs.BOOSTED_PLAYER
 MASTER_LOGIN = _configs.MASTER_LOGIN
 
-ITEM_3D_VIEW_ENTRY_ID = "item_3d_view__item"
-ALWAYS_AVAILABLE_ENTRY_IDS = frozenset(["view_hidden_clue"])
-
-NAVIGABLE_ENTRIES = [
-    entry for entry in list(_inventory.iter_inventory_entries(_inventory.CATEGORY_PLAIN_GET))
-    + list(_inventory.iter_inventory_entries(_inventory.CATEGORY_PARAMETRIZED))
-    if entry.entry_id != "view_single_message__msg_id"
-]
-NAVIGABLE_ENTRY_IDS = [entry.entry_id for entry in NAVIGABLE_ENTRIES]
-
-
-def _url_for(base_url, username, sample):
-    return "%s/%s/%s/%s" % (base_url, GAME_ID, username, sample.path)
+NAVIGABLE_ENTRIES = _inventory.NAVIGABLE_ENTRIES
+NAVIGABLE_ENTRY_IDS = _inventory.NAVIGABLE_ENTRY_IDS
 
 
 @pytest.mark.parametrize("entry", NAVIGABLE_ENTRIES, ids=NAVIGABLE_ENTRY_IDS)
 def test_superuser_impersonating_master_reaches_allowed_pages(entry, superuser_page, base_url, game):
-    expected_available = _inventory.expect_available(entry, MASTER_LOGIN, game)
-    if entry.entry_id in ALWAYS_AVAILABLE_ENTRY_IDS:
-        expected_available = True
-    if entry.entry_id == ITEM_3D_VIEW_ENTRY_ID:
-        expected_available = True  # master/superuser sees every item, regardless of ownership
+    expected_available = _inventory.expect_available_for_page_visit(
+        entry, MASTER_LOGIN, game, owns_sample_item=True)  # master/superuser sees every item
 
     for sample in entry.sample_paths(game):
-        url = _url_for(base_url, MASTER_LOGIN, sample)
+        url = _inventory.url_for(base_url, GAME_ID, MASTER_LOGIN, sample)
         response = superuser_page.context.request.get(url, max_redirects=0)
         if expected_available:
             assert response.status == 200, (entry.entry_id, url, response.status)
         else:
             assert response.status in (301, 302), (entry.entry_id, url, response.status)
+            _pages.assert_redirects_to_own_homepage(response, GAME_ID, MASTER_LOGIN)
 
 
 @pytest.mark.parametrize("entry", NAVIGABLE_ENTRIES, ids=NAVIGABLE_ENTRY_IDS)
 def test_superuser_impersonating_boosted_player_reaches_allowed_pages(entry, superuser_page, base_url, game):
-    expected_available = _inventory.expect_available(entry, BOOSTED_PLAYER, game)
-    if entry.entry_id in ALWAYS_AVAILABLE_ENTRY_IDS:
-        expected_available = True
-    if entry.entry_id == ITEM_3D_VIEW_ENTRY_ID:
-        expected_available = True  # guy1 owns "sacred_chest", per apply_baseline_tweaks
+    expected_available = _inventory.expect_available_for_page_visit(
+        entry, BOOSTED_PLAYER, game, owns_sample_item=True)  # guy1 owns "sacred_chest", per apply_baseline_tweaks
 
     for sample in entry.sample_paths(game):
-        url = _url_for(base_url, BOOSTED_PLAYER, sample)
+        url = _inventory.url_for(base_url, GAME_ID, BOOSTED_PLAYER, sample)
         response = superuser_page.context.request.get(url, max_redirects=0)
         if expected_available:
             assert response.status == 200, (entry.entry_id, url, response.status)
         else:
             assert response.status in (301, 302), (entry.entry_id, url, response.status)
+            _pages.assert_redirects_to_own_homepage(response, GAME_ID, BOOSTED_PLAYER)
 
 
 def test_superuser_impersonating_master_cannot_reach_character_only_pages(superuser_page, base_url, game):
@@ -76,9 +63,10 @@ def test_superuser_impersonating_master_cannot_reach_character_only_pages(superu
     assert character_entries, "expected at least one ACCESS=character view in the inventory"
     entry = character_entries[0]
     for sample in entry.sample_paths(game):
-        url = _url_for(base_url, MASTER_LOGIN, sample)
+        url = _inventory.url_for(base_url, GAME_ID, MASTER_LOGIN, sample)
         response = superuser_page.context.request.get(url, max_redirects=0)
         assert response.status in (301, 302), (entry.entry_id, url, response.status)
+        _pages.assert_redirects_to_own_homepage(response, GAME_ID, MASTER_LOGIN)
 
 
 def test_superuser_master_homepage_renders_cleanly(superuser_page, base_url):
