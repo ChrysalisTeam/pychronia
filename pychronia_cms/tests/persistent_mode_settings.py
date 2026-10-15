@@ -32,12 +32,13 @@ DATABASES = {
 # here rather than fixed because it wasn't exercised by this upgrade's page checks
 # (homepage/blog list/blog post/admin login), only by the system check itself.
 #
-# treebeard.E001 (rung 9): cmsplugin_filer_utils.FilerPluginManager (cmsplugin-filer 1.1.3,
-# abandoned) predates django-treebeard's modern MP_NodeManager base class requirement; cms
-# 3.11.11 pulls in django-treebeard>=4.3 transitively, whose newer releases added this check.
+# treebeard.E001 (rung 9, re-verified at rung 11/cms 5.0.13): originally raised against
+# cmsplugin_filer_utils.FilerPluginManager (cmsplugin-filer 1.1.3, abandoned - since removed
+# entirely from this stack); still fires post-upgrade, now against django-cms's OWN
+# cms.models.managers.PageManager, which likewise predates django-treebeard's modern
+# MP_NodeManager base class requirement. No upstream fix available on django-cms 5.0.13.
 #
-# admin.E013 (rung 9): filer.admin.clipboardadmin.ClipboardAdmin (django-filer 1.5.0, kept
-# pinned - see requirements.txt) puts a manually-through-modeled M2M field in
-# filter_horizontal, which newer Django validates against. Not verified whether the actual
-# clipboard admin UI works under this stack; not exercised by this upgrade's page checks.
-SILENCED_SYSTEM_CHECKS = ['fields.E903', 'admin.E012', 'treebeard.E001', 'admin.E013']
+# admin.E013 (rung 9) no longer fires as of the django-filer 1.5.0->3.6.0 bump (rung 11
+# Stage B) - filer.admin.clipboardadmin.ClipboardAdmin's M2M/filter_horizontal issue was
+# fixed upstream somewhere in that range - so it has been dropped from this list.
+SILENCED_SYSTEM_CHECKS = ['fields.E903', 'admin.E012', 'treebeard.E001']
