@@ -16,8 +16,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pychronia_settings")  # not era
 # The patches below must run before django.setup() (triggered a few lines down by
 # django_compat_patcher.patch()), since they fix crashes that happen during app loading /
 # admin autodiscovery / model preparation themselves. django_compat_patcher covers Django's
-# own deprecations; these instead work around abandoned third-party packages (django-filer 1.x,
-# django-blog-zinnia/cmsplugin-zinnia) that have no upstream fix for current Django versions.
+# own deprecations; these instead work around abandoned third-party packages (django-filer 1.x)
+# that have no upstream fix for current Django versions.
 
 import django
 if django.VERSION < (3, 0):
@@ -65,21 +65,6 @@ def _patched_Field_init(self, *args, **kwargs):
     _original_Field_init(self, *args, **kwargs)
 Field.__init__ = _patched_Field_init
 
-# django-blog-zinnia 0.20 (abandoned)'s zinnia/admin/fields.py builds its MPTT choice field as
-# `choices = property(_get_choices, forms.ChoiceField._set_choices)`, i.e. it needs ChoiceField
-# to still expose the pre-property-rewrite `_set_choices` method. Django replaced that with a
-# plain `choices` property/setter pair at some point and dropped the method name entirely, which
-# Django <=4.2 tolerated (closures below for `_set_choices` were effectively unused leftovers) but
-# Django 5.0 doesn't - admin autodiscovery crashes with AttributeError while importing zinnia's
-# admin. No upstream fix exists; restoring just the method name here (mirroring Django 5.0's own
-# setter body) is enough since zinnia never calls it directly, only passes it to `property()`.
-# Must run before django.setup(), same reasoning as the patch above.
-from django.forms.fields import ChoiceField
-from django.utils.choices import normalize_choices
-def _set_choices(self, value):
-    self._choices = self.widget.choices = normalize_choices(value)
-ChoiceField._set_choices = _set_choices
-
 # django-filer 1.5.0's Folder/File models declare their MPTT fields (level/lft/rght)
 # explicitly but still rely on the old imperative `mptt.register(Folder)` (called at module
 # level, AFTER the class body closes) to add the remaining ones, 'tree_id' among them - so
@@ -113,55 +98,6 @@ def _patched_set_name_with_model(self, model):
         return
     _original_set_name_with_model(self, model)
 Index.set_name_with_model = _patched_set_name_with_model
-
-# django-blog-zinnia 0.20's zinnia/models_bases/entry.py declares
-# `index_together = [['slug', 'publication_date'], ...]` - a list of lists, not Django's
-# expected tuple of tuples. Options.contribute_to_class() only runs normalize_together() on
-# unique_together, never on index_together, so this raw list is stored verbatim in
-# _meta.original_attrs and copied as-is into migration state. `migrate`'s autodetector used to
-# tolerate that, but Django 5.1 does `new_value = set(new_value)` on it directly in
-# _get_altered_foo_together_operations(), and lists aren't hashable -> TypeError. No upstream
-# fix exists. Patched by normalizing index_together into tuples right after ModelState captures
-# it off the live model, which is the only place this raw value flows through unmodified.
-from django.db.migrations.state import ModelState
-_original_from_model = ModelState.from_model.__func__
-def _patched_from_model(cls, model, exclude_rels=False):
-    state = _original_from_model(cls, model, exclude_rels=exclude_rels)
-    it = state.options.get("index_together")
-    if it:
-        state.options["index_together"] = tuple(tuple(entry) for entry in it)
-    return state
-ModelState.from_model = classmethod(_patched_from_model)
-
-# django-blog-zinnia 0.20 (abandoned) ships URL patterns with a redundant bare inline
-# unicode-flag group nested INSIDE a named group instead of at the pattern start, eg.
-# r'^tags/(?P<tag>[^/]+(?u))/$' (zinnia/urls/tags.py, zinnia/urls/feeds.py) - the "(?u)" ends
-# up at position 19, not 0. Python's re module tolerated this with a mere DeprecationWarning
-# for years, but newer Python versions (3.11+) turned it into a hard re.error ("global flags
-# not at the start of the expression"), which Django wraps into ImproperlyConfigured as soon
-# as the pattern is first compiled (on first URL resolution / system checks, not at import
-# time - hence patched here rather than needing to run before django.setup()). Moving the
-# flag to the start instead of dropping it would only fix compilation, not reversal -
-# django.utils.regex_helper.normalize() (used by {% url %}/reverse()) cannot parse ANY
-# inline-flag group regardless of position and raises its own "Non-reversible reg-exp
-# portion" ValueError. Since Python 3 str patterns are already Unicode-aware by default,
-# "(?u)" is a pure no-op there, so it's safe to just strip it rather than relocate it. No
-# upstream fix exists.
-import re
-from django.urls.resolvers import LocaleRegexDescriptor
-from django.core.exceptions import ImproperlyConfigured
-_original_locale_regex_compile = LocaleRegexDescriptor._compile
-_bare_u_flag_re = re.compile(r"\(\?u\)")
-def _patched_locale_regex_compile(self, regex):
-    try:
-        return _original_locale_regex_compile(self, regex)
-    except ImproperlyConfigured:
-        fixed_regex, count = _bare_u_flag_re.subn("", regex)
-        if not count:
-            raise
-        return _original_locale_regex_compile(self, fixed_regex)
-LocaleRegexDescriptor._compile = _patched_locale_regex_compile
-LocaleRegexDescriptor._compile = _patched_locale_regex_compile
 
 import django_compat_patcher
 from django_compat_patcher import default_settings as dcp_default_settings
