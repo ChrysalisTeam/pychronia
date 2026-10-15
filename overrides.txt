@@ -1,2 +1,0 @@
-django-polymorphic==3.0.0
-Django==5.1.15
