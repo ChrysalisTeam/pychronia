@@ -11,7 +11,7 @@ from django.http.response import HttpResponse
 from cms.views import details
 
 from djangocms_page_sitemap.sitemap import ExtendedSitemap
-from zinnia.sitemaps import EntrySitemap, CategorySitemap
+from djangocms_stories.sitemaps import StoriesSitemap
 
 
 admin.autodiscover()
@@ -32,9 +32,9 @@ Sitemap: http://chrysalis-game.com/sitemap.xml
 
 sitemaps = {'cmspages': ExtendedSitemap,
             #'tags': TagSitemap,
-            'blog': EntrySitemap,
+            'blog': StoriesSitemap,
             #'authors': AuthorSitemap,
-            'categories': CategorySitemap, }
+            }
 
 urlpatterns = patterns('',
 
@@ -51,7 +51,7 @@ urlpatterns = patterns('',
 urlpatterns += i18n_patterns(
                              #(r'^accounts/', include('userprofiles.urls')), # one-step registration
 
-                             # not needed, CMS does it: (r'^weblog/', include('zinnia.urls')),
+                             # not needed, CMS does it: (r'^weblog/', include(...)),
 
                              #url(r'^comments/', include('django.contrib.comments.urls')), useless ATM ?
 
@@ -76,13 +76,4 @@ urlpatterns += patterns('',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     #(r'^admin/filebrowser/', include('filebrowser.urls')), # TO BE PUT BEFORE "admin/" !!
-    
-    
-    # specific zinnia parts
-   url(r'^weblog/categories/', include('zinnia.urls.categories')),
-    url(r'^weblog/', include('zinnia.urls.entries')),
-    url(r'^weblog/', include('zinnia.urls.archives')),
-    #url(r'^feeds/', include('zinnia.urls.feeds')),
-
-
 '''
