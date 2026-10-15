@@ -4,6 +4,8 @@ from pychronia_common.common_settings import *
 
 LANGUAGE_CODE = 'fr'  # for now, CMS content is french only so....
 
+CMS_CONFIRM_VERSION4 = True  # required by cms>=4 to acknowledge the Title->PageContent/versioning rewrite
+
 
 SILENCED_SYSTEM_CHECKS = ["admin.E012", # duplicate field(s) in 'fieldsets
                           "urls.W001"]  # wrong "is_endpoint" checks by Django
@@ -26,6 +28,8 @@ INSTALLED_APPS += [
     'mptt',  # menu handler, now only for zinnia
     'treebeard',  # new menu handler for djangocms
     'menus',
+    'djangocms_versioning',  # required by cms4+ (versioned PageContent/placeholders)
+    'djangocms_alias',  # required by cms4+ (reusable content aliases)
 
     'cmsplugin_rst',
     'cmsplugin_simple_gallery',
