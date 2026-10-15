@@ -19,18 +19,10 @@ DATABASES = {
     }
 }
 
-# cmsplugin_zinnia (abandoned, pinned to a fixed git commit) still declares
-# LatestEntriesPlugin.featured as models.NullBooleanField, which Django 4.0 turned
-# into a hard system-check error (fields.E903) even though the field class itself
-# still works at runtime. Silencing rather than patching: no upstream fix exists,
-# and nothing in this codebase reads/writes that field directly.
-#
-# admin.E012: cmsplugin_zinnia.admin.EntryPlaceholderAdmin repeats a field across
-# several of its fieldsets; Django 4.0 started validating this at startup (older
-# Django silently allowed it). Not independently verified whether the actual
-# Entry admin changelist/edit page renders correctly under this stack; flagged
-# here rather than fixed because it wasn't exercised by this upgrade's page checks
-# (homepage/blog list/blog post/admin login), only by the system check itself.
+# fields.E903 (cmsplugin_zinnia's LatestEntriesPlugin.featured NullBooleanField) and
+# admin.E012 (cmsplugin_zinnia.admin.EntryPlaceholderAdmin's repeated fieldset field) both
+# dropped from this list: no longer fire now that zinnia/cmsplugin_zinnia has been removed
+# (entries migrated to djangocms-stories, see cms4_data_fix_migrate_zinnia_to_stories.py).
 #
 # treebeard.E001 (rung 9, re-verified at rung 11/cms 5.0.13): originally raised against
 # cmsplugin_filer_utils.FilerPluginManager (cmsplugin-filer 1.1.3, abandoned - since removed
@@ -41,4 +33,4 @@ DATABASES = {
 # admin.E013 (rung 9) no longer fires as of the django-filer 1.5.0->3.6.0 bump (rung 11
 # Stage B) - filer.admin.clipboardadmin.ClipboardAdmin's M2M/filter_horizontal issue was
 # fixed upstream somewhere in that range - so it has been dropped from this list.
-SILENCED_SYSTEM_CHECKS = ['fields.E903', 'admin.E012', 'treebeard.E001']
+SILENCED_SYSTEM_CHECKS = ['treebeard.E001']
