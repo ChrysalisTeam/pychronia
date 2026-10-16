@@ -366,7 +366,7 @@ body .notification_panel {
         position: relative;
         padding: 10px;
         margin: 7px auto 0;
-        background: transparent url('#{$IMGS}backgrounds/leather_bg.jpg') repeat scroll center center;
+        background: transparent url('#{$IMGS}backgrounds/leather_bg.jpg') repeat scroll center top;
         background-clip: padding-box;
 
         /* fallback for border-image of top level */
