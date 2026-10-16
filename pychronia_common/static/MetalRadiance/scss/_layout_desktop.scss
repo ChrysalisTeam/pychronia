@@ -472,6 +472,11 @@ body .notification_panel {
 
     #up_footer_border_center {
         @include up_footer_common;
+        // negative horizontal margin: overlaps the left/right pieces by 1px so that sub-pixel
+        // rounding of each inline-block's fractional edge position (seen at non-integer
+        // devicePixelRatio, eg. 110% Windows display scaling) can't leave a hairline gap of
+        // visible page background between the 3 border-image pieces of the footer bar.
+        margin: 0 -1px;
         border-width: 1px;
         border-style: solid; // important
         /////background-image: url('#{$IMGS}backgrounds/up_footer_center.png');

@@ -2917,6 +2917,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     background-color: transparent;
     border-color: transparent;
     border-style: solid;
+    margin: 0 -1px;
     border-width: 1px;
     border-style: solid;
     border-image: url('img/backgrounds/up_footer_center.png') 1 1 1 1 fill stretch stretch;
