@@ -1,0 +1,12 @@
+{% load i18n %}{% spaceless %}
+<ul class="categories">
+    {% for category in categories %}
+        <li>
+            <a href="{{ category.get_absolute_url }}" title="{% blocktrans with name=category.name %}Voir tous les articles dans {{ name }}{% endblocktrans %}">{{ category.name }}</a>
+            {% blocktrans count articles=category.count %}{{ articles }} article{% plural %}{{ articles }} articles{% endblocktrans %}
+        </li>
+    {% empty %}
+        <li class="blog-empty">{% trans "No categories found." %}</li>
+    {% endfor %}
+</ul>
+{% endspaceless %}

@@ -1,5 +1,5 @@
 {% extends "cms_one_column.html" %}
-{% load cms_tags menu_tags sekizai_tags heading kwacros i18n %}
+{% load cms_tags menu_tags sekizai_tags heading kwacros i18n stories_sidebar_tags %}
 {% loadkwacros "metalradiance_kwacros.html" %}
 
 {# Project override of djangocms_stories/base.html, mirroring the pre-existing
@@ -16,12 +16,30 @@
 
 {% block panels %}
 
-    {% usekwacro main_panel_start frame_class="big_frame bare_forms" %}
+    {% usekwacro main_panel_start frame_class="medium_frame float_right bare_forms" %}
 
         <div class="app app-blog">
             {% block content_blog %}{% endblock %}
         </div>
 
     {% usekwacro main_panel_end %}
+
+    {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="2" %}
+        <div id="widget-categories" class="widget">
+            <h2>{% trans "Catégories" %}</h2>
+            <div class="scroll_yellow_flat">
+                {% stories_categories_widget %}
+            </div>
+        </div>
+    {% usekwacro side_panel_end %}
+
+    {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
+        <div id="widget-archives" class="widget">
+            <h2>{% trans "Archives" %}</h2>
+            <div class="scroll_yellow_flat">
+                {% stories_archive_years_widget %}
+            </div>
+        </div>
+    {% usekwacro side_panel_end %}
 
 {% endblock %}
