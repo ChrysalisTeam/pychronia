@@ -7,12 +7,13 @@
 <section class="blog-list">
     {% block blog_title %}
     <header>
-        <h2>
+        <h1>
         {% if author %}{% trans "Articles by" %} {{ author.get_full_name }}
         {% elif archive_date %}{% trans "Archive" %} &ndash; {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year|unlocalize }}
         {% elif tagged_entries %}{% trans "Tag" %} &ndash; {{ tagged_entries|capfirst }}
-        {% elif category %}{% trans "Category" %} &ndash; {% render_model category "name" %}{% endif %}
-        </h2>
+        {% elif category %}{% trans "Category" %} &ndash; {% render_model category "name" %}
+        {% else %}{% trans "Derniers articles" %}{% endif %}
+        </h1>
         {% if category.abstract %}
           <div class="category-abstract">
             {% render_model category "abstract" %}
