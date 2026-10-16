@@ -44,12 +44,12 @@ dependencies = [
 # actually exercised by that ladder (not aspirational pins); some differ from what this
 # extra used to declare because those older pins were never actually verified to work.
 cms = [
-    "django-cms==5.0.13",
+    "django-cms==5.1.3",  # django6-upgrade-ladder rung: 5.0.13->5.1.3, first cms release declaring Django 6.0/6.1 support
     # cms4+ architecture (Title->PageContent, PageUrl, versioned placeholders) requires these two:
     "djangocms-versioning==2.8.0",
     "djangocms-alias==3.2.0",
     "djangocms-admin-style==3.3.1",
-    "djangocms-page-sitemap==1.1.0",
+    "djangocms-page-sitemap==1.4.0",
     # djangocms-text-ckeditor replaced by djangocms-text (the successor plugin); its own
     # migrations auto-copy existing TextPlugin.body rows and drop the old ckeditor table.
     "djangocms-text==1.0.2",
