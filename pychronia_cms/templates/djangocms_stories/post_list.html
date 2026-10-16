@@ -1,0 +1,65 @@
+{% extends "djangocms_stories/base.html" %}
+{% load i18n l10n easy_thumbnails_tags cms_tags %}{% spaceless %}
+
+{% block canonical_url %}<link rel="canonical" href="{{ view.get_view_url }}"/>{% endblock canonical_url %}
+
+{% block content_blog %}
+<section class="blog-list">
+    {% block blog_title %}
+    <header>
+        <h2>
+        {% if author %}{% trans "Articles by" %} {{ author.get_full_name }}
+        {% elif archive_date %}{% trans "Archive" %} &ndash; {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year|unlocalize }}
+        {% elif tagged_entries %}{% trans "Tag" %} &ndash; {{ tagged_entries|capfirst }}
+        {% elif category %}{% trans "Category" %} &ndash; {% render_model category "name" %}{% endif %}
+        </h2>
+        {% if category.abstract %}
+          <div class="category-abstract">
+            {% render_model category "abstract" %}
+          </div>
+        {% endif %}
+    </header>
+    {% endblock %}
+    {% for post_content in postcontent_list %}
+        {% include "djangocms_stories/includes/post_item.html" with post_content=post_content image="true" TRUNCWORDS_COUNT=TRUNCWORDS_COUNT %}
+    {% empty %}
+    <p class="blog-empty">{% trans "No article found." %}</p>
+    {% endfor %}
+    {% if author or archive_date or tagged_entries %}
+    <p class="blog-back"><a href="{% url 'djangocms_stories:posts-latest' %}">{% trans "Back" %}</a></p>
+    {% endif %}
+    {% if is_paginated %}
+    {% comment %}
+    Project override: numbered page links (matching the old zinnia blog's pagination look),
+    instead of the vendor template's plain Previous/Next links. Reuses the same ul.paginator /
+    li.index / li.page / li.page.current / li.page.next markup zinnia used, so the pre-existing
+    _zinnia_customization.scss styling applies unchanged.
+    {% endcomment %}
+    <ul class="paginator">
+        <li class="index">
+            {% blocktrans with current=page_obj.number total=paginator.num_pages %}Page {{ current }} sur {{ total }}{% endblocktrans %}
+        </li>
+        {% if page_obj.has_previous %}
+        <li class="page prev">
+            <a href="?{{ view.page_kwarg }}={{ page_obj.previous_page_number }}" title="{% trans "Articles plus récents" %}">&laquo;</a>
+        </li>
+        {% endif %}
+        {% for page_num in paginator.page_range %}
+        <li class="page{% if page_num == page_obj.number %} current{% endif %}">
+            {% if page_num == page_obj.number %}
+                {{ page_num }}
+            {% else %}
+                <a href="?{{ view.page_kwarg }}={{ page_num }}" title="{% blocktrans %}Articles page {{ page_num }}{% endblocktrans %}">{{ page_num }}</a>
+            {% endif %}
+        </li>
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <li class="page next">
+            <a href="?{{ view.page_kwarg }}={{ page_obj.next_page_number }}" title="{% trans "Articles plus anciens" %}">&raquo;</a>
+        </li>
+        {% endif %}
+    </ul>
+    {% endif %}
+</section>
+{% endblock %}
+{% endspaceless %}

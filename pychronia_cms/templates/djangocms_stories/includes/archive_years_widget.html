@@ -1,0 +1,12 @@
+{% load i18n l10n %}{% spaceless %}
+<ul class="archives-entries-tree">
+    {% for year, count in years %}
+        <li>
+            <a title="{% blocktrans %}Archives {{ year }}{% endblocktrans %}" rel="archives" href="{% url namespace|add:':posts-archive' year=year %}">{{ year|unlocalize }}</a>
+            {% blocktrans count articles=count %}{{ articles }} article{% plural %}{{ articles }} articles{% endblocktrans %}
+        </li>
+    {% empty %}
+        <li class="blog-empty">{% trans "No article found." %}</li>
+    {% endfor %}
+</ul>
+{% endspaceless %}
