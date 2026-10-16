@@ -2790,7 +2790,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     position: relative;
     padding: 10px;
     margin: 7px auto 0;
-    background: transparent url('img/backgrounds/leather_bg.jpg') repeat scroll center center;
+    background: transparent url('img/backgrounds/leather_bg.jpg') repeat scroll center top;
     background-clip: padding-box;
     border-color: #775F13;
     border-style: ridge;
@@ -2801,7 +2801,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     position: relative;
     padding: 10px;
     margin: 7px auto 0;
-    background: transparent url('img/backgrounds/leather_bg.jpg') repeat scroll center center;
+    background: transparent url('img/backgrounds/leather_bg.jpg') repeat scroll center top;
     background-clip: padding-box;
     border-color: #775F13;
     border-style: ridge;
@@ -2812,7 +2812,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     position: relative;
     padding: 10px;
     margin: 7px auto 0;
-    background: transparent url('img/backgrounds/leather_bg.jpg') repeat scroll center center;
+    background: transparent url('img/backgrounds/leather_bg.jpg') repeat scroll center top;
     background-clip: padding-box;
     border-color: #775F13;
     border-style: ridge;
