@@ -18,7 +18,10 @@
     margin-left: -30px;
     margin-right: -30px;
 
-    img.center {
+    // "img.center" is the old zinnia/docutils class; djangocms_picture (used by the new
+    // djangocms_stories blog) renders centered images as "img.align-center" instead - both
+    // need the same vertical spacing.
+    img.center, img.align-center {
         margin-top: 15px;
         margin-bottom: 15px;
     }

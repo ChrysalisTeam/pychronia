@@ -2130,7 +2130,7 @@ button.pretty_button {
   margin-left: -30px;
   margin-right: -30px;
 }
-.hentry img.center {
+.hentry img.center, .hentry img.align-center {
   margin-top: 15px;
   margin-bottom: 15px;
 }
