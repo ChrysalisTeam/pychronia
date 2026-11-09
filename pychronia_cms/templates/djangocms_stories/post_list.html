@@ -9,7 +9,7 @@
     <header>
         <h1>
         {% if author %}{% trans "Articles by" %} {{ author.get_full_name }}
-        {% elif archive_date %}{% trans "Archive" %} &ndash; {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year|unlocalize }}
+        {% elif archive_date %}{% trans "Archives" %} &ndash; {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year|unlocalize }}
         {% elif tagged_entries %}{% trans "Tag" %} &ndash; {{ tagged_entries|capfirst }}
         {% elif category %}{% trans "Category" %} &ndash; {% render_model category "name" %}
         {% else %}{% trans "Latest posts" %}{% endif %}
