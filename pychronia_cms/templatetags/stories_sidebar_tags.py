@@ -36,7 +36,11 @@ def stories_categories_widget(context):
     qs = qs.filter(Q(posts__sites__isnull=True) | Q(posts__sites=site.pk))
     if not config or not config.menu_empty_categories:
         qs = qs.filter(posts__isnull=False)
-    categories = qs.distinct().order_by("translations__name")
+    # Sorted in Python: order_by("translations__name") would join ALL translation rows (incl.
+    # the fallback-language ones matched by active_translations()), duplicating each category
+    # translated in several languages despite distinct().
+    categories = sorted(qs.distinct(),
+                        key=lambda c: (c.safe_translation_getter("name", any_language=True) or "").lower())
     return {"categories": categories}
 
 
