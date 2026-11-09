@@ -824,6 +824,33 @@ msgid_plural "%(entry_count)s entries tagged by %(tag)s"
 msgstr[0] ""
 msgstr[1] ""
 
+#: .\templates\djangocms_stories\includes\categories_widget.html:5
+#, python-format
+msgid "View all posts in %(name)s"
+msgstr "Voir tous les articles dans %(name)s"
+
+#: .\templates\djangocms_stories\post_list.html:15
+msgid "Latest posts"
+msgstr "Derniers articles"
+
+#: .\templates\djangocms_stories\post_list.html:41
+#, python-format
+msgid "Page %(current)s of %(total)s"
+msgstr "Page %(current)s sur %(total)s"
+
+#: .\templates\djangocms_stories\post_list.html:45
+msgid "Newer posts"
+msgstr "Articles plus récents"
+
+#: .\templates\djangocms_stories\post_list.html:53
+#, python-format
+msgid "Articles page %(page_num)s"
+msgstr "Page %(page_num)s des articles"
+
+#: .\templates\djangocms_stories\post_list.html:59
+msgid "Older posts"
+msgstr "Articles plus anciens"
+
 #~ msgid "Profile"
 #~ msgstr "Profil"
 

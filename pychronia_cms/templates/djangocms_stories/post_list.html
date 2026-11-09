@@ -12,7 +12,7 @@
         {% elif archive_date %}{% trans "Archive" %} &ndash; {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year|unlocalize }}
         {% elif tagged_entries %}{% trans "Tag" %} &ndash; {{ tagged_entries|capfirst }}
         {% elif category %}{% trans "Category" %} &ndash; {% render_model category "name" %}
-        {% else %}{% trans "Derniers articles" %}{% endif %}
+        {% else %}{% trans "Latest posts" %}{% endif %}
         </h1>
         {% if category.abstract %}
           <div class="category-abstract">
@@ -38,11 +38,11 @@
     {% endcomment %}
     <ul class="paginator">
         <li class="index">
-            {% blocktrans with current=page_obj.number total=paginator.num_pages %}Page {{ current }} sur {{ total }}{% endblocktrans %}
+            {% blocktrans with current=page_obj.number total=paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}
         </li>
         {% if page_obj.has_previous %}
         <li class="page prev">
-            <a href="?{{ view.page_kwarg }}={{ page_obj.previous_page_number }}" title="{% trans "Articles plus récents" %}">&laquo;</a>
+            <a href="?{{ view.page_kwarg }}={{ page_obj.previous_page_number }}" title="{% trans "Newer posts" %}">&laquo;</a>
         </li>
         {% endif %}
         {% for page_num in paginator.page_range %}
@@ -56,7 +56,7 @@
         {% endfor %}
         {% if page_obj.has_next %}
         <li class="page next">
-            <a href="?{{ view.page_kwarg }}={{ page_obj.next_page_number }}" title="{% trans "Articles plus anciens" %}">&raquo;</a>
+            <a href="?{{ view.page_kwarg }}={{ page_obj.next_page_number }}" title="{% trans "Older posts" %}">&raquo;</a>
         </li>
         {% endif %}
     </ul>

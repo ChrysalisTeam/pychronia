@@ -2,7 +2,7 @@
 <ul class="categories">
     {% for category in categories %}
         <li>
-            <a href="{{ category.get_absolute_url }}" title="{% blocktrans with name=category.name %}Voir tous les articles dans {{ name }}{% endblocktrans %}">{{ category.name }}</a>
+            <a href="{{ category.get_absolute_url }}" title="{% blocktrans with name=category.name %}View all posts in {{ name }}{% endblocktrans %}">{{ category.name }}</a>
             {% blocktrans count articles=category.count %}{{ articles }} article{% plural %}{{ articles }} articles{% endblocktrans %}
         </li>
     {% empty %}
