@@ -99,11 +99,9 @@ ABSOLUTE_URL_OVERRIDES = {
 
 ## DJANGO DEBUG TOOLBAR CONF ##
 def show_toolbar_to_superusers_only(request):
-    print(">>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<")
-    return True
-    if request.user.is_superuser:
-        return True
-    return False
+    # also gates the toolbar's own /__debug__/ views (debug_toolbar.decorators.require_show_toolbar)
+    user = getattr(request, "user", None)
+    return bool(user and user.is_superuser)
 
 
 DEBUG_TOOLBAR_CONFIG = {
