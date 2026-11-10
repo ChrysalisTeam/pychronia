@@ -55,6 +55,7 @@ cms = [
     "djangocms-text==1.0.2",
     "nh3",  # djangocms-text's HTML sanitizer
     "lxml",  # djangocms-text's HTML parser
+    "html5lib",  # djangocms-text's extract_images(), run on every Text.save() since TEXT_SAVE_IMAGE_FUNCTION is set
     "djangocms-link==5.2.0",
     "djangocms-snippet==5.0.2",
     "djangocms-rawhtml==1.3.0",
