@@ -30,9 +30,20 @@ Disallow: *.zip
 Sitemap: http://chrysalis-game.com/sitemap.xml
 """
 
+class PerLanguageStoriesSitemap(StoriesSitemap):
+    """StoriesSitemap.items() resolves each PostContent's url in the *request* language, so it
+    listed every post twice in that language and none in the other; resolve it in its own."""
+
+    def items(self):
+        items = super().items()
+        for postcontent in items:
+            self.url_cache[postcontent] = postcontent.get_absolute_url(postcontent.language)
+        return items
+
+
 sitemaps = {'cmspages': ExtendedSitemap,
             #'tags': TagSitemap,
-            'blog': StoriesSitemap,
+            'blog': PerLanguageStoriesSitemap,
             #'authors': AuthorSitemap,
             }
 
