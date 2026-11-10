@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-{% load sekizai_tags kwacros i18n cms_tags %}
+{% load sekizai_tags kwacros i18n cms_tags %}{% get_current_language as HTML_LANGUAGE %}
+<html xmlns="http://www.w3.org/1999/xhtml" lang="{{ HTML_LANGUAGE }}" xml:lang="{{ HTML_LANGUAGE }}">
 <head>
     
     <title>{% block html_title %}{% trans "Welcome" %}{% endblock %}</title>
