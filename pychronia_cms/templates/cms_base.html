@@ -72,6 +72,12 @@
     {{ block.super }}
     {% show_menu 0 100 100 100 %}
 
+    {# language switcher: links to this same page in the other language(s) it exists in #}
+    {% language_alternates as alternates %}
+    {% for alternate in alternates %}{% if not alternate.is_current %}
+        <li class="child language-switch"><a href="{{ alternate.url }}" hreflang="{{ alternate.code }}" lang="{{ alternate.code }}">{{ alternate.name }}</a></li>
+    {% endif %}{% endfor %}
+
     {% comment %} NO MORE AUTHENTICATION NEEDED
     <li class="toplevel">
     {% if not user.is_authenticated %}
