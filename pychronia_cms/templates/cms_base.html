@@ -1,5 +1,5 @@
 {% extends "metalradiance_base.html" %}
-{% load cms_tags menu_tags sekizai_tags heading kwacros i18n %}
+{% load cms_tags menu_tags sekizai_tags heading kwacros i18n language_switch_tags %}
 {% loadkwacros "metalradiance_kwacros.html" %}
 
 {% block html_title %}{% page_attribute "page_title" %} - {% trans "Chrysalis Game" %}{% endblock %}
@@ -10,6 +10,12 @@
         {# blog post/category views provide their own django-meta "meta" object, else it'd be the blog page's description #}
         <meta name="description" content="{% if meta.description %}{{ meta.description|truncatechars:160 }}{% else %}{% page_attribute "meta_description" %}{% endif %}">
         <meta name="google-site-verification" content="1x4qsZNhJ6VznsuetSz5WI8pFliBnc0HsNxmXFNZX5E"/>
+        {% language_alternates as alternates %}
+        {% for alternate in alternates %}
+            {% if alternate.is_current %}<link rel="canonical" href="{{ alternate.url }}"/>{% endif %}
+            <link rel="alternate" hreflang="{{ alternate.code }}" href="{{ alternate.url }}"/>
+            {% if alternate.is_default %}<link rel="alternate" hreflang="x-default" href="{{ alternate.url }}"/>{% endif %}
+        {% endfor %}
     {% endaddtoblock %}
 {% endblock %}
 
