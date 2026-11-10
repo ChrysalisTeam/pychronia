@@ -7,7 +7,8 @@
 {% block sekizai_calls %}
     {{ block.super }}
     {% addtoblock "meta" %}
-        <meta name="description" content="{% page_attribute "meta_description" %}">
+        {# blog post/category views provide their own django-meta "meta" object, else it'd be the blog page's description #}
+        <meta name="description" content="{% if meta.description %}{{ meta.description|truncatechars:160 }}{% else %}{% page_attribute "meta_description" %}{% endif %}">
         <meta name="google-site-verification" content="1x4qsZNhJ6VznsuetSz5WI8pFliBnc0HsNxmXFNZX5E"/>
     {% endaddtoblock %}
 {% endblock %}
