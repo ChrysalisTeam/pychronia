@@ -774,11 +774,36 @@ YAML_FILE_GLOBS = ["*.yaml", "*.yml", "*/*.yaml", "*/*.yml"]  # works on windows
 APPENDABLE_FIELDS = """manual_messages_templates messages_dispatched messages_queued game_items""".split()
 
 
-def load_yaml_fixture(yaml_fixture):
+def _get_yaml_file_language(yaml_file):
+    """
+    Returns the language code of a "<name>_<language>.yaml" fixture file, or None for a language-neutral file.
+    """
+    match = re.search(r"_([a-z]{2})\.ya?ml$", os.path.basename(yaml_file))
+    if match and match.group(1) in config.GAME_LANGUAGES:
+        return match.group(1)
+    return None
+
+
+def _localize_yaml_path(yaml_entry, language):
+    """
+    A language-neutral file path "<name>.yaml" which doesn't exist is replaced by "<name>_<language>.yaml".
+    """
+    if os.path.exists(yaml_entry) or not language:
+        return yaml_entry
+    (base, ext) = os.path.splitext(yaml_entry)
+    return "%s_%s%s" % (base, language, ext)
+
+
+def load_yaml_fixture(yaml_fixture, language=None):
     """
     Can load a single yaml file, or a list of files or directories containing y[a]ml files.
     Each file must only contain a single yaml document (which must be a mapping).
+
+    If a language code is provided, translated fixtures "<name>_<other_language>.yaml" are skipped when
+    walking directories, and explicit paths "<name>.yaml" which don't exist are loaded as "<name>_<language>.yaml".
+    Language-neutral files (without such suffix) are always loaded.
     """
+    assert language is None or language in config.GAME_LANGUAGES, language
 
     if isinstance(yaml_fixture, str):
         yaml_entries =  [yaml_fixture]
@@ -789,6 +814,8 @@ def load_yaml_fixture(yaml_fixture):
     data = {}
 
     for yaml_entry in yaml_entries:
+
+        yaml_entry = _localize_yaml_path(yaml_entry, language=language)
 
         if not os.path.exists(yaml_entry):
             raise ValueError(yaml_entry)
@@ -801,6 +828,10 @@ def load_yaml_fixture(yaml_fixture):
 
             yaml_files = [path for pattern in YAML_FILE_GLOBS
                           for path in glob.glob(os.path.join(yaml_entry, pattern))]
+
+            if language:
+                yaml_files = [path for path in yaml_files
+                              if _get_yaml_file_language(path) in (None, language)]
 
         for yaml_file in yaml_files:
 

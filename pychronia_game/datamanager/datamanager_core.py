@@ -139,6 +139,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
     @transaction_watcher(always_writable=True)  # might operate on broken data
     def reset_game_data(self,
                         yaml_fixture=None,  # may be a persistent mapping, or yaml files/dirs
+                        game_language=None,  # language of game CONTENT, defaults to the current one if any
                         skip_randomizations=False,  # randomize some values in dm.data
                         skip_initializations=False,  # used when an already-initialized fixture is used
                         skip_coherence_check=False,
@@ -153,6 +154,14 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         if not yaml_fixture:
             yaml_fixture = config.GAME_INITIAL_DATA_PATH  # might be a list of files/dirs
 
+        if not game_language:
+            # a reset keeps the content language of the game, which is set once for all at creation
+            _previous_global_parameters = self.data.get("global_parameters") if self.data else None
+            game_language = ((_previous_global_parameters or {}).get("game_language") or
+                             config.GAME_DEFAULT_LANGUAGE)
+        if game_language not in config.GAME_LANGUAGES:
+            raise AbnormalUsageError(_("Unknown game language %r") % game_language)
+
         self.logger.info("Resetting game data for instance '%s' with fixture '%s'",
                          self.game_instance_id, yaml_fixture if isinstance(yaml_fixture, str) else "<data-tree>")
         #print "RESETTING DATABASE !"
@@ -162,12 +171,18 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         self.data.clear()
 
         if isinstance(yaml_fixture, (list, str)):
-            initial_data = utilities.load_yaml_fixture(yaml_fixture)
+            initial_data = utilities.load_yaml_fixture(yaml_fixture, language=game_language)
         else:
             assert isinstance(yaml_fixture, PersistentMapping), yaml_fixture  # a preloaded data tree was provided
             initial_data = yaml_fixture
 
         self.data.update(initial_data)
+
+        if "global_parameters" in self.data:
+            if skip_initializations:  # preloaded game dump, which may predate game languages
+                self.data["global_parameters"].setdefault("game_language", game_language)
+            else:
+                self.data["global_parameters"]["game_language"] = game_language
 
         if not skip_initializations:
             self._load_initial_data(skip_randomizations=skip_randomizations)  # traversal of each core module

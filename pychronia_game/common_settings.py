@@ -92,37 +92,37 @@ def generate_mindstorm_settings(chrysalis_data_dir):
     assert os.path.isdir(_GAME_INITIAL_DATA_DIR), _GAME_INITIAL_DATA_DIR
 
     _selected_yaml_files = """
-        descent_rpg
+        rpg_descent
     
-        abilities.yaml
-        characters_factions.yaml
-        game_items.yaml
-        gamemaster_manual.yaml
-        global_data.yaml
-        locations.yaml
-        messaging_core.yaml
-        nightmare_captchas.yaml
-        #radio_spots.yaml
-        static_pages.yaml
+        alternate_reality_game_auction/abilities.yaml
+        alternate_reality_game_auction/characters_factions.yaml
+        alternate_reality_game_auction/game_items.yaml
+        alternate_reality_game_auction/gamemaster_manual.yaml
+        alternate_reality_game_auction/global_data.yaml
+        alternate_reality_game_auction/locations.yaml
+        alternate_reality_game_auction/messaging_core.yaml
+        alternate_reality_game_auction/nightmare_captchas.yaml
+        #alternate_reality_game_auction/radio_spots.yaml
+        alternate_reality_game_auction/static_pages.yaml
         
-        encyclopedia/ability_related_subjects.yaml
-        encyclopedia/midolian_and_yodic_subjects.yaml
-        encyclopedia/pangea_misc_locations_and_events.yaml
-        encyclopedia/sabarim_locations_and_characters.yaml
+        alternate_reality_game_auction/encyclopedia/ability_related_subjects.yaml
+        alternate_reality_game_auction/encyclopedia/midolian_and_yodic_subjects.yaml
+        alternate_reality_game_auction/encyclopedia/pangea_misc_locations_and_events.yaml
+        alternate_reality_game_auction/encyclopedia/sabarim_locations_and_characters.yaml
         
-        messaging/abilities.yaml
-        #messaging/cynthia_abduction.yaml
-        #messaging/doctor_honoris_causa_and_nazur.yaml
-        messaging/first_contacts.yaml
-        messaging/geopolitics.yaml
-        messaging/inquiries_between_players.yaml
-        #messaging/magnus_society_family_exchanges.yaml
-        #messaging/main_npcs_exchanges.yaml
-        messaging/news.yaml
-        messaging/npc_orbs.yaml
-        #messaging/player_instructions.yaml
-        #messaging/super_factions.yaml
-        #messaging/wiremind.yaml
+        alternate_reality_game_auction/messaging/abilities.yaml
+        #alternate_reality_game_auction/messaging/cynthia_abduction.yaml
+        #alternate_reality_game_auction/messaging/doctor_honoris_causa_and_nazur.yaml
+        alternate_reality_game_auction/messaging/first_contacts.yaml
+        alternate_reality_game_auction/messaging/geopolitics.yaml
+        alternate_reality_game_auction/messaging/inquiries_between_players.yaml
+        #alternate_reality_game_auction/messaging/magnus_society_family_exchanges.yaml
+        #alternate_reality_game_auction/messaging/main_npcs_exchanges.yaml
+        alternate_reality_game_auction/messaging/news.yaml
+        alternate_reality_game_auction/messaging/npc_orbs.yaml
+        #alternate_reality_game_auction/messaging/player_instructions.yaml
+        #alternate_reality_game_auction/messaging/super_factions.yaml
+        #alternate_reality_game_auction/messaging/wiremind.yaml
         
         mysteryparty_mindstorm/anthropia_game_data_overrides.yaml
         """.split()
@@ -284,22 +284,22 @@ def generate_auction_settings(chrysalis_data_dir):
     assert os.path.isdir(_GAME_INITIAL_DATA_DIR), _GAME_INITIAL_DATA_DIR
 
     _selected_yaml_files = """
-        descent_rpg
+        rpg_descent
         
-        abilities.yaml
-        characters_factions.yaml
-        game_items.yaml
-        gamemaster_manual.yaml
-        global_data.yaml
-        locations.yaml
-        messaging_core.yaml
-        nightmare_captchas.yaml
-        radio_spots.yaml
-        static_pages.yaml
+        alternate_reality_game_auction/abilities.yaml
+        alternate_reality_game_auction/characters_factions.yaml
+        alternate_reality_game_auction/game_items.yaml
+        alternate_reality_game_auction/gamemaster_manual.yaml
+        alternate_reality_game_auction/global_data.yaml
+        alternate_reality_game_auction/locations.yaml
+        alternate_reality_game_auction/messaging_core.yaml
+        alternate_reality_game_auction/nightmare_captchas.yaml
+        alternate_reality_game_auction/radio_spots.yaml
+        alternate_reality_game_auction/static_pages.yaml
         
-        encyclopedia
+        alternate_reality_game_auction/encyclopedia
         
-        messaging
+        alternate_reality_game_auction/messaging
         """.split()
 
     GAME_INITIAL_DATA_PATH = [os.path.join(_GAME_INITIAL_DATA_DIR, _selected_yaml_file)

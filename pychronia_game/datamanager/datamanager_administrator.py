@@ -84,8 +84,9 @@ if __debug__ and config.DEBUG and config.ZODB_RESET_ALLOWED:
         root[GAME_INSTANCES_MOUNT_POINT] = OOBTree()
 
 
-def _create_metadata_record(game_instance_id, creator_login, creator_email):
+def _create_metadata_record(game_instance_id, creator_login, creator_email, game_language):
     utilities.check_is_slug(game_instance_id)
+    assert game_language in config.GAME_LANGUAGES, game_language
     utilities.check_is_string(creator_login)  # NOT necessarily a slug
     if creator_email is not None:
         utilities.check_is_email(creator_email)
@@ -93,6 +94,7 @@ def _create_metadata_record(game_instance_id, creator_login, creator_email):
     game_metadata = PersistentMapping(instance_id=game_instance_id,
                                       creator_login=creator_login,
                                       creator_email=creator_email,
+                                      game_language=game_language,  # also stored in game global parameters
                                       creation_time=utcnow,
                                       accesses_count=0,
                                       last_access_time=utcnow,
@@ -106,6 +108,7 @@ def _create_metadata_record(game_instance_id, creator_login, creator_email):
 def create_game_instance(game_instance_id,
                          creator_login,
                          creator_email=None,
+                         game_language=None,
                          skip_initializations=False,
                          skip_randomizations=False,
                          skip_coherence_check=False,
@@ -116,7 +119,13 @@ def create_game_instance(game_instance_id,
 
     We use *strict* mode by default, because initial yaml fixtures are supposed
     to be robust (even regarding restructuredtext formatting).
+
+    The *game_language* of the game content can't be changed afterwards.
     """
+    game_language = game_language or config.GAME_DEFAULT_LANGUAGE
+    if game_language not in config.GAME_LANGUAGES:
+        raise AbnormalUsageError(_("Unknown game language %r") % game_language)
+
     game_instances = _get_game_instances_mapping()
 
     if game_instances.get(game_instance_id):  # must be present and non-empty
@@ -126,7 +135,8 @@ def create_game_instance(game_instance_id,
 
         game_metadata = _create_metadata_record(game_instance_id=game_instance_id,
                                                 creator_login=creator_login,
-                                                creator_email=creator_email)
+                                                creator_email=creator_email,
+                                                game_language=game_language)
         game_data = PersistentMapping()
         game_root = PersistentMapping(metadata=game_metadata,
                                       data=game_data)
@@ -137,6 +147,7 @@ def create_game_instance(game_instance_id,
 
         assert not dm.is_initialized
         dm.reset_game_data(strict=strict,
+                           game_language=game_language,
                            skip_randomizations=skip_randomizations,
                            skip_initializations=skip_initializations,
                            skip_coherence_check=skip_coherence_check,

@@ -8,6 +8,11 @@ GAME_FILES_ROOT = None  # MUST be overridden
 GAME_INITIAL_DATA_PATH = None  # MUST be overridden
 GAME_INITIAL_FIXTURE_SCRIPT = None  # must be a callable taking a datamanager as unique parameter
 
+# Languages in which game CONTENT may be available (fixture files suffixed "_<language>.yaml"), and the
+# language of game instances created before game languages existed (all their fixtures were French)
+GAME_LANGUAGES = ("fr", "en")
+GAME_DEFAULT_LANGUAGE = "fr"
+
 GAME_ALLOW_ENFORCED_LOGIN = False
 ACTIVATE_AIML_BOTS = False
 ZODB_RESET_ALLOWED = False

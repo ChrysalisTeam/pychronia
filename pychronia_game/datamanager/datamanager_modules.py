@@ -152,6 +152,9 @@ class GameGlobalParameters(BaseDataManager):
 
         utilities.check_is_string(game_data["global_parameters"]["game_random_seed"], multiline=False)
 
+        # absent from game instances created before game languages existed
+        assert game_data["global_parameters"].get("game_language", config.GAME_DEFAULT_LANGUAGE) in config.GAME_LANGUAGES
+
     @readonly_method
     def get_global_parameters(self):
         return self.data["global_parameters"]
@@ -160,11 +163,21 @@ class GameGlobalParameters(BaseDataManager):
     def get_global_parameter(self, name):
         return self.data["global_parameters"][name]
 
+    @readonly_method
+    def get_game_language(self):
+        """
+        Language of the game CONTENT (fixtures), chosen once for all at game creation.
+        Users may still browse the interface in another language.
+        """
+        return self.data["global_parameters"].get("game_language", config.GAME_DEFAULT_LANGUAGE)
+
     @transaction_watcher
     def set_global_parameter(self, name, value):
         assert self.is_master() or config.DEBUG
         if name not in self.data["global_parameters"]:
             raise AbnormalUsageError(_("Unexisting setting %s") % name)
+        if name == "game_language":
+            raise AbnormalUsageError(_("The language of a game can't be changed after its creation"))
         self.data["global_parameters"][name] = value
 
     @readonly_method
