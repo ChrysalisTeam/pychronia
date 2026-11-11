@@ -6,6 +6,7 @@ import string, random
 from collections import OrderedDict
 
 from pychronia_game.common import *
+from django.utils import translation
 from pychronia_game.common import _, ugettext_lazy, ugettext_noop, _undefined  # mainly to shut up the static checker...
 from pychronia_game import utilities
 
@@ -382,7 +383,10 @@ class GameEvents(BaseDataManager):  # TODO REFINE
         utilities.check_is_string(message)  # no lazy objects
         assert url is None or (url and isinstance(url, str))
 
-        message = _(message)  # TODO - force language to "official game language", not "user interface language"
+        # event logs are stored once for all, so they are written in the game language, whatever the
+        # interface language of the user triggering them
+        with translation.override(self.get_game_language()):
+            message = _(message)
 
         if additional_details:
             message += "\n" + additional_details

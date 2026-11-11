@@ -245,6 +245,7 @@ class BaseGameTestCase(TransactionTestCase):  # one day, use pytest-django modul
         # FIXME - very heavy with loading + checking, we should do it only once and copy/paste dm.data tree.
         create_game_instance(game_instance_id=TEST_GAME_INSTANCE_ID,
                              creator_login="test_creator",
+                             game_language="en",  # unit tests check English UI strings
                              skip_randomizations=True,  # handy to test stuffs
                              skip_initializations=skip_initializations,
                              skip_coherence_check=True,

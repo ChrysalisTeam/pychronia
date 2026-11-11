@@ -631,6 +631,36 @@ class TestUtilities(BaseGameTestCase):
         data4 = load_yaml_fixture([fixture_dir])
         assert data4 == data1
 
+    def test_load_yaml_fixture_with_language(self):
+        tmp_dir = tempfile.mkdtemp()
+        try:
+            os.mkdir(os.path.join(tmp_dir, "subdir"))
+            for (filename, content) in [("common.yaml", "common: 1"),
+                                        ("texts_fr.yaml", "texts: bonjour"),
+                                        ("texts_en.yaml", "texts: hello"),
+                                        ("subdir/more_fr.yaml", "more: oui"),
+                                        ("subdir/more_en.yaml", "more: yes_"),
+                                        ("not_a_language_xy.yaml", "other: 2")]:
+                with open(os.path.join(tmp_dir, filename), "w") as f:
+                    f.write(content)
+
+            expected_common = dict(common=1, other=2)
+            assert load_yaml_fixture(tmp_dir, language="fr") == dict(texts="bonjour", more="oui", **expected_common)
+            assert load_yaml_fixture(tmp_dir, language="en") == dict(texts="hello", more="yes_", **expected_common)
+
+            # language-neutral paths of missing files are completed with the language suffix
+            texts_file = os.path.join(tmp_dir, "texts.yaml")
+            assert load_yaml_fixture([texts_file], language="en") == dict(texts="hello")
+            assert load_yaml_fixture(texts_file, language="fr") == dict(texts="bonjour")
+            with pytest.raises(ValueError):
+                load_yaml_fixture(texts_file)  # no language
+            assert load_yaml_fixture(os.path.join(tmp_dir, "common.yaml"), language="en") == dict(common=1)
+
+            with pytest.raises(AssertionError):
+                load_yaml_fixture(tmp_dir, language="xx")
+        finally:
+            shutil.rmtree(tmp_dir)
+
 
 class TestMetaAdministration(unittest.TestCase):  # no django setup required ATM
 
@@ -776,11 +806,58 @@ class TestMetaAdministration(unittest.TestCase):  # no django setup required ATM
 
     def test_meta_admin_utilities(self):
 
-        data = compute_game_activation_token("myinstànce", "mylogïn", "my@email.fr")
-        assert decode_game_activation_token(data) == ("myinstànce", "mylogïn", "my@email.fr")
+        data = compute_game_activation_token("myinstànce", "mylogïn", "my@email.fr", "fr")
+        assert decode_game_activation_token(data) == ("myinstànce", "mylogïn", "my@email.fr", "fr")
 
-        data = compute_game_activation_token("2myinstànce", "amylogïn", None)
-        assert decode_game_activation_token(data) == ("2myinstànce", "amylogïn", None)
+        data = compute_game_activation_token("2myinstànce", "amylogïn", None, "en")
+        assert decode_game_activation_token(data) == ("2myinstànce", "amylogïn", None, "en")
+
+        with pytest.raises(AssertionError):
+            compute_game_activation_token("myinstance", "mylogin", None, "xx")
+
+        # tokens emitted before game languages existed are still valid, for French games
+        from pychronia_game.utilities import encryption
+        data = encryption.unicode_encrypt("oldinstance|oldlogin|")
+        assert decode_game_activation_token(data) == ("oldinstance", "oldlogin", None, "fr")
+
+        data = encryption.unicode_encrypt("badinstance|badlogin||xx")
+        with pytest.raises(ValueError):
+            decode_game_activation_token(data)
+
+    def test_game_language_of_instances(self):
+
+        reset_zodb_structure()
+
+        with pytest.raises(UsageError):
+            create_game_instance("badlanguage", creator_login="ze_creator_test", game_language="xx")
+        assert not game_instance_exists("badlanguage")
+
+        create_game_instance("defaultlanguage", creator_login="ze_creator_test")
+        create_game_instance("englishgame", creator_login="ze_creator_test", game_language="en")
+
+        metadata = dict((meta["instance_id"], meta) for meta in get_all_instances_metadata())
+        assert metadata["defaultlanguage"]["game_language"] == config.GAME_DEFAULT_LANGUAGE == "fr"
+        assert metadata["englishgame"]["game_language"] == "en"
+
+        dm = retrieve_game_instance("englishgame")
+        assert dm.get_game_language() == "en"
+        assert dm.get_global_parameter("game_language") == "en"
+        assert retrieve_game_instance("defaultlanguage").get_game_language() == "fr"
+
+        # the content language is set forever
+        dm._set_user(dm.get_global_parameter("master_login"))
+        with pytest.raises(UsageError):
+            dm.set_global_parameter("game_language", "fr")
+        assert dm.get_game_language() == "en"
+
+        dm.reset_game_data(skip_randomizations=True)  # keeps the game language
+        assert dm.get_game_language() == "en"
+        dm.check_database_coherence()
+
+        # game instances created before game languages existed have French content
+        del dm.data["global_parameters"]["game_language"]
+        assert dm.get_game_language() == "fr"
+        dm.rollback()
 
     def test_admin_scripts(self):
 

@@ -243,7 +243,7 @@ def test_activate_instance_with_valid_token_creates_and_logs_in(page, base_url):
     assert not dma.game_instance_exists(new_instance_id)
 
     token = compute_game_activation_token(game_instance_id=new_instance_id, creator_login=creator_login,
-                                          creator_email=None)
+                                          creator_email=None, game_language="en")
     url = "%s/administration/activate/?%s" % (base_url, urlencode({"token": token}))
 
     response = page.goto(url)

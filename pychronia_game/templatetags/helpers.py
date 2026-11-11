@@ -326,8 +326,9 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
         html = _generate_messaging_links(html, datamanager)
     with exception_swallower():
         html = _generate_site_links(html, datamanager)
-    with exception_swallower():  #FIXME - make it depend on game language, one day
-        html = french_insecable(html)  # handles non-breaking spaces, especially
+    if datamanager.get_game_language() == "fr":
+        with exception_swallower():
+            html = french_insecable(html)  # handles non-breaking spaces of French typography
 
     # note that conf-enforced RST roles might be used too (|BR|, |NBSP|)...
     html = html.replace("[BR]", "<br />")  # line breaks, handy for vertical spacing
@@ -339,8 +340,10 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
 @register.simple_tag(takes_context=True)
 def render_restructuredtext(context, content, initial_header_level=None, report_level=None):
     html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
-    with exception_swallower():  # FIXME - make it depend on game language, one day
-        html = french_insecable(html)  # handles non-breaking spaces, especially
+    datamanager = getattr(context.get("request"), "datamanager", None)
+    if datamanager is None or datamanager.get_game_language() == "fr":
+        with exception_swallower():
+            html = french_insecable(html)  # handles non-breaking spaces of French typography
     return mark_safe(html)
 
 

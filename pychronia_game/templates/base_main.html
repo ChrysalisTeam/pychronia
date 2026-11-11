@@ -13,6 +13,14 @@
 
 
 {% addtoblock "css" %}
+<style type="text/css">
+    .lang-flags { display: inline-flex; align-items: center; justify-content: flex-end; }
+    .lang-flags form { display: inline; margin: 0; }
+    .lang-flags-label { margin-right: 4px; }
+    .lang-flag-link { display: block; margin: 0 4px; padding: 0; border: none; background: none; cursor: pointer; line-height: 0; }
+    .lang-flag { display: block; border-radius: 2px; opacity: 0.55; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35); }
+    .lang-flag-link.active .lang-flag, .lang-flag-link:hover .lang-flag { opacity: 1; }
+</style>
 
     <!-- no need - link href="{{ STATIC_URL }}libs/jquery-ui/ui.dropdownchecklist.css" rel="stylesheet" type="text/css" /-->
     <link href="{{ STATIC_URL }}libs/zoomy/zoomy.css" rel="stylesheet" type="text/css" />
@@ -522,17 +530,23 @@
 
 {% block up_footer_right_content %}
 
-        {% trans "Interface : " %}
-
-        <form id="change_language_fr" style="display:inline;" method="POST" action="{% url 'django.views.i18n.set_language' %}">
-        <input type="hidden" name="language" value="fr"/>
-        <a href="javascript:document.getElementById('change_language_fr').submit()"><img src="{{ STATIC_URL }}img/flags/France.jpg"/></a>
-        </form>
-
-        <form id="change_language_en" style="display:inline;" method="POST" action="{% url 'django.views.i18n.set_language' %}">
-        <input type="hidden" name="language" value="en"/>
-        <a href="javascript:document.getElementById('change_language_en').submit()"><img src="{{ STATIC_URL }}img/flags/UK.jpg"/></a>
-        </form>    <br/>
+        {# interface language switcher (same flags as the CMS); the game content language is fixed at game creation #}
+        {% get_current_language as CURRENT_LANGUAGE %}
+        {% get_available_languages as AVAILABLE_LANGUAGES %}
+        <div class="lang-flags">
+            <span class="lang-flags-label">{% trans "Interface:" %}</span>
+            {% for code, name in AVAILABLE_LANGUAGES %}
+            {% get_language_info for code as language_info %}
+            <form method="POST" action="{% url 'pychronia_game-set_interface_language' %}">
+                <input type="hidden" name="language" value="{{ code }}"/>
+                <input type="hidden" name="next" value="{{ request.get_full_path }}"/>
+                <button type="submit" class="lang-flag-link{% if code == CURRENT_LANGUAGE %} active{% endif %}"
+                        lang="{{ code }}" title="{{ language_info.name_local|capfirst }}">
+                    {% include "_language_flag_icon.html" with code=code name=language_info.name_local|capfirst %}
+                </button>
+            </form>
+            {% endfor %}
+        </div>
 
 {% endblock %}
 

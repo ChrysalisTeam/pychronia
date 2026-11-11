@@ -10,11 +10,28 @@ from django.utils.deprecation import MiddlewareMixin
 from . import authentication
 from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance
 from django.http.response import HttpResponseRedirect
+from django.utils import translation
 
 settings = None
 del settings  # use config instead
 
 assert logging
+
+
+# session key of the interface language explicitly chosen by the user, via the footer language switcher
+INTERFACE_LANGUAGE_SESSION_KEY = "pychronia_interface_language"
+
+
+def activate_interface_language(request):
+    """
+    Game pages are displayed in the interface language explicitly chosen by the user if any,
+    else in the content language of the game instance (browser preferences are ignored here).
+    """
+    language = request.session.get(INTERFACE_LANGUAGE_SESSION_KEY)
+    if language not in dict(config.LANGUAGES):
+        language = request.datamanager.get_game_language()
+    translation.activate(language)
+    request.LANGUAGE_CODE = translation.get_language()
 
 
 class ZodbTransactionMiddleware(MiddlewareMixin):
@@ -53,6 +70,8 @@ class ZodbTransactionMiddleware(MiddlewareMixin):
 
             if not request.datamanager.is_initialized:
                 raise RuntimeError("ZodbTransactionMiddleware - Game data isn't in initialized state")
+
+            activate_interface_language(request)
 
             return None
 

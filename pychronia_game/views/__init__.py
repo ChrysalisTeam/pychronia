@@ -51,6 +51,28 @@ if False:
 #### Here are the views that don't belong to any particular category ####
 
 
+def set_interface_language(request):
+    """
+    Changes the interface language of game pages, for the current user session.
+
+    The language of game CONTENT is set once for all when the game instance is created, it's not impacted.
+    """
+    from django.utils.http import url_has_allowed_host_and_scheme
+    from pychronia_game.middlewares import INTERFACE_LANGUAGE_SESSION_KEY
+
+    next_url = request.POST.get("next") or request.META.get("HTTP_REFERER")
+    if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()},
+                                           require_https=request.is_secure()):
+        next_url = "/"
+
+    if request.method == "POST":
+        language = request.POST.get("language")
+        if language in dict(config.LANGUAGES):
+            request.session[INTERFACE_LANGUAGE_SESSION_KEY] = language
+
+    return HttpResponseRedirect(next_url)
+
+
 def game_homepage_without_username(request):
     """
     Simple redirection when homepage URL lacks the "game_username" part.

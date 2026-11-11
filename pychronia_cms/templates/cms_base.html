@@ -15,6 +15,7 @@
             .lang-flag-link { display: block; margin: 0 5px; line-height: 0; text-decoration: none; }
             .lang-flag { display: block; border-radius: 2px; opacity: 0.55; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35); }
             .lang-flag-link.active .lang-flag, .lang-flag-link:hover .lang-flag { opacity: 1; }
+            .lang-flag-name { color: white; }
         </style>
     {% endaddtoblock %}
     {% addtoblock "meta" %}
@@ -70,23 +71,7 @@
 <div class="lang-flags">
 {% for alternate in alternates %}
     <a class="lang-flag-link{% if alternate.is_current %} active{% endif %}" href="{{ alternate.url }}" hreflang="{{ alternate.code }}" lang="{{ alternate.code }}" title="{{ alternate.name }}">
-        {% if alternate.code == "fr" %}
-        <svg class="lang-flag" viewBox="0 0 3 2" width="30" height="20" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <rect width="1" height="2" x="0" fill="#0055A4"/>
-            <rect width="1" height="2" x="1" fill="#FFFFFF"/>
-            <rect width="1" height="2" x="2" fill="#EF4135"/>
-        </svg>
-        {% elif alternate.code == "en" %}
-        <svg class="lang-flag" viewBox="0 0 60 30" width="30" height="20" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <rect width="60" height="30" fill="#00247d"/>
-            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#FFFFFF" stroke-width="6"/>
-            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#cf142b" stroke-width="2"/>
-            <path d="M30,0 V30 M0,15 H60" stroke="#FFFFFF" stroke-width="10"/>
-            <path d="M30,0 V30 M0,15 H60" stroke="#cf142b" stroke-width="6"/>
-        </svg>
-        {% else %}
-        <span style="color: white;">{{ alternate.name }}</span>
-        {% endif %}
+        {% include "_language_flag_icon.html" with code=alternate.code name=alternate.name %}
     </a>
 {% endfor %}
 </div>

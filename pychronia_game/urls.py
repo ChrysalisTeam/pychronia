@@ -153,6 +153,8 @@ support_urlpatterns = patterns('',
                                (r'^admin/', include(admin.site.urls)),
 
                                (r'^i18n/', include('django.conf.urls.i18n')),  # to set language
+                               url(r'^set_interface_language/$', 'pychronia_game.views.set_interface_language',
+                                   name="pychronia_game-set_interface_language"),
                                (
                                r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('pychronia_game',)}),
 
