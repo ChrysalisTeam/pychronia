@@ -851,6 +851,14 @@ msgstr "Page %(page_num)s des articles"
 msgid "Older posts"
 msgstr "Articles plus anciens"
 
+#: .\templates\jplayer\player.html:7
+msgid "Update Required"
+msgstr "Mise à jour requise"
+
+#: .\templates\jplayer\player.html:8
+msgid "To play the media, please update your browser to a recent version."
+msgstr "Pour lire ce média, veuillez mettre à jour votre navigateur vers une version récente."
+
 #~ msgid "Profile"
 #~ msgstr "Profil"
 

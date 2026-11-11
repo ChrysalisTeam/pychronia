@@ -1,0 +1,10 @@
+{% extends "jplayer/player_base.html" %}
+{% load i18n %}
+
+{# Project override of django-cms-jplayer's player: its "no solution" notice linked to the long-dead Flash plugin #}
+{% block no_solution %}
+                <div class="jp-no-solution">
+                    <span>{% trans "Update Required" %}</span>
+                    {% trans "To play the media, please update your browser to a recent version." %}
+                </div>
+{% endblock %}
