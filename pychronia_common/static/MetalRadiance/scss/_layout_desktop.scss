@@ -477,10 +477,13 @@ body .notification_panel {
         // devicePixelRatio, eg. 110% Windows display scaling) can't leave a hairline gap of
         // visible page background between the 3 border-image pieces of the footer bar.
         margin: 0 -1px;
-        border-width: 1px;
+        // no top/bottom border slices, like the left/right pieces: all 131 image rows are then scaled
+        // as one block in all 3 pieces, else at non-integer devicePixelRatio the separately rounded
+        // 1px top slice shifted this center piece 1 device pixel above its neighbors
+        border-width: 0 1px;
         border-style: solid; // important
         /////background-image: url('#{$IMGS}backgrounds/up_footer_center.png');
-        border-image: url('#{$IMGS}backgrounds/up_footer_center.png') 1 1 1 1 fill stretch stretch;
+        border-image: url('#{$IMGS}backgrounds/up_footer_center.png') 0 1 0 1 fill stretch stretch;
         image-rendering: optimizequality;
         width: 225px;
     }
@@ -489,7 +492,7 @@ body .notification_panel {
         display: block;
         position: absolute; // else it breaks the table layout...
         left: 9px;
-        top: 10px;
+        top: 11px; // relative to the center piece's padding box, which has no top border anymore (was 1px + 10px)
     }
 }
 

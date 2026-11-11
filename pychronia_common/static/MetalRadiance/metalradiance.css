@@ -2918,9 +2918,9 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     border-color: transparent;
     border-style: solid;
     margin: 0 -1px;
-    border-width: 1px;
+    border-width: 0 1px;
     border-style: solid;
-    border-image: url('img/backgrounds/up_footer_center.png') 1 1 1 1 fill stretch stretch;
+    border-image: url('img/backgrounds/up_footer_center.png') 0 1 0 1 fill stretch stretch;
     image-rendering: optimizequality;
     width: 225px;
   }
@@ -2931,7 +2931,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     display: block;
     position: absolute;
     left: 9px;
-    top: 10px;
+    top: 11px;
   }
   .footer_note {
     font-size: 11px;
