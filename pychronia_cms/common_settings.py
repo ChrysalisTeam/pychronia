@@ -88,6 +88,10 @@ MIDDLEWARE = \
         'django.middleware.cache.FetchFromCacheMiddleware',
     )
 
+# required by django CMS: its toolbar opens admin forms (page settings, plugins...) in same-origin
+# iframes, which Django's default "DENY" makes browsers block (NS_ERROR_XFO_VIOLATION in Firefox)
+X_FRAME_OPTIONS = "SAMEORIGIN"
+
 # global django overrides, easier than overridding models get_absolute_url() methods
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': (lambda u: "/")  # access to user data, eg. u.username
