@@ -61,8 +61,10 @@ def e2e_environment():
     User.objects.create_superuser(_configs.SUPERUSER_USERNAME, "e2e_admin@example.com", _configs.SUPERUSER_PASSWORD)
 
     reset_zodb_structure()
-    create_game_instance(game_instance_id=_configs.GAME_ID, creator_login="e2e_creator", skip_randomizations=True)
-    create_game_instance(game_instance_id=_configs.SECONDARY_GAME_ID, creator_login="e2e_creator",
+    # English instances, since e2e tests check English UI strings (the UI defaults to the game language)
+    create_game_instance(game_instance_id=_configs.GAME_ID, creator_login="e2e_creator", game_language="en",
+                         skip_randomizations=True)
+    create_game_instance(game_instance_id=_configs.SECONDARY_GAME_ID, creator_login="e2e_creator", game_language="en",
                          skip_randomizations=True)
 
     dm = retrieve_game_instance(_configs.GAME_ID)
