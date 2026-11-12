@@ -45,60 +45,6 @@ if django.VERSION < (5, 1):
     URLResolver._check_custom_error_handlers = \
         lambda self: [] if self.urlconf_name == "app_resolver" else _original_check_custom_error_handlers(self)
 
-# django-filer 1.x's AdminFolderFormField.__init__ calls forms.Field.__init__() directly
-# (skipping ModelChoiceField.__init__, which is the only place that knows to consume a
-# 'blank' kwarg). Since Django 3.1, ForeignKey.formfield() always passes 'blank' along,
-# so building the folder widget crashes with "unexpected keyword argument 'blank'".
-# Never fixed in the filer 1.x line (only filer 2.x's cms-plugin rewrite, which
-# cmsplugin-filer 1.1.3 doesn't support, avoids this code path).
-# Patched on the base Field class (not on AdminFolderFormField itself) and BEFORE
-# django.setup(): the crash happens during admin autodiscovery, itself triggered deep inside
-# django.setup() (via django_compat_patcher), too early for a post-setup patch to still beat
-# it; importing filer.fields.folder this early would itself crash (needs the app registry +
-# django.utils.six, neither ready yet).
-# Only ModelChoiceField ever legitimately consumes 'blank', so dropping it in the
-# base Field is safe framework-wide.
-from django.forms.fields import Field
-_original_Field_init = Field.__init__
-def _patched_Field_init(self, *args, **kwargs):
-    kwargs.pop("blank", None)
-    _original_Field_init(self, *args, **kwargs)
-Field.__init__ = _patched_Field_init
-
-# django-filer 1.5.0's Folder/File models declare their MPTT fields (level/lft/rght)
-# explicitly but still rely on the old imperative `mptt.register(Folder)` (called at module
-# level, AFTER the class body closes) to add the remaining ones, 'tree_id' among them - so
-# 'tree_id' doesn't exist yet when the class itself is being prepared. That used to be fine
-# because Meta.index_together's entries were resolved into named Index objects lazily; Django
-# 5.1 made Index.set_name_with_model() resolve its fields eagerly during Model._prepare(),
-# so building the `index_together = (('tree_id', 'lft'),)` index on Folder/File now crashes
-# with FieldDoesNotExist before mptt.register() ever runs. No upstream fix exists (filer 1.x is
-# abandoned). Patched narrowly: when a field named in an index isn't resolvable yet, fall back
-# to using its bare name as the column name (true here - 'tree_id' has no custom db_column) so
-# naming can proceed; this only affects the auto-generated index *name*, not the schema itself.
-from django.db.models.indexes import Index
-from django.core.exceptions import FieldDoesNotExist
-_original_set_name_with_model = Index.set_name_with_model
-def _patched_set_name_with_model(self, model):
-    try:
-        for field_name, _order in self.fields_orders:
-            model._meta.get_field(field_name)
-    except FieldDoesNotExist:
-        from django.db.backends.utils import names_digest, split_identifier
-        _, table_name = split_identifier(model._meta.db_table)
-        column_names = [field_name for field_name, _order in self.fields_orders]
-        hash_data = [table_name] + column_names + [self.suffix]
-        self.name = "%s_%s_%s" % (
-            table_name[:11],
-            column_names[0][:7],
-            "%s_%s" % (names_digest(*hash_data, length=6), self.suffix),
-        )
-        if self.name[0] == "_" or self.name[0].isdigit():
-            self.name = "D%s" % self.name[1:]
-        return
-    _original_set_name_with_model(self, model)
-Index.set_name_with_model = _patched_set_name_with_model
-
 import django_compat_patcher
 from django_compat_patcher import default_settings as dcp_default_settings
 dcp_settings = dict(DCP_ENABLE_WARNINGS=False,
