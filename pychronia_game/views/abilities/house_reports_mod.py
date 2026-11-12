@@ -65,22 +65,23 @@ class HouseReportsAbility(AbstractPartnershipAbility):
 
         report = self._get_valid_report_for_period(period)
 
-        # dummy request email, to allow wiretapping
-        subject = _('Manor surveillance request for period %s') % period
-        body = _("Please provide me with an analysis of manor activity during this period.")
-        request_msg_data = dict(subject=subject,
-                                body=body)
-        del subject, body
-
-        # answer from surveillance center
-        response_msg_data = None
-        if report:
-            subject = _("<Manor surveillance response for period %(period)s>") % SDICT(period=period)
-            body = report  # as is
-            response_msg_data = dict(subject=subject,
-                                     body=body,
-                                     attachment=None)
+        with self.datamanager.game_language_override():  # exchanged messages are game content
+            # dummy request email, to allow wiretapping
+            subject = _('Manor surveillance request for period %s') % period
+            body = _("Please provide me with an analysis of manor activity during this period.")
+            request_msg_data = dict(subject=subject,
+                                    body=body)
             del subject, body
+
+            # answer from surveillance center
+            response_msg_data = None
+            if report:
+                subject = _("<Manor surveillance response for period %(period)s>") % SDICT(period=period)
+                body = report  # as is
+                response_msg_data = dict(subject=subject,
+                                         body=body,
+                                         attachment=None)
+                del subject, body
 
         best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
                                                                    response_msg_data=response_msg_data)

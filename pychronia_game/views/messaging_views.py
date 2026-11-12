@@ -116,8 +116,10 @@ class MessageComposeForm(AbstractGameForm):
                         sender = msg["sender_email"]  # for master
                     recipients = msg["recipient_emails"]
 
-                    if _("Bis:") not in msg["subject"]:
-                        subject = _("Bis:") + " " + subject
+                    with datamanager.game_language_override():  # subjects are game content
+                        resend_prefix = _("Bis:")
+                    if resend_prefix not in msg["subject"]:
+                        subject = resend_prefix + " " + subject
                         # don't resend attachment! #
 
                 elif visibility_reason == VISIBILITY_REASONS.recipient:  # we reply to a message
@@ -129,7 +131,8 @@ class MessageComposeForm(AbstractGameForm):
                     # works OK if my_email is None (i.e game master) or sender is None
                     recipients += [_email for _email in msg["recipient_emails"] if
                                    _email != my_email and _email != sender]
-                    response_prefix = _("Re:")
+                    with datamanager.game_language_override():  # subjects are game content
+                        response_prefix = _("Re:")
                     if response_prefix not in msg["subject"]:
                         subject = response_prefix + " " + subject
                         # don't resend attachment, here too! #

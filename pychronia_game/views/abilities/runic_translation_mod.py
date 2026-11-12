@@ -204,37 +204,38 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         if not transcription:
             raise UsageError(_("The transcription submitted is empty."))
 
-        # dummy request email, to allow wiretapping
-        subject = _('Translation Request')
-        body = _("Runes: ") + transcription
-        request_msg_data = dict(subject=subject,
-                                body=body)
-        del subject, body
-
-        # answer from laboratory
-        response_msg_data = None
-        item_title = None
-        item_name = self._get_closest_item_name_or_none(
-            decoding_attempt=transcription)  # will always return non-None, unless no objects are translatable
-        if item_name:
-            translation = self._translate_rune_message(item_name=item_name, rune_transcription=transcription)
-            item_title = item_name or _("unknown")
-            del item_name
-
-            subject = _("<Rune Translation Result>")
-            body = dedent(_("""
-                            Below is the output of the automated translation process for the runes of the targeted object.
-                            Please note that any error in the decoding of runes may lead to important errors in the translation result.
-    
-                            Runes transcription: "%(original)s"
-    
-                            Translation result: "%(translation)s"
-                          """)).strip() % SDICT(original=transcription, translation=translation)
-
-            response_msg_data = dict(subject=subject,
-                                     body=body,
-                                     attachment=None)
+        with self.datamanager.game_language_override():  # exchanged messages are game content
+            # dummy request email, to allow wiretapping
+            subject = _('Translation Request')
+            body = _("Runes: ") + transcription
+            request_msg_data = dict(subject=subject,
+                                    body=body)
             del subject, body
+
+            # answer from laboratory
+            response_msg_data = None
+            item_title = None
+            item_name = self._get_closest_item_name_or_none(
+                decoding_attempt=transcription)  # will always return non-None, unless no objects are translatable
+            if item_name:
+                translation = self._translate_rune_message(item_name=item_name, rune_transcription=transcription)
+                item_title = item_name or _("unknown")
+                del item_name
+
+                subject = _("<Rune Translation Result>")
+                body = dedent(_("""
+                                Below is the output of the automated translation process for the runes of the targeted object.
+                                Please note that any error in the decoding of runes may lead to important errors in the translation result.
+    
+                                Runes transcription: "%(original)s"
+    
+                                Translation result: "%(translation)s"
+                              """)).strip() % SDICT(original=transcription, translation=translation)
+
+                response_msg_data = dict(subject=subject,
+                                         body=body,
+                                         attachment=None)
+                del subject, body
 
         best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
                                                                    response_msg_data=response_msg_data)

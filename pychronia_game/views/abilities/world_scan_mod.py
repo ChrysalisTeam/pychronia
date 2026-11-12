@@ -149,36 +149,37 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
         item_title = self.get_item_properties(item_name)["title"]
 
-        # dummy request email, to allow wiretapping
-        subject = _('<Scanning Request - "%s">') % item_title
-        body = _("Please scan the world according to the features of this object.")
-        request_msg_data = dict(subject=subject,
-                                body=body)
-        del subject, body
-
-        # answer email
-        response_msg_data = None
-        scanning_result = self._compute_scanning_result_or_none(item_name)
-
-        if scanning_result:
-
-            locations_found_msg = self._format_scanning_result(scanning_result)
-
-            subject = _("<World Scan Result - %(item)s>") % SDICT(item=item_title)
-
-            body = dedent(_("""
-                    Below is the result of the scanning operation which has been performed according to the documents you sent.
-                    Please note that these results might be incomplete or erroneous, depending on the accuracy of the information available.
-    
-                    Potential locations of similar items: 
-                    
-                    %(locations_found)s
-                    """)) % SDICT(locations_found=locations_found_msg)
-
-            response_msg_data = dict(subject=subject,
-                                     body=body,
-                                     attachment=None)
+        with self.datamanager.game_language_override():  # exchanged messages are game content
+            # dummy request email, to allow wiretapping
+            subject = _('<Scanning Request - "%s">') % item_title
+            body = _("Please scan the world according to the features of this object.")
+            request_msg_data = dict(subject=subject,
+                                    body=body)
             del subject, body
+
+            # answer email
+            response_msg_data = None
+            scanning_result = self._compute_scanning_result_or_none(item_name)
+
+            if scanning_result:
+
+                locations_found_msg = self._format_scanning_result(scanning_result)
+
+                subject = _("<World Scan Result - %(item)s>") % SDICT(item=item_title)
+
+                body = dedent(_("""
+                        Below is the result of the scanning operation which has been performed according to the documents you sent.
+                        Please note that these results might be incomplete or erroneous, depending on the accuracy of the information available.
+    
+                        Potential locations of similar items: 
+                    
+                        %(locations_found)s
+                        """)) % SDICT(locations_found=locations_found_msg)
+
+                response_msg_data = dict(subject=subject,
+                                         body=body,
+                                         attachment=None)
+                del subject, body
 
         best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
                                                                    response_msg_data=response_msg_data)

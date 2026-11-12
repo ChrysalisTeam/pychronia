@@ -6753,6 +6753,46 @@ class TestSpecialAbilities(BaseGameTestCase):
                                                     ability_breaker=ability_breaker)
 
 
+    @for_ability(house_reports)
+    def test_stored_game_content_ignores_interface_language(self):
+        """
+        Texts stored in game data (messages, event logs...) are written in the game content language,
+        even when the user triggering them browses the interface in another language.
+        """
+        from django.utils import translation
+        from django.utils.translation import gettext as _
+
+        assert self.dm.get_game_language() == "en"
+        self._reset_messages()
+        self._set_user("guy1")
+        self.dm.set_global_parameter("disable_automated_ability_responses", False)
+        house_reports = self.dm.instantiate_ability("house_reports")
+        free_item = [name for name, item in self.dm.get_all_items().items() if not item["owner"] and not item["is_gem"]][0]
+
+        with translation.override("fr"):
+            assert _("no one") == "personne"  # the interface really is in French
+
+            house_reports.fetch_house_report(period="10h-12h")
+
+            self._set_user("master")
+            self.dm.transfer_object_to_character(free_item, "guy2")
+            item_event = self.dm.data["events_log"][-1]
+            self.dm.transfer_money_between_characters("guy1", "guy2", 10, reason="a debt")
+            money_event = self.dm.data["events_log"][-1]
+
+        (request_msg,) = self.dm.get_all_dispatched_messages()
+        assert request_msg["subject"] == "Manor surveillance request for period 10h-12h"
+        (response_msg,) = self.dm.get_all_queued_messages()
+        assert response_msg["subject"] == "<Manor surveillance response for period 10h-12h>"
+
+        assert item_event["substitutions"]["from_name"] == "no one"
+
+        # the reason belongs to the translatable message, instead of being glued to it before translation
+        assert money_event["message"] == "Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s. Reason: %(reason)s"
+        assert money_event["substitutions"]["reason"] == "a debt"
+        with translation.override("fr"):
+            assert _(money_event["message"]).startswith("Opération bancaire")
+
     @for_ability(house_locking)
     def test_house_locking(self):
 

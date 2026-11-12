@@ -90,20 +90,21 @@ class TelecomInvestigationAbility(AbstractPartnershipAbility):
 
         target_official_name = self.get_official_name(target_username)
 
-        # request e-mail
-        subject = _("Telecom Investigation Request - %(target_name)s") % dict(target_name=target_official_name)
-        body = _("Please look for anything you can find about this person.")
-        request_msg_data = dict(subject=subject,
-                                body=body)
+        with self.datamanager.game_language_override():  # exchanged messages are game content
+            # request e-mail
+            subject = _("Telecom Investigation Request - %(target_name)s") % dict(target_name=target_official_name)
+            body = _("Please look for anything you can find about this person.")
+            request_msg_data = dict(subject=subject,
+                                    body=body)
 
-        # response e-mail
-        subject = _('Telecom Investigation Results - %(target_name)s') % dict(target_name=target_official_name)
-        _context_list = self.extract_conversation_summary(target_username)
-        body = self.format_conversation_summary(_context_list)
-        response_msg_data = dict(subject=subject,
-                                 body=body,
-                                 attachment=None)
-        del subject, body
+            # response e-mail
+            subject = _('Telecom Investigation Results - %(target_name)s') % dict(target_name=target_official_name)
+            _context_list = self.extract_conversation_summary(target_username)
+            body = self.format_conversation_summary(_context_list)
+            response_msg_data = dict(subject=subject,
+                                     body=body,
+                                     attachment=None)
+            del subject, body
 
         best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
                                                                    response_msg_data=response_msg_data)

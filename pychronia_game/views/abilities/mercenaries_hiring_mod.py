@@ -218,16 +218,17 @@ def network_management(request, template_name='specific_operations/network_manag
 
         sender_email = "message-forwarder@masslavia.com"
         recipient_emails = self.get_character_email(employer_name)
-        subject = _("<Spying Report - %(city_name)s>") % SDICT(city_name=location.capitalize())
+        with self.datamanager.game_language_override():  # exchanged messages are game content
+            subject = _("<Spying Report - %(city_name)s>") % SDICT(city_name=location.capitalize())
 
-        default_message = _("*Report from your spies of %(city_name)s*") % SDICT(city_name=location.capitalize())
+            default_message = _("*Report from your spies of %(city_name)s*") % SDICT(city_name=location.capitalize())
 
-        if spy_audio:
-            body = default_message
-            attachment = game_file_url("spy_reports/spy_" + location.lower() + ".mp3")
-        else:
-            body = default_message + "\n\n-------\n\n" + spy_message
-            attachment = None
+            if spy_audio:
+                body = default_message
+                attachment = game_file_url("spy_reports/spy_" + location.lower() + ".mp3")
+            else:
+                body = default_message + "\n\n-------\n\n" + spy_message
+                attachment = None
 
         parent_id = self.post_message(user_email, recipient_emails, subject, body, attachment,
                               date_or_delay_mn=self.get_global_parameter("spy_report_delays"))

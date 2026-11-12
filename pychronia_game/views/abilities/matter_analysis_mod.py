@@ -73,23 +73,24 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
 
         item_title = self.get_item_properties(item_name)["title"]
 
-        # dummy request email, to allow wiretapping
-        subject = _('Deep Analysis Request - item "%s"') % item_title
-        body = _("Please analyse the physical and biological properties of this item.")
-        request_msg_data = dict(subject=subject,
-                                body=body)
-        del subject, body
-
-        # answer from laboratory
-        response_msg_data = None
-        result = self._compute_analysis_result_or_none(item_name)
-        if result:
-            subject = _("<Deep Matter Analysis Report - %(item_title)s>") % SDICT(item_title=item_title)
-            body = result  # as is
-            response_msg_data = dict(subject=subject,
-                                     body=body,
-                                     attachment=None)
+        with self.datamanager.game_language_override():  # exchanged messages are game content
+            # dummy request email, to allow wiretapping
+            subject = _('Deep Analysis Request - item "%s"') % item_title
+            body = _("Please analyse the physical and biological properties of this item.")
+            request_msg_data = dict(subject=subject,
+                                    body=body)
             del subject, body
+
+            # answer from laboratory
+            response_msg_data = None
+            result = self._compute_analysis_result_or_none(item_name)
+            if result:
+                subject = _("<Deep Matter Analysis Report - %(item_title)s>") % SDICT(item_title=item_title)
+                body = result  # as is
+                response_msg_data = dict(subject=subject,
+                                         body=body,
+                                         attachment=None)
+                del subject, body
 
         best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
                                                                    response_msg_data=response_msg_data)

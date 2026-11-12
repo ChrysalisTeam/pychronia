@@ -172,6 +172,14 @@ class GameGlobalParameters(BaseDataManager):
         """
         return self.data["global_parameters"].get("game_language", config.GAME_DEFAULT_LANGUAGE)
 
+    @readonly_method
+    def game_language_override(self):
+        """
+        Context manager activating the game content language, to translate texts which get STORED in
+        game data (messages, event logs...), whatever the interface language of the current user.
+        """
+        return translation.override(self.get_game_language())
+
     @transaction_watcher
     def set_global_parameter(self, name, value):
         assert self.is_master() or config.DEBUG
@@ -385,7 +393,7 @@ class GameEvents(BaseDataManager):  # TODO REFINE
 
         # event logs are stored once for all, so they are written in the game language, whatever the
         # interface language of the user triggering them
-        with translation.override(self.get_game_language()):
+        with self.game_language_override():
             message = _(message)
 
         if additional_details:
@@ -1145,12 +1153,12 @@ class PlayerAuthentication(BaseDataManager):
 
             password = user_properties["password"]
 
-            subject = _("<Password Recovery System>")
-
-            body = dedent(_("""
-                    The password corresponding to your login %(username)s is '%(password)s'.
-                    Please keep it carefully and do not share it with anyone else.
-                   """)) % SDICT(username=username, password=password)
+            with self.game_language_override():  # this message is game content
+                subject = _("<Password Recovery System>")
+                body = dedent(_("""
+                        The password corresponding to your login %(username)s is '%(password)s'.
+                        Please keep it carefully and do not share it with anyone else.
+                       """)) % SDICT(username=username, password=password)
 
             attachment = None
 
@@ -3935,13 +3943,14 @@ class MoneyItemsOwnership(BaseDataManager):
             to_char["account"] += amount
             visible_by.append(to_name)  # can't be the same as from_name, due to checks above
 
-        # FIXME - bug here with early translation !!! #
-        msg = ugettext_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s.")
+        # the reason is a substitution too, so that log_game_event() can translate the whole message
         if reason:
-            msg += " " + ugettext_noop("Reason: %(reason)s") % SDICT(reason=reason)
+            msg = ugettext_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s. Reason: %(reason)s")
+        else:
+            msg = ugettext_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s.")
 
         self.log_game_event(msg,
-                            PersistentMapping(amount=amount, from_name=from_name, to_name=to_name),
+                            PersistentMapping(amount=amount, from_name=from_name, to_name=to_name, reason=reason),
                             url=None,
                             visible_by=(visible_by or None))
 
@@ -3994,7 +4003,8 @@ class MoneyItemsOwnership(BaseDataManager):
 
         ## FIXME - make this a character-method too !!!
         item = self.get_item_properties(item_name)
-        from_name = item["owner"] if item["owner"] else _("no one")  # must be done IMMEDIATELY
+        with self.game_language_override():  # stored in the game event log
+            from_name = item["owner"] if item["owner"] else _("no one")  # must be done IMMEDIATELY
         visible_by = []
 
         if previous_owner is not None and previous_owner != item["owner"]:
