@@ -285,19 +285,27 @@ class AbstractGameView(object, metaclass=GameViewMetaclass):
 
     @classmethod
     def get_access_token(cls, datamanager):
-        return cls.get_access_token_for_username(datamanager, datamanager.user.username)
+        # fast path for the current user, whose flags were computed once by GameUser (menus call this
+        # for every registered view, on every page)
+        user = datamanager.user
+        return cls._compute_access_token(datamanager, user.username, is_master=user.is_master,
+                                         is_character=user.is_character, is_authenticated=user.is_authenticated)
 
     @classmethod
     def get_access_token_for_username(cls, datamanager, username):
         """Same logic as get_access_token(), but resolved for an arbitrary *username*
         instead of the datamanager's currently logged-in/impersonated user. Read-only
-        (never mutates datamanager.user). Used by get_access_token() itself, and also by
-        the e2e test suite (see pychronia_game/tests/e2e/_inventory.py) to compute
+        (never mutates datamanager.user). Both share _compute_access_token(); this variant is
+        used by the e2e test suite (see pychronia_game/tests/e2e/_inventory.py) to compute
         expected access for every identity without needing a live session per identity."""
 
-        is_master = datamanager.is_master(username)
-        is_character = datamanager.is_character(username)
-        is_authenticated = datamanager.is_authenticated(username)
+        return cls._compute_access_token(datamanager, username,
+                                         is_master=datamanager.is_master(username),
+                                         is_character=datamanager.is_character(username),
+                                         is_authenticated=datamanager.is_authenticated(username))
+
+    @classmethod
+    def _compute_access_token(cls, datamanager, username, is_master, is_character, is_authenticated):
 
         if ((cls.ACCESS == UserAccess.master and not is_master) or
                 (cls.ACCESS == UserAccess.authenticated and not is_authenticated) or
