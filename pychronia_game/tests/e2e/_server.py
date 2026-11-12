@@ -5,32 +5,32 @@ import time
 
 from django.contrib.staticfiles.handlers import StaticFilesHandler
 from django.test.testcases import LiveServerThread
-from django.utils.deprecation import MiddlewareMixin
 
 _counter_lock = threading.Lock()
 _in_flight_count = 0
 
 
-class InFlightRequestsMiddleware(MiddlewareMixin):
+class InFlightRequestsMiddleware(object):
     """Tracks requests currently being handled by the live server thread, so that
     the per-test ZODB-restore fixture can wait for trailing AJAX polling (chat,
-    webradio...) to settle before closing the ZODB connection."""
+    webradio...) to settle before closing the ZODB connection.
 
-    def process_request(self, request):
+    The counter is decremented exactly once per request, in a "finally" clause: with
+    process_response() + process_exception() hooks, a view exception triggered both,
+    making the counter negative, so that wait_for_idle_server() stopped waiting."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
         global _in_flight_count
         with _counter_lock:
             _in_flight_count += 1
-
-    def process_response(self, request, response):
-        global _in_flight_count
-        with _counter_lock:
-            _in_flight_count -= 1
-        return response
-
-    def process_exception(self, request, exception):
-        global _in_flight_count
-        with _counter_lock:
-            _in_flight_count -= 1
+        try:
+            return self.get_response(request)
+        finally:
+            with _counter_lock:
+                _in_flight_count -= 1
 
 
 def wait_for_idle_server(timeout=5.0, poll_interval=0.05):
