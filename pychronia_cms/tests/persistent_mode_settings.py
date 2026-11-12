@@ -12,10 +12,11 @@ _curdir = os.path.dirname(os.path.abspath(__file__))
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'chryscms_local',  # TEMPORARY (do not commit): local MariaDB sandbox
+        'NAME': 'chrysaliscms_dev',
         'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
+        'PASSWORD': 'root',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
 
@@ -34,3 +35,9 @@ DATABASES = {
 # Stage B) - filer.admin.clipboardadmin.ClipboardAdmin's M2M/filter_horizontal issue was
 # fixed upstream somewhere in that range - so it has been dropped from this list.
 SILENCED_SYSTEM_CHECKS = ['treebeard.E001']
+
+
+# machine-specific overrides (eg. a local MariaDB sandbox) go in an UNTRACKED "persistent_mode_settings_local.py"
+import importlib.util as _importlib_util
+if _importlib_util.find_spec("pychronia_cms.tests.persistent_mode_settings_local"):
+    from pychronia_cms.tests.persistent_mode_settings_local import *

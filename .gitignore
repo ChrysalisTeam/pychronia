@@ -24,3 +24,6 @@ thumbs
 /static
 
 /.venv
+
+# machine-specific settings overrides
+persistent_mode_settings_local.py

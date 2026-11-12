@@ -35,3 +35,8 @@ if os.path.exists(_chrysalis_data_dir):
     GAME_INITIAL_DATA_PATH, GAME_INITIAL_FIXTURE_SCRIPT = \
         generate_auction_settings(GAME_FILES_ROOT)  # or generate_mindstorm_settings()
 
+
+# machine-specific overrides (eg. a local MariaDB sandbox) go in an UNTRACKED "persistent_mode_settings_local.py"
+import importlib.util as _importlib_util
+if _importlib_util.find_spec("pychronia_game.tests.persistent_mode_settings_local"):
+    from pychronia_game.tests.persistent_mode_settings_local import *
