@@ -11,16 +11,18 @@ so the widgets always render automatically on every blog page, with no CMS place
 needed - mirroring how the old zinnia tags worked.
 
 Unlike the stock BlogArchivePlugin (which groups by year+month), the archive widget here
-only goes down to year granularity, per product decision - djangocms-stories has no month/day
+only goes down to year granularity (and counts the posts visible in the current language), per product decision - djangocms-stories has no month/day
 URL below the year/month archive routes, and the project no longer wants day-level navigation.
 """
+from collections import Counter
+
 from django.contrib.sites.shortcuts import get_current_site
 from django.db.models import Q
 from django.template import Library
 from django.utils.translation import get_language
 
 from djangocms_stories.cms_appconfig import get_app_instance
-from djangocms_stories.models import Post, PostCategory
+from djangocms_stories.models import PostCategory, PostContent
 
 register = Library()
 
@@ -46,14 +48,18 @@ def stories_categories_widget(context):
 
 @register.inclusion_tag("djangocms_stories/includes/archive_years_widget.html", takes_context=True)
 def stories_archive_years_widget(context):
+    """
+    Years with their number of posts, counted exactly like PostArchiveView lists them when such a
+    year is clicked: published post contents in the current language, on the current site and blog
+    config, by post.date_published (unlike the stock BlogArchivePlugin, which counts all posts of
+    any language by featured/modified date, so that the counts and the archive pages disagreed).
+    """
     request = context["request"]
     _, config = get_app_instance(request)
     site = get_current_site(request)
-    qs = Post.objects.on_site(site)
+    qs = PostContent.objects.filter(language=get_language()).on_site(site)
     if config:
-        qs = qs.filter(app_config=config)
-    years = {}
-    for month in Post.objects.get_months(queryset=qs):
-        years[month["date"].year] = years.get(month["date"].year, 0) + month["count"]
+        qs = qs.filter(post__app_config__namespace=config.namespace)
+    years = Counter(date.year for date in qs.values_list("post__date_published", flat=True) if date)
     years_list = sorted(years.items(), reverse=True)
     return {"years": years_list, "namespace": config.namespace if config else "djangocms_stories"}
