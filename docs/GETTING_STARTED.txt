@@ -87,6 +87,8 @@ There is specific tooling to load the "Chrysalis" RPG campaign (https://chrysali
 If the game data repository of this RPG is stored in a "Chrysalis/" folder which is sibling with the root folder of your Pychronia repository, then it'll be automatically detected,
 and the `generate_auction_settings()` or `generate_mindstorm_settings()` functions can be used to automatically setup the game in either murder-party or alternate-reality-game mode.
 
+These functions expect the root folder of the Chrysalis repository, which has one folder per game (with its scenario sources in a "scenario_fixtures/" subfolder). GAME_FILES_ROOT must then point to the "alternate_reality_game_auction/" folder of this repository, whose media are shared by both modes; `get_chrysalis_game_files_root()` computes this path.
+
 See "pychronia_game/tests/persistent_mode_settings.py" for more information.
 
 

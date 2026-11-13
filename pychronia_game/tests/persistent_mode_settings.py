@@ -30,10 +30,10 @@ _external_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 _chrysalis_data_dir = os.path.join(_external_dir, "Chrysalis")
 if os.path.exists(_chrysalis_data_dir):
 
-    GAME_FILES_ROOT = _chrysalis_data_dir + os.sep
+    GAME_FILES_ROOT = get_chrysalis_game_files_root(_chrysalis_data_dir)
 
     GAME_INITIAL_DATA_PATH, GAME_INITIAL_FIXTURE_SCRIPT = \
-        generate_auction_settings(GAME_FILES_ROOT)  # or generate_mindstorm_settings()
+        generate_auction_settings(_chrysalis_data_dir)  # or generate_mindstorm_settings()
 
 
 # machine-specific overrides (eg. a local MariaDB sandbox) go in an UNTRACKED "persistent_mode_settings_local.py"
