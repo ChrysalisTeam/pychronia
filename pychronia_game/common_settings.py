@@ -140,7 +140,7 @@ def generate_mindstorm_settings(chrysalis_data_dir):
         #alternate_reality_game_auction/scenario_fixtures/messaging/super_factions.yaml
         #alternate_reality_game_auction/scenario_fixtures/messaging/wiremind.yaml
         
-        mysteryparty_mindstorm/scenario_fixtures/anthropia_game_data_overrides.yaml
+        mysteryparty_mindstorm/scenario_fixtures/anthropia_portal_game_data_overrides.yaml
         """.split()
 
     GAME_INITIAL_DATA_PATH = [os.path.join(_GAME_INITIAL_DATA_DIR, _selected_yaml_file)
