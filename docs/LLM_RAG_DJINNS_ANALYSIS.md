@@ -74,6 +74,101 @@ Embeddings should not be stored in ZODB: they bloat the pickles and are purely d
 data.
 
 
+## sqlite-vec in more detail
+
+This is the store to switch to if the corpus grows to thousands of pages (roughly 10,000
+to 50,000 chunks). At that size brute-force search is still fast (a few milliseconds);
+what breaks with the in-memory numpy approach is around it:
+
+- **Memory:** 50,000 vectors of 1024 floats is about 200 MB, copied in each Django worker.
+- **Startup:** every worker loads that matrix when it starts.
+- **Updates:** editing one article should rewrite a few rows, not a whole cache file.
+- **Filtering:** "only this djinn's whitelist" or "only articles this character knows"
+  becomes a `WHERE` clause instead of hand-written numpy masks.
+
+The facts below were checked on 2026-11-14 against the project's README
+(https://github.com/asg017/sqlite-vec) and its Python guide
+(https://alexgarcia.xyz/sqlite-vec/python.html), except where stated otherwise.
+
+### How it works
+
+`sqlite-vec` is a small C extension loaded into SQLite. It adds a new kind of table,
+`vec0`, whose rows hold a vector plus optional ordinary columns.
+
+```python
+import sqlite3, sqlite_vec
+
+db = sqlite3.connect("encyclopedia_index.sqlite")
+db.enable_load_extension(True)
+sqlite_vec.load(db)
+db.enable_load_extension(False)
+
+db.execute("CREATE VIRTUAL TABLE chunks USING vec0(embedding float[1024])")
+
+# insert: a numpy float32 array is accepted directly
+db.execute("INSERT INTO chunks(rowid, embedding) VALUES (?, ?)", (42, vector.astype("float32")))
+
+# search: the 5 nearest chunks to the question's vector
+rows = db.execute(
+    "SELECT rowid, distance FROM chunks WHERE embedding MATCH ? ORDER BY distance LIMIT 5",
+    (question_vector.astype("float32"),),
+).fetchall()
+```
+
+- **Storage:** each vector is stored as a compact binary blob (4 bytes per number),
+  inside the normal SQLite file.
+- **Search:** the `MATCH ... ORDER BY distance LIMIT n` query computes the distance
+  between the question vector and the stored vectors, and returns the closest `n`. This
+  is believed to be a full scan (brute force) in optimised C; the README does not say so
+  explicitly.
+- **Linking to the content:** the `rowid` points to a regular table holding the chunk
+  text, article id and category, joined as usual.
+- **Extra columns:** the `vec0` table can also carry metadata, auxiliary and
+  partition-key columns, allowing filters in the same query. The README mentions them
+  without detail; the exact syntax is not verified.
+
+### Pros
+
+- **No server:** one `pip install sqlite-vec` and one file; backup is a file copy.
+- **Plain SQL:** joins, `WHERE` filters and transactions work as in any SQLite database.
+- **Hybrid search in one place:** SQLite's built-in FTS5 full-text index can live in the
+  same file, next to the vectors.
+- **Shared across workers:** all Django processes read the same file, instead of each
+  holding a copy in memory.
+- **Incremental updates:** editing an article means replacing a few rows.
+- **Small and portable:** no dependencies, runs on Windows and Linux.
+
+### Cons
+
+- **Pre-1.0:** the README warns "expect breaking changes". Tolerable here, since the
+  index is derived data which can be rebuilt, but the version must be pinned.
+- **Brute-force search:** query time grows linearly with the number of chunks. The
+  repository contains files named for IVF and DiskANN indexes, but the README does not
+  document them, so an approximate index should not be counted on.
+- **Single writer:** SQLite allows one write at a time. Fine for an index written only
+  when articles change.
+- **Python build requirements:** the `sqlite3` module must allow extension loading. The
+  Python bundled with macOS does not; the standard Windows and Linux builds are believed
+  to (not verified).
+- **SQLite version:** 3.41 or later is recommended, and some features need it. Check with
+  `python -c "import sqlite3; print(sqlite3.sqlite_version)"`. On Windows the SQLite
+  bundled with Python cannot be swapped, so upgrading it means upgrading Python.
+- **One-person project:** maintained mainly by a single author, hence more abandonment
+  risk than MariaDB or Postgres.
+- **A second data store:** it sits beside ZODB and MariaDB, with its own file to deploy
+  and keep in sync with the articles.
+
+### Retrieval quality at that scale
+
+With thousands of pages, the hard part becomes retrieval quality rather than the store:
+many articles look vaguely relevant, and the right one may rank eighth instead of first.
+
+- **Hybrid search:** keep combining keyword matches with embedding matches.
+- **Reranking:** retrieve the top 30 or so cheaply, then have a small "reranker" model
+  score each one against the question and keep the best five (bge-reranker is the usual
+  companion to bge-m3).
+
+
 ## What makes it robust
 
 1. **Restrict sources in code, not in the prompt.** Each djinn gets a whitelist in
