@@ -643,7 +643,7 @@ def find_game_file(*rel_path_glob):
     assert full_file_path.startswith(game_files_root)
     rel_file_path = os.path.relpath(full_file_path, start=game_files_root)
     assert not os.path.isabs(rel_file_path)
-    return rel_file_path
+    return rel_file_path.replace(os.sep, "/")  # game file paths are URL-like, even on Windows
 
 
 def find_game_file_or_url(*rel_path_globs):

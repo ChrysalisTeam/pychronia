@@ -2337,12 +2337,12 @@ class TestDatamanager(BaseGameTestCase):
         assert res == ' Hello <a href="/TeStiNg/anyuser/messages/compose/?recipient=h%C3%A9lloaaxsjjs%40gma%C3%AFl.fr">h\xe9lloaaxsjjs@gma\xefl.fr</a>. please write to h\xe9rb\xe8rt@h\xe9l\xe9nia.'
 
         expected_res = [
-            {'description': 'Simon Bladstaffulovza - whatever', 'avatar': os.path.normpath('images/avatars/guy1.png'),
+            {'description': 'Simon Bladstaffulovza - whatever', 'avatar': 'images/avatars/guy1.png',
              'address': 'guy1@pangea.com', 'color': '#0033CC',
              'gamemaster_hints': 'This is guy1, actually agent SHA1.'},
-            {'description': 'the terrible judicators', 'avatar': os.path.normpath('images/avatars/here.png'),
+            {'description': 'the terrible judicators', 'avatar': 'images/avatars/here.png',
              'address': 'judicators@akaris.com', 'color': None, 'gamemaster_hints': ''},
-            {'description': 'Unidentified contact', 'avatar': os.path.normpath('images/avatars/question_mark.png'),
+            {'description': 'Unidentified contact', 'avatar': 'images/avatars/question_mark.png',
              'address': 'unknown@mydomain.com', 'color': None, 'gamemaster_hints': None}]
 
         assert self.dm.get_contacts_display_properties([]) == []

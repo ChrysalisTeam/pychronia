@@ -137,9 +137,9 @@ class GameGlobalParameters(BaseDataManager):
         game_data = self.data
 
         game_data["global_parameters"]["world_map_image"] = os.path.normpath(
-            game_data["global_parameters"]["world_map_image"])
+            game_data["global_parameters"]["world_map_image"]).replace(os.sep, "/")  # URL-like, even on Windows
         game_data["global_parameters"]["world_map_image_bw"] = os.path.normpath(
-            game_data["global_parameters"]["world_map_image_bw"])
+            game_data["global_parameters"]["world_map_image_bw"]).replace(os.sep, "/")  # URL-like, even on Windows
 
     def _check_database_coherence(self, **kwargs):
         super(GameGlobalParameters, self)._check_database_coherence(**kwargs)
@@ -2475,7 +2475,7 @@ class TextMessagingForCharacters(BaseDataManager):  # TODO REFINE
 
         utilities.check_is_game_file(game_data["global_parameters"]["default_contact_avatar"])
         game_data["global_parameters"]["default_contact_avatar"] = os.path.normpath(
-            game_data["global_parameters"]["default_contact_avatar"])
+            game_data["global_parameters"]["default_contact_avatar"]).replace(os.sep, "/")  # URL-like, even on Windows
 
         for (name, character) in list(game_data["character_properties"].items()):
             character.setdefault("has_new_messages", 0)
