@@ -108,7 +108,7 @@ def generate_mindstorm_settings(chrysalis_data_dir):
     assert os.path.isdir(os.path.join(_GAME_INITIAL_DATA_DIR, "alternate_reality_game_auction", "scenario_fixtures")), _GAME_INITIAL_DATA_DIR
 
     _selected_yaml_files = """
-        rpg_descent/scenario_fixtures
+        rpg_descent/scenario_fixtures/descent_rpg_data.yaml
     
         alternate_reality_game_auction/scenario_fixtures/abilities.yaml
         alternate_reality_game_auction/scenario_fixtures/characters_factions.yaml
@@ -302,7 +302,7 @@ def generate_auction_settings(chrysalis_data_dir):
     assert os.path.isdir(os.path.join(_GAME_INITIAL_DATA_DIR, "alternate_reality_game_auction", "scenario_fixtures")), _GAME_INITIAL_DATA_DIR
 
     _selected_yaml_files = """
-        rpg_descent/scenario_fixtures
+        rpg_descent/scenario_fixtures/descent_rpg_data.yaml
         
         alternate_reality_game_auction/scenario_fixtures/abilities.yaml
         alternate_reality_game_auction/scenario_fixtures/characters_factions.yaml
