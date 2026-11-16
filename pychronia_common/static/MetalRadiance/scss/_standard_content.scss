@@ -93,6 +93,7 @@ h4 {
 // USELESS ATM - & > p:first-child:not(.post-it), & >p:first-of-type:not(.post-it), & > p.beautiful
 .justified p, .section p {
     text-align: justify;
+    @include justified_text_helpers;
     overflow: hidden; // for drop caps
     text-decoration: none; // underline, overline, line-through, blink or inherit
     text-indent: 0; // else too many problems with widow lines...
@@ -128,6 +129,12 @@ div, span, p {
 }
 p {
     margin: 8px 0 8px;
+}
+
+// more airy text in the content area only (header, menus and footers have pixel-tuned decorations);
+// ":where()" cancels the ID specificity, so that classes setting their own line-height keep winning
+:where(#full_content) p, :where(#full_content) li {
+    line-height: 1.5;
 }
 
 h1, h2, h3, h4, p {
@@ -309,6 +316,71 @@ input[readonly=True] {
 }
 
 
+textarea {
+    font-family: inherit;
+}
+
+// reStructuredText source editor: monospace is useful there, but at a readable size (markItUp's skin uses 12px Courier)
+textarea.markItUpEditor {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 14px;
+}
+
+// geometry and typography shared by ink (light backgrounds) and gold (dark backgrounds) buttons;
+// ".digit" buttons are the keypad of the house locking ability, which has its own look
+@mixin themed_button_shape {
+    input[type=submit]:not(.digit), input[type=button]:not(.digit) {
+        width: auto;
+        max-width: 100%; // lets the button shrink in table cells, instead of widening the table beyond its parchment
+        margin: 20px auto 0;
+        padding: 4px 16px 5px;
+        background: transparent;
+        border-radius: 2px;
+        font-family: $chrome_font_stack; // already small-caps, hence no text-transform
+        font-size: 16px;
+        font-weight: normal;
+        letter-spacing: 0.5px;
+        text-transform: none;
+        line-height: 1.2;
+        white-space: normal; // long labels wrap inside the button instead of overflowing it
+        overflow-wrap: break-word;
+        cursor: pointer;
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        @include mobile-only {
+            padding: 4px 10px 5px;
+            font-size: 15px;
+        }
+    }
+}
+
+/* Gold-outlined buttons, for DARK backgrounds (mobile content frame, sidebars...), where ink buttons would be
+   unreadable and native buttons would clash with the theme. Text fields keep the cream look of form_controls_variant. */
+@mixin dark_form_controls {
+    @include themed_button_shape;
+
+    input[type=submit]:not(.digit), input[type=button]:not(.digit) {
+        border: 1px solid $medium_orange;
+        color: $light_orange;
+
+        &:hover {
+            background: rgba(248, 216, 91, 0.15);
+        }
+    }
+}
+
+// emitted BEFORE the parchment rules below, and with ":where()" so that it has no more specificity than them:
+// parchments lying inside these dark frames (scrolls, realtables...) must keep their ink buttons
+@include mobile-only {
+    :where(.main_frame_content), :where(.mini_frame_content) {
+        @include dark_form_controls;
+    }
+}
+
 /* "Pressed into leather" form controls: transparent debossed fields with ink text, and ink buttons.
    ONLY for LIGHT backgrounds (parchments, light leather): on dark ones (mobile content, sidebars, header,
    menus...) they would be unreadable, so the cream look of form_controls_variant remains there. */
@@ -322,7 +394,7 @@ input[readonly=True] {
         border-radius: 4px;
         padding: 4px 7px;
         box-shadow: inset 0 2px 4px $deboss_shadow_color, inset 0 -1px 0 rgba(255, 240, 200, 0.30), 0 1px 0 $deboss_light_color;
-        font-family: Georgia, serif;
+        font-family: $text_font_stack;
         font-size: 15px;
         color: $ink_color;
 
@@ -338,6 +410,11 @@ input[readonly=True] {
             box-shadow: none;
             color: rgba(60, 35, 10, 0.5);
         }
+    }
+
+    textarea.markItUpEditor {
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
     }
 
     select {
@@ -378,48 +455,80 @@ input[readonly=True] {
         accent-color: $dark_red;
     }
 
-    // ".digit" buttons are the keypad of the house locking ability, which has its own look
+    // plain "red" is barely readable on parchment
+    .errorlist {
+        color: $dark_red;
+    }
+
+    @include themed_button_shape;
+
     input[type=submit]:not(.digit), input[type=button]:not(.digit) {
-        width: auto;
-        max-width: 100%; // lets the button shrink in table cells, instead of widening the table beyond its parchment
-        margin: 20px auto 0;
-        padding: 5px 22px;
-        background: transparent;
         border: 1px solid $ink_brown;
-        border-radius: 2px;
-        font: bold 13px Georgia, serif;
-        letter-spacing: 1px;
-        text-transform: uppercase;
         color: $ink_brown;
-        cursor: pointer;
 
         &:hover {
             background: rgba(90, 58, 20, 0.12);
         }
+    }
+}
 
-        &:disabled {
-            opacity: 0.5;
-            cursor: default;
-        }
 
-        @include mobile-only {
-            // input buttons can't wrap their text, so keep them compact on narrow screens
-            padding: 5px 10px;
-            font-size: 12px;
-            letter-spacing: 0.5px;
+/* Texts lying on LIGHT backgrounds (parchments, light leather): darker links, and dark red secondary titles
+   instead of white ones (white outlined titles are only readable on dark backgrounds) */
+@mixin parchment_texts {
+    a {
+        &:link {
+            color: $ink_link_color;
         }
+        &:visited {
+            color: $ink_link_visited_color;
+        }
+        &:hover, &:active {
+            color: $ink_link_hover_color;
+        }
+    }
+
+    h2 {
+        color: $dark_red;
+        text-shadow: 0 1px 0 rgba(255, 240, 200, 0.6);
+    }
+
+    // dark sub-panels lying on parchments keep their light titles
+    .marble_panel h2 {
+        color: $title_white;
+        @include text_shadow;
     }
 }
 
 .scroll_yellow_rolled, .scroll_yellow_flat, .scroll_realistic, .scroll_realistic_thin_ends,
 .post-it, .rice_paper_beige, .rice_paper_rose, table.realtable {
     @include parchment_form_controls;
+    @include parchment_texts;
 }
 
 @include desktop-only {
     .main_frame_content {  // light leather on desktop only, dark brown on mobile
         @include parchment_form_controls;
+        @include parchment_texts;
     }
+}
+
+// row of several submit buttons (eg. login form), wrapping on narrow screens
+.form_buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    column-gap: 12px;
+
+    input[type=submit], input[type=button] {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+}
+
+.login_form {
+    text-align: left;
 }
 
 // inline buttons in table cells must not get the vertical spacing of form buttons, else rows grow uneven

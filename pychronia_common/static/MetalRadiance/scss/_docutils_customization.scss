@@ -41,3 +41,11 @@ table.footnote {
     border-color: $medium_yellow;
 }
 
+
+// admonition titles ("Note", "Warning"...) in the UI-chrome font, instead of html4css1's generic sans-serif;
+// "div[class]" matches the specificity of html4css1's "div.note p.admonition-title" rules, and wins by coming later
+div[class] p.admonition-title {
+    font-family: $chrome_font_stack;
+    font-weight: normal;
+    font-size: 1.2em;
+}

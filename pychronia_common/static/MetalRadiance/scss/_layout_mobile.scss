@@ -71,15 +71,43 @@ body {
         #full_header_center {
             margin: 0px auto 0px;
             height: 74px;
-            background: transparent url("img/backgrounds/mobile/header.jpg") no-repeat scroll top center;
+            position: relative;
+            // laurels only: the site name comes from the per-site #site_title image below
+            // (the old header.jpg had "Anthropia" baked in, even on the Chrysalis CMS)
+            background: transparent url("img/backgrounds/mobile/header_blank.jpg") no-repeat scroll top center;
 
             .notification_panel {
                 display: none;
             }
         }
 
-        #title_table, #notification_table {
+        #notification_table {
             display: none;
+        }
+
+        #title_table {
+            .motto {
+                display: none;
+            }
+
+            #site_title {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 74px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                img {
+                    // must stay between the laurels of the 312px-wide header image
+                    max-width: 200px;
+                    max-height: 44px;
+                    width: auto;
+                    height: auto;
+                }
+            }
         }
 
     }
@@ -199,6 +227,11 @@ body {
             color: black;
         }
     }
+}
+
+// on narrow columns, justified text leaves huge gaps between words (hyphenation can't always save it)
+.pretty_text p, p.pretty_text, .justified p, .section p, .entry-body p {
+    text-align: left;
 }
 
 #up_footer_wrapper, #low_footer_wrapper {

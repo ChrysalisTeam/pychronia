@@ -79,7 +79,12 @@
 
 
 
+{# on mobile the header carvings (user name, language flags) are hidden, and only reachable through the mmenu #}
+{# side panel that this "hamburger" opens - same as in the game's base_main.html #}
 {% block left_big_icon_panel %}
+<div class="big_icon_panel mobile-only">
+    <a href="#full_header" style="font-size: 2em; color: #CC971A" title="{% trans "Controls" %}"><i class="fa fa-bars fa-lg"></i></a>
+</div>
 {% endblock %}
 
 {% block right_big_icon_panel %}

@@ -52,11 +52,12 @@ $dark_red: #8E0D0D;
 
 $outline_gold: #B89215;
 
-$notification_red: red;
-$notification_green: green;
-$notification_blue: blue;
-$notification_orange: orange;
-$notification_beige: #A89D97; // rather dark
+// notification panels and status backgrounds (white bold text on them, >= 7:1 contrast)
+$notification_red: #7A1010;
+$notification_green: #2E4A12;
+$notification_blue: #1F3566;
+$notification_orange: #7A4A00;
+$notification_beige: #5E534A; // default "mixed" panel
 
 $success_color: green;
 $error_color: red;
@@ -69,6 +70,10 @@ $ink_brown: #5a3a14;
 $ink_line_color: rgba(60, 35, 10, 0.45);
 $ink_hairline_color: rgba(60, 35, 10, 0.18);
 $ink_placeholder_color: rgba(60, 35, 10, 0.45);
+// links on parchments: >= 4.5:1 contrast even on the darker (tan) parchments of blog posts
+$ink_link_color: #2A5320;
+$ink_link_visited_color: #265C4E;
+$ink_link_hover_color: #8E0D0D;
 $deboss_shadow_color: rgba(40, 20, 0, 0.55);
 $deboss_light_color: rgba(255, 240, 200, 0.50);
 $parchment_option_color: #f6e9c4;
@@ -135,13 +140,25 @@ $scroll_text_color: black;
     font-style: normal;
 }
 
+// typeface roles of the theme: black_chancery for titles, im_fell_english_sc for UI chrome (menus, buttons,
+// table headers), open_sans for everything that is read or typed
+$text_font_stack: open_sans, Arial, Helvetica, sans-serif;
+$chrome_font_stack: im_fell_english_sc, serif;
+
 @mixin text_shadow($bgcolor: black) {
     text-shadow: 1px 1px 0 $bgcolor, -1px -1px 0 $bgcolor, 1px -1px 0 $bgcolor, -1px 1px 0 $bgcolor;
+}
+
+// hyphenation (according to the html "lang" attribute) avoids large gaps between words of justified text
+@mixin justified_text_helpers {
+    -webkit-hyphens: auto;
+    hyphens: auto;
 }
 
 @mixin pretty_text {
     text-align: justify;
     text-indent: 0; // else, quickly ugly...
+    @include justified_text_helpers;
 }
 
 @mixin light-texts {

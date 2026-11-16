@@ -256,7 +256,7 @@
                                 <li class="toplevel">
 
                                     {% if menu.is_active %}
-                                        <a data-ftrans="{{ page_transition }}" href="{{ menu.url }}">{{ menu.title }}{#% if menu.submenus %}&darr;{% endif %#} {% if menu.is_novelty %}*{% endif %}</a>
+                                        <a data-ftrans="{{ page_transition }}" href="{{ menu.url }}">{{ menu.title }}{#% if menu.submenus %}&darr;{% endif %#}{% if menu.is_novelty %}<i class="novelty_dot" title="{% trans "New" %}"></i>{% endif %}</a>
                                     {% else %}
                                         <span>{{ menu.title }}</span>
                                     {% endif %}
@@ -267,7 +267,7 @@
                                             {% for submenu in menu.submenus %}
                                                 <li>
                                                 {% if submenu.is_active %}
-                                                    <a data-ftrans="{{ page_transition }}" href="{{ submenu.url }}" accesskey="{{ forloop.counter }}">{{ submenu.title }}{% if submenu.is_novelty %} *{% endif %}</a>
+                                                    <a data-ftrans="{{ page_transition }}" href="{{ submenu.url }}" accesskey="{{ forloop.counter }}">{{ submenu.title }}{% if submenu.is_novelty %}<i class="novelty_dot" title="{% trans "New" %}"></i>{% endif %}</a>
                                                 {% else %}
                                                     <span>{{ submenu.title }}</span>
                                                 {% endif %}

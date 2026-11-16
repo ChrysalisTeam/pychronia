@@ -105,7 +105,7 @@ table.realtable {
             text-align: center;
             padding: 4px 12px;
             font-size: 1.1em;
-            font-family: Georgia, serif;
+            font-family: $text_font_stack;
             font-weight: normal;
         }
     }
@@ -124,7 +124,7 @@ table.realtable {
             text-align: center;
             padding: 7px;
             font-size: 1.1em;
-            font-family: Georgia, serif;
+            font-family: $text_font_stack;
             font-weight: normal;
         }
 
@@ -136,9 +136,9 @@ table.realtable {
             background-image: linear-gradient($parchment_header_top, $parchment_header_bottom);
             border-bottom: 1px solid $ink_line_color;
             color: $parchment_header_text;
-            font-size: 1.2em;
-            font-weight: bold;
-            font-variant: small-caps;
+            font-family: $chrome_font_stack; // already small caps
+            font-size: 1.25em;
+            font-weight: normal;
             letter-spacing: 0.5px;
         }
 

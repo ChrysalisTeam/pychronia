@@ -33,6 +33,11 @@ msgstr "Bienvenue"
 msgid "Controls"
 msgstr "Contrôles"
 
+#: .\templates\metalradiance_base.html:259
+#: .\templates\metalradiance_base.html:270
+msgid "New"
+msgstr "Nouveau"
+
 #: .\templates\metalradiance_base.html:188
 msgid "Click on the border of this notification panel to close it."
 msgstr "Cliquez sur le bord de ce panneau de notification pour le fermer."

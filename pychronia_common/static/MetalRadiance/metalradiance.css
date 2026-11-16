@@ -614,6 +614,8 @@ ul.auto-toc {
 .pretty_text p, p.pretty_text {
   text-align: justify;
   text-indent: 0;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 .pretty_text img, .document img, img.filer_image {
   border-radius: 6px;
@@ -623,19 +625,19 @@ ul.auto-toc {
   line-height: 1.3em;
 }
 .bg_beige, .mixed {
-  background-color: #A89D97;
+  background-color: #5E534A;
 }
 .bg_blue, .info {
-  background-color: blue;
+  background-color: #1F3566;
 }
 .bg_green, .success {
-  background-color: green;
+  background-color: #2E4A12;
 }
 .bg_orange, .warning {
-  background-color: orange;
+  background-color: #7A4A00;
 }
 .bg_red, .error {
-  background-color: red;
+  background-color: #7A1010;
 }
 .center {
   margin-left: auto !important;
@@ -883,7 +885,7 @@ table.realtable a:active {
     text-align: center;
     padding: 4px 12px;
     font-size: 1.1em;
-    font-family: Georgia, serif;
+    font-family: open_sans, Arial, Helvetica, sans-serif;
     font-weight: normal;
   }
 }
@@ -899,7 +901,7 @@ table.realtable a:active {
     text-align: center;
     padding: 7px;
     font-size: 1.1em;
-    font-family: Georgia, serif;
+    font-family: open_sans, Arial, Helvetica, sans-serif;
     font-weight: normal;
   }
   table.realtable thead th, table.realtable tr:first-child > th,
@@ -910,9 +912,9 @@ table.realtable a:active {
     background-image: linear-gradient(#f0d58a, #dcb560);
     border-bottom: 1px solid rgba(60, 35, 10, 0.45);
     color: #3d2a0a;
-    font-size: 1.2em;
-    font-weight: bold;
-    font-variant: small-caps;
+    font-family: im_fell_english_sc, serif;
+    font-size: 1.25em;
+    font-weight: normal;
     letter-spacing: 0.5px;
   }
 }
@@ -1068,6 +1070,11 @@ table.realtable a:active {
 }
 table.footnote {
   border-color: #9D8126;
+}
+div[class] p.admonition-title {
+  font-family: im_fell_english_sc, serif;
+  font-weight: normal;
+  font-size: 1.2em;
 }
 .jp-audio {
   margin: 10px auto;
@@ -1941,6 +1948,8 @@ h4 {
 }
 .justified p, .section p {
   text-align: justify;
+  -webkit-hyphens: auto;
+  hyphens: auto;
   overflow: hidden;
   text-decoration: none;
   text-indent: 0;
@@ -1968,6 +1977,9 @@ div, span, p {
 }
 p {
   margin: 8px 0 8px;
+}
+:where(#full_content) p, :where(#full_content) li {
+  line-height: 1.5;
 }
 h1, h2, h3, h4, p {
   min-width: 190px;
@@ -2121,6 +2133,66 @@ input[readonly=True] {
 :where(#full_content form) input[type=button] {
   width: 100%;
 }
+textarea {
+  font-family: inherit;
+}
+textarea.markItUpEditor {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 14px;
+}
+@media (max-width: 991px) {
+  :where(.main_frame_content) input[type=submit]:not(.digit),
+  :where(.main_frame_content) input[type=button]:not(.digit),
+  :where(.mini_frame_content) input[type=submit]:not(.digit),
+  :where(.mini_frame_content) input[type=button]:not(.digit) {
+    width: auto;
+    max-width: 100%;
+    margin: 20px auto 0;
+    padding: 4px 16px 5px;
+    background: transparent;
+    border-radius: 2px;
+    font-family: im_fell_english_sc, serif;
+    font-size: 16px;
+    font-weight: normal;
+    letter-spacing: 0.5px;
+    text-transform: none;
+    line-height: 1.2;
+    white-space: normal;
+    overflow-wrap: break-word;
+    cursor: pointer;
+  }
+  :where(.main_frame_content) input[type=submit]:not(.digit):disabled,
+  :where(.main_frame_content) input[type=button]:not(.digit):disabled,
+  :where(.mini_frame_content) input[type=submit]:not(.digit):disabled,
+  :where(.mini_frame_content) input[type=button]:not(.digit):disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+@media (max-width: 991px) and (max-width: 991px) {
+  :where(.main_frame_content) input[type=submit]:not(.digit),
+  :where(.main_frame_content) input[type=button]:not(.digit),
+  :where(.mini_frame_content) input[type=submit]:not(.digit),
+  :where(.mini_frame_content) input[type=button]:not(.digit) {
+    padding: 4px 10px 5px;
+    font-size: 15px;
+  }
+}
+@media (max-width: 991px) {
+  :where(.main_frame_content) input[type=submit]:not(.digit),
+  :where(.main_frame_content) input[type=button]:not(.digit),
+  :where(.mini_frame_content) input[type=submit]:not(.digit),
+  :where(.mini_frame_content) input[type=button]:not(.digit) {
+    border: 1px solid #f8d85b;
+    color: #ffeaa3;
+  }
+  :where(.main_frame_content) input[type=submit]:not(.digit):hover,
+  :where(.main_frame_content) input[type=button]:not(.digit):hover,
+  :where(.mini_frame_content) input[type=submit]:not(.digit):hover,
+  :where(.mini_frame_content) input[type=button]:not(.digit):hover {
+    background: rgba(248, 216, 91, 0.15);
+  }
+}
 .scroll_yellow_rolled input[type=text], .scroll_yellow_rolled input[type=email],
 .scroll_yellow_rolled input[type=number], .scroll_yellow_rolled input[type=tel],
 .scroll_yellow_rolled input[type=password],
@@ -2216,7 +2288,7 @@ table.realtable .ui-dropdownchecklist-selector-wrapper,
   padding: 4px 7px;
   box-shadow: inset 0 2px 4px rgba(40, 20, 0, 0.55), inset 0 -1px 0 rgba(255, 240, 200,
     0.3), 0 1px 0 rgba(255, 240, 200, 0.5);
-  font-family: Georgia, serif;
+  font-family: open_sans, Arial, Helvetica, sans-serif;
   font-size: 15px;
   color: #2b1a08;
 }
@@ -2465,6 +2537,19 @@ table.realtable .ui-dropdownchecklist-selector-wrapper:disabled,
   box-shadow: none;
   color: rgba(60, 35, 10, 0.5);
 }
+.scroll_yellow_rolled textarea.markItUpEditor,
+.scroll_yellow_flat textarea.markItUpEditor,
+.scroll_realistic textarea.markItUpEditor,
+.scroll_realistic_thin_ends textarea.markItUpEditor,
+.post-it textarea.markItUpEditor, .rice_paper_beige textarea.markItUpEditor,
+.rice_paper_rose textarea.markItUpEditor, table.realtable textarea.markItUpEditor,
+.missing-content textarea.markItUpEditor,
+.form_scroll_thin textarea.markItUpEditor,
+.form_scroll_medium textarea.markItUpEditor,
+.form_scroll_big textarea.markItUpEditor, .hentry textarea.markItUpEditor {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 14px;
+}
 .scroll_yellow_rolled select, .scroll_yellow_flat select, .scroll_realistic select,
 .scroll_realistic_thin_ends select, .post-it select, .rice_paper_beige select,
 .rice_paper_rose select, table.realtable select, .missing-content select,
@@ -2550,6 +2635,14 @@ table.realtable input[type=radio], .missing-content input[type=checkbox],
 .hentry input[type=radio] {
   accent-color: #8E0D0D;
 }
+.scroll_yellow_rolled .errorlist, .scroll_yellow_flat .errorlist,
+.scroll_realistic .errorlist, .scroll_realistic_thin_ends .errorlist,
+.post-it .errorlist, .rice_paper_beige .errorlist, .rice_paper_rose .errorlist,
+table.realtable .errorlist, .missing-content .errorlist,
+.form_scroll_thin .errorlist, .form_scroll_medium .errorlist,
+.form_scroll_big .errorlist, .hentry .errorlist {
+  color: #8E0D0D;
+}
 .scroll_yellow_rolled input[type=submit]:not(.digit),
 .scroll_yellow_rolled input[type=button]:not(.digit),
 .scroll_yellow_flat input[type=submit]:not(.digit),
@@ -2577,43 +2670,18 @@ table.realtable input[type=button]:not(.digit),
   width: auto;
   max-width: 100%;
   margin: 20px auto 0;
-  padding: 5px 22px;
+  padding: 4px 16px 5px;
   background: transparent;
-  border: 1px solid #5a3a14;
   border-radius: 2px;
-  font: bold 13px Georgia, serif;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: #5a3a14;
+  font-family: im_fell_english_sc, serif;
+  font-size: 16px;
+  font-weight: normal;
+  letter-spacing: 0.5px;
+  text-transform: none;
+  line-height: 1.2;
+  white-space: normal;
+  overflow-wrap: break-word;
   cursor: pointer;
-}
-.scroll_yellow_rolled input[type=submit]:not(.digit):hover,
-.scroll_yellow_rolled input[type=button]:not(.digit):hover,
-.scroll_yellow_flat input[type=submit]:not(.digit):hover,
-.scroll_yellow_flat input[type=button]:not(.digit):hover,
-.scroll_realistic input[type=submit]:not(.digit):hover,
-.scroll_realistic input[type=button]:not(.digit):hover,
-.scroll_realistic_thin_ends input[type=submit]:not(.digit):hover,
-.scroll_realistic_thin_ends input[type=button]:not(.digit):hover,
-.post-it input[type=submit]:not(.digit):hover,
-.post-it input[type=button]:not(.digit):hover,
-.rice_paper_beige input[type=submit]:not(.digit):hover,
-.rice_paper_beige input[type=button]:not(.digit):hover,
-.rice_paper_rose input[type=submit]:not(.digit):hover,
-.rice_paper_rose input[type=button]:not(.digit):hover,
-table.realtable input[type=submit]:not(.digit):hover,
-table.realtable input[type=button]:not(.digit):hover,
-.missing-content input[type=submit]:not(.digit):hover,
-.missing-content input[type=button]:not(.digit):hover,
-.form_scroll_thin input[type=submit]:not(.digit):hover,
-.form_scroll_thin input[type=button]:not(.digit):hover,
-.form_scroll_medium input[type=submit]:not(.digit):hover,
-.form_scroll_medium input[type=button]:not(.digit):hover,
-.form_scroll_big input[type=submit]:not(.digit):hover,
-.form_scroll_big input[type=button]:not(.digit):hover,
-.hentry input[type=submit]:not(.digit):hover,
-.hentry input[type=button]:not(.digit):hover {
-  background: rgba(90, 58, 20, 0.12);
 }
 .scroll_yellow_rolled input[type=submit]:not(.digit):disabled,
 .scroll_yellow_rolled input[type=button]:not(.digit):disabled,
@@ -2669,10 +2737,108 @@ table.realtable input[type=button]:not(.digit):disabled,
   .form_scroll_big input[type=submit]:not(.digit),
   .form_scroll_big input[type=button]:not(.digit),
   .hentry input[type=submit]:not(.digit), .hentry input[type=button]:not(.digit) {
-    padding: 5px 10px;
-    font-size: 12px;
-    letter-spacing: 0.5px;
+    padding: 4px 10px 5px;
+    font-size: 15px;
   }
+}
+.scroll_yellow_rolled input[type=submit]:not(.digit),
+.scroll_yellow_rolled input[type=button]:not(.digit),
+.scroll_yellow_flat input[type=submit]:not(.digit),
+.scroll_yellow_flat input[type=button]:not(.digit),
+.scroll_realistic input[type=submit]:not(.digit),
+.scroll_realistic input[type=button]:not(.digit),
+.scroll_realistic_thin_ends input[type=submit]:not(.digit),
+.scroll_realistic_thin_ends input[type=button]:not(.digit),
+.post-it input[type=submit]:not(.digit), .post-it input[type=button]:not(.digit),
+.rice_paper_beige input[type=submit]:not(.digit),
+.rice_paper_beige input[type=button]:not(.digit),
+.rice_paper_rose input[type=submit]:not(.digit),
+.rice_paper_rose input[type=button]:not(.digit),
+table.realtable input[type=submit]:not(.digit),
+table.realtable input[type=button]:not(.digit),
+.missing-content input[type=submit]:not(.digit),
+.missing-content input[type=button]:not(.digit),
+.form_scroll_thin input[type=submit]:not(.digit),
+.form_scroll_thin input[type=button]:not(.digit),
+.form_scroll_medium input[type=submit]:not(.digit),
+.form_scroll_medium input[type=button]:not(.digit),
+.form_scroll_big input[type=submit]:not(.digit),
+.form_scroll_big input[type=button]:not(.digit),
+.hentry input[type=submit]:not(.digit), .hentry input[type=button]:not(.digit) {
+  border: 1px solid #5a3a14;
+  color: #5a3a14;
+}
+.scroll_yellow_rolled input[type=submit]:not(.digit):hover,
+.scroll_yellow_rolled input[type=button]:not(.digit):hover,
+.scroll_yellow_flat input[type=submit]:not(.digit):hover,
+.scroll_yellow_flat input[type=button]:not(.digit):hover,
+.scroll_realistic input[type=submit]:not(.digit):hover,
+.scroll_realistic input[type=button]:not(.digit):hover,
+.scroll_realistic_thin_ends input[type=submit]:not(.digit):hover,
+.scroll_realistic_thin_ends input[type=button]:not(.digit):hover,
+.post-it input[type=submit]:not(.digit):hover,
+.post-it input[type=button]:not(.digit):hover,
+.rice_paper_beige input[type=submit]:not(.digit):hover,
+.rice_paper_beige input[type=button]:not(.digit):hover,
+.rice_paper_rose input[type=submit]:not(.digit):hover,
+.rice_paper_rose input[type=button]:not(.digit):hover,
+table.realtable input[type=submit]:not(.digit):hover,
+table.realtable input[type=button]:not(.digit):hover,
+.missing-content input[type=submit]:not(.digit):hover,
+.missing-content input[type=button]:not(.digit):hover,
+.form_scroll_thin input[type=submit]:not(.digit):hover,
+.form_scroll_thin input[type=button]:not(.digit):hover,
+.form_scroll_medium input[type=submit]:not(.digit):hover,
+.form_scroll_medium input[type=button]:not(.digit):hover,
+.form_scroll_big input[type=submit]:not(.digit):hover,
+.form_scroll_big input[type=button]:not(.digit):hover,
+.hentry input[type=submit]:not(.digit):hover,
+.hentry input[type=button]:not(.digit):hover {
+  background: rgba(90, 58, 20, 0.12);
+}
+.scroll_yellow_rolled a:link, .scroll_yellow_flat a:link, .scroll_realistic a:link,
+.scroll_realistic_thin_ends a:link, .post-it a:link, .rice_paper_beige a:link,
+.rice_paper_rose a:link, table.realtable a:link, .missing-content a:link,
+.form_scroll_thin a:link, .form_scroll_medium a:link, .form_scroll_big a:link,
+.hentry a:link {
+  color: #2A5320;
+}
+.scroll_yellow_rolled a:visited, .scroll_yellow_flat a:visited,
+.scroll_realistic a:visited, .scroll_realistic_thin_ends a:visited,
+.post-it a:visited, .rice_paper_beige a:visited, .rice_paper_rose a:visited,
+table.realtable a:visited, .missing-content a:visited, .form_scroll_thin a:visited,
+.form_scroll_medium a:visited, .form_scroll_big a:visited, .hentry a:visited {
+  color: #265C4E;
+}
+.scroll_yellow_rolled a:hover, .scroll_yellow_rolled a:active,
+.scroll_yellow_flat a:hover, .scroll_yellow_flat a:active,
+.scroll_realistic a:hover, .scroll_realistic a:active,
+.scroll_realistic_thin_ends a:hover, .scroll_realistic_thin_ends a:active,
+.post-it a:hover, .post-it a:active, .rice_paper_beige a:hover,
+.rice_paper_beige a:active, .rice_paper_rose a:hover, .rice_paper_rose a:active,
+table.realtable a:hover, table.realtable a:active, .missing-content a:hover,
+.missing-content a:active, .form_scroll_thin a:hover, .form_scroll_thin a:active,
+.form_scroll_medium a:hover, .form_scroll_medium a:active,
+.form_scroll_big a:hover, .form_scroll_big a:active, .hentry a:hover,
+.hentry a:active {
+  color: #8E0D0D;
+}
+.scroll_yellow_rolled h2, .scroll_yellow_flat h2, .scroll_realistic h2,
+.scroll_realistic_thin_ends h2, .post-it h2, .rice_paper_beige h2,
+.rice_paper_rose h2, table.realtable h2, .missing-content h2, .form_scroll_thin h2,
+.form_scroll_medium h2, .form_scroll_big h2, .hentry h2 {
+  color: #8E0D0D;
+  text-shadow: 0 1px 0 rgba(255, 240, 200, 0.6);
+}
+.scroll_yellow_rolled .marble_panel h2, .scroll_yellow_flat .marble_panel h2,
+.scroll_realistic .marble_panel h2, .scroll_realistic_thin_ends .marble_panel h2,
+.post-it .marble_panel h2, .rice_paper_beige .marble_panel h2,
+.rice_paper_rose .marble_panel h2, table.realtable .marble_panel h2,
+.missing-content .marble_panel h2, .form_scroll_thin .marble_panel h2,
+.form_scroll_medium .marble_panel h2, .form_scroll_big .marble_panel h2,
+.hentry .marble_panel h2 {
+  color: white;
+  text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
 }
 @media (min-width: 992px) {
   .main_frame_content input[type=text], .main_frame_content input[type=email],
@@ -2688,7 +2854,7 @@ table.realtable input[type=button]:not(.digit):disabled,
     padding: 4px 7px;
     box-shadow: inset 0 2px 4px rgba(40, 20, 0, 0.55), inset 0 -1px 0 rgba(255, 240, 200,
         0.3), 0 1px 0 rgba(255, 240, 200, 0.5);
-    font-family: Georgia, serif;
+    font-family: open_sans, Arial, Helvetica, sans-serif;
     font-size: 15px;
     color: #2b1a08;
   }
@@ -2721,6 +2887,10 @@ table.realtable input[type=button]:not(.digit):disabled,
     box-shadow: none;
     color: rgba(60, 35, 10, 0.5);
   }
+  .main_frame_content textarea.markItUpEditor {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 14px;
+  }
   .main_frame_content select {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -2750,24 +2920,26 @@ table.realtable input[type=button]:not(.digit):disabled,
   .main_frame_content input[type=checkbox], .main_frame_content input[type=radio] {
     accent-color: #8E0D0D;
   }
+  .main_frame_content .errorlist {
+    color: #8E0D0D;
+  }
   .main_frame_content input[type=submit]:not(.digit),
   .main_frame_content input[type=button]:not(.digit) {
     width: auto;
     max-width: 100%;
     margin: 20px auto 0;
-    padding: 5px 22px;
+    padding: 4px 16px 5px;
     background: transparent;
-    border: 1px solid #5a3a14;
     border-radius: 2px;
-    font: bold 13px Georgia, serif;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: #5a3a14;
+    font-family: im_fell_english_sc, serif;
+    font-size: 16px;
+    font-weight: normal;
+    letter-spacing: 0.5px;
+    text-transform: none;
+    line-height: 1.2;
+    white-space: normal;
+    overflow-wrap: break-word;
     cursor: pointer;
-  }
-  .main_frame_content input[type=submit]:not(.digit):hover,
-  .main_frame_content input[type=button]:not(.digit):hover {
-    background: rgba(90, 58, 20, 0.12);
   }
   .main_frame_content input[type=submit]:not(.digit):disabled,
   .main_frame_content input[type=button]:not(.digit):disabled {
@@ -2778,10 +2950,51 @@ table.realtable input[type=button]:not(.digit):disabled,
 @media (min-width: 992px) and (max-width: 991px) {
   .main_frame_content input[type=submit]:not(.digit),
   .main_frame_content input[type=button]:not(.digit) {
-    padding: 5px 10px;
-    font-size: 12px;
-    letter-spacing: 0.5px;
+    padding: 4px 10px 5px;
+    font-size: 15px;
   }
+}
+@media (min-width: 992px) {
+  .main_frame_content input[type=submit]:not(.digit),
+  .main_frame_content input[type=button]:not(.digit) {
+    border: 1px solid #5a3a14;
+    color: #5a3a14;
+  }
+  .main_frame_content input[type=submit]:not(.digit):hover,
+  .main_frame_content input[type=button]:not(.digit):hover {
+    background: rgba(90, 58, 20, 0.12);
+  }
+  .main_frame_content a:link {
+    color: #2A5320;
+  }
+  .main_frame_content a:visited {
+    color: #265C4E;
+  }
+  .main_frame_content a:hover, .main_frame_content a:active {
+    color: #8E0D0D;
+  }
+  .main_frame_content h2 {
+    color: #8E0D0D;
+    text-shadow: 0 1px 0 rgba(255, 240, 200, 0.6);
+  }
+  .main_frame_content .marble_panel h2 {
+    color: white;
+    text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
+  }
+}
+.form_buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  column-gap: 12px;
+}
+.form_buttons input[type=submit], .form_buttons input[type=button] {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+.login_form {
+  text-align: left;
 }
 table.realtable td input[type=submit]:not(.digit),
 table.realtable td input[type=button]:not(.digit) {
@@ -2819,10 +3032,14 @@ button.pretty_button {
 }
 .entry-body p {
   text-align: justify;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
-.hentry {
-  margin-left: -30px;
-  margin-right: -30px;
+@media (min-width: 992px) {
+  .hentry {
+    margin-left: -30px;
+    margin-right: -30px;
+  }
 }
 .hentry img.center, .hentry img.align-center {
   margin-top: 15px;
@@ -2907,6 +3124,16 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   resize: none;
   width: 100%;
 }
+i.novelty_dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-left: 4px;
+  vertical-align: super;
+  border-radius: 50%;
+  background-color: #f5af09;
+  box-shadow: 0 0 0 1px rgba(40, 20, 0, 0.8), 0 0 4px rgba(245, 175, 9, 0.8);
+}
 @media (max-width: 991px) {
   body {
     color: #ffeaa3;
@@ -2986,14 +3213,33 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   #full_header #full_header_background #full_header_center {
     margin: 0px auto 0px;
     height: 74px;
-    background: transparent url("img/backgrounds/mobile/header.jpg") no-repeat scroll top center;
+    position: relative;
+    background: transparent url("img/backgrounds/mobile/header_blank.jpg") no-repeat scroll top center;
   }
   #full_header #full_header_background #full_header_center .notification_panel {
     display: none;
   }
-  #full_header #full_header_background #title_table,
   #full_header #full_header_background #notification_table {
     display: none;
+  }
+  #full_header #full_header_background #title_table .motto {
+    display: none;
+  }
+  #full_header #full_header_background #title_table #site_title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 74px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #full_header #full_header_background #title_table #site_title img {
+    max-width: 200px;
+    max-height: 44px;
+    width: auto;
+    height: auto;
   }
   #full_menu {
     width: 100%;
@@ -3028,10 +3274,10 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a {
     display: none;
     color: #f5af09;
-    font-size: 18px;
+    font-size: 17px;
     text-decoration: none;
     line-height: 27px;
-    padding: 10px 10px;
+    padding: 10px 6px;
     float: none;
   }
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a:hover {
@@ -3112,6 +3358,9 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   }
   #full_content .main_frame_content .email_message.unread {
     color: black;
+  }
+  .pretty_text p, p.pretty_text, .justified p, .section p, .entry-body p {
+    text-align: left;
   }
   #up_footer_wrapper, #low_footer_wrapper {
     display: block;

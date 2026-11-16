@@ -10,10 +10,12 @@ ul.dropmenu {
     a {
         display: none;
         color: $dark_orange;
-        font-size: 18px;
+        font-size: 17px;
         text-decoration: none;
         line-height: 27px;
-        padding: 10px 10px; // tap targets of ~48px, as recommended for touch screens
+        // tap targets of ~48px high, as recommended for touch screens, but narrow horizontal padding,
+        // so that the menu wraps on fewer lines (no horizontal scrolling here: it would clip dropdowns)
+        padding: 10px 6px;
         float: none;
 
         &:hover {

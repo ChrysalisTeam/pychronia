@@ -83,3 +83,16 @@ body .notification_panel {
     }
 }
 
+
+// "new content" marker of menu entries (a "*" looked like a footnote call); an <i> element, since
+// the menu styles apply to every "a" and "span" descendant of menu entries
+i.novelty_dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-left: 4px;
+    vertical-align: super;
+    border-radius: 50%;
+    background-color: $dark_orange;
+    box-shadow: 0 0 0 1px rgba(40, 20, 0, 0.8), 0 0 4px rgba(245, 175, 9, 0.8);
+}
