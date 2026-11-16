@@ -115,10 +115,59 @@ def game_file_img(a="", b="", c="", d="", e="", f="", alias=None):
     return _try_generating_thumbnail_url(rel_path=rel_path, alias=alias)
 
 
+_PARCHMENT_RGB = (0xF3, 0xE3, 0xAD)  # darkest of the usual light backgrounds (realtable rows, message parchments)
+_MIN_TEXT_CONTRAST = 4.5  # WCAG AA for normal text
+
+
+def _relative_luminance(rgb):
+    def _channel(value):
+        value /= 255.0
+        return value / 12.92 if value <= 0.03928 else ((value + 0.055) / 1.055) ** 2.4
+
+    r, g, b = (_channel(v) for v in rgb)
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def _contrast_ratio(rgb1, rgb2):
+    l1, l2 = sorted((_relative_luminance(rgb1), _relative_luminance(rgb2)), reverse=True)
+    return (l1 + 0.05) / (l2 + 0.05)
+
+
+def make_color_readable_on_parchment(color):
+    """
+    Darkens a character color (any CSS color: name, #hex, rgb()...) just enough for it to be readable
+    as TEXT color on parchment backgrounds; colors that are already dark enough, or that can't be parsed,
+    are returned unchanged.
+    """
+    from PIL import ImageColor
+    try:
+        rgb = ImageColor.getrgb(color)[:3]
+    except (ValueError, AttributeError):
+        return color
+    if _contrast_ratio(rgb, _PARCHMENT_RGB) >= _MIN_TEXT_CONTRAST:
+        return color
+    for step in range(1, 21):  # mix with black, by 5% steps
+        factor = 1 - step * 0.05
+        darker = tuple(int(round(v * factor)) for v in rgb)
+        if _contrast_ratio(darker, _PARCHMENT_RGB) >= _MIN_TEXT_CONTRAST:
+            break
+    return "#%02x%02x%02x" % darker
+
+
+@register.filter
+def readable_color(color):
+    """Template filter version of make_color_readable_on_parchment()."""
+    if not color:
+        return color
+    return make_color_readable_on_parchment(color)
+
+
 @register.simple_tag(takes_context=True)
 def usercolor(context, username_or_email):
     """
     Determines if an HTML color is attached to the user/email, or returns None instead.
+
+    The color is darkened if needed, to stay readable as text color on parchment backgrounds.
     """
     color = None
     with exception_swallower():
@@ -128,7 +177,7 @@ def usercolor(context, username_or_email):
         else:
             username = username_or_email
         color = request.datamanager.get_character_color_or_none(username)
-    return color or "black"  # default color
+    return make_color_readable_on_parchment(color) if color else "black"  # default color
 
 
 def _generate_game_file_links(rst_content, datamanager):

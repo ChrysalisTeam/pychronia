@@ -25,7 +25,7 @@ from pychronia_game.common import _undefined, config, AbnormalUsageError, revers
 from pychronia_game.templatetags.helpers import _generate_encyclopedia_links, \
     advanced_restructuredtext, _generate_messaging_links, _generate_site_links, \
     format_enriched_text, _generate_game_file_links, _generate_game_image_thumbnails, \
-    rich_text
+    rich_text, make_color_readable_on_parchment, _contrast_ratio, _PARCHMENT_RGB
 from pychronia_game import views, utilities, authentication
 from pychronia_game.utilities import autolinker, to_snake_case, load_yaml_fixture
 from django.test.client import RequestFactory
@@ -661,6 +661,27 @@ class TestUtilities(BaseGameTestCase):
                 load_yaml_fixture(tmp_dir, language="xx")
         finally:
             shutil.rmtree(tmp_dir)
+
+
+class TestReadableColors(unittest.TestCase):  # no django setup required
+
+    def test_make_color_readable_on_parchment(self):
+        from PIL import ImageColor
+
+        # already dark enough: returned untouched, whatever its notation
+        for color in ("DarkBlue", "#0033CC", "black", "rgb(10, 20, 30)"):
+            assert make_color_readable_on_parchment(color) == color
+
+        # too light: darkened just enough for normal text (WCAG AA)
+        for color in ("#00CCFF", "cyan", "gold", "#339933", "white"):
+            readable = make_color_readable_on_parchment(color)
+            assert readable != color
+            assert readable.startswith("#")
+            assert _contrast_ratio(ImageColor.getrgb(readable), _PARCHMENT_RGB) >= 4.5
+            assert _contrast_ratio(ImageColor.getrgb(readable), _PARCHMENT_RGB) < 6  # not needlessly blackened
+
+        # unparseable colors are left to the browser
+        assert make_color_readable_on_parchment("not-a-color") == "not-a-color"
 
 
 class TestMetaAdministration(unittest.TestCase):  # no django setup required ATM
