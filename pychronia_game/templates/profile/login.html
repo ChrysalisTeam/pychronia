@@ -6,28 +6,31 @@
 
     <div class="scroll_yellow_flat center medium_width">
 
-        <form action="{% game_view_url "pychronia_game.views.login" %}?next={{ next_url|urlencode }}" method="post" autocomplete="off">
-        <table class="center">
+        {# labels ABOVE full-width fields (like scroll_form.html), so that the form never overflows its parchment #}
+        <form class="login_form" action="{% game_view_url "pychronia_game.views.login" %}?next={{ next_url|urlencode }}" method="post" autocomplete="off">
 
         <!-- fake fields are a workaround for chrome autofill getting the wrong fields -->
         <input style="display:none" type="text" name="fakeusernameremembered"/>
         <input style="display:none" type="password" name="fakepasswordremembered"/>
 
-        {{ login_form.as_table }}
-        <tr>
+        {{ login_form.non_field_errors }}
 
-            <td>
-                <br/>
-                <input type="submit" id="login" name="login" value="{% trans "Log Me In!" %}" />
-            </td>
+        {% for field in login_form.visible_fields %}
+            {# "required" class on both rows: the password is optional only for the "forgot password" action, #}
+            {# and its label must not get the italic style of optional fields #}
+            <p class="required">
+                {{ field.errors }}
+                {{ field.label_tag }}
+                {{ field }}
+            </p>
+        {% endfor %}
+        {% for field in login_form.hidden_fields %}{{ field }}{% endfor %}
 
-            <td>
-                <br/>
-                <input type="submit" name="password_forgotten" value="{% trans "Forgot password?" %}" />
-            </td>
+        <div class="form_buttons">
+            <input type="submit" id="login" name="login" value="{% trans "Log Me In!" %}" />
+            <input type="submit" name="password_forgotten" value="{% trans "Forgot password?" %}" />
+        </div>
 
-        </tr>
-        </table>
         </form>
 
         <script type="text/javascript">

@@ -74,7 +74,7 @@ class BaseAbstractGameForm(SimpleForm):
         kwargs.setdefault("prefix", None)  # NO prefix, all forms must submit the same data names
         kwargs.setdefault("auto_id",
                           "id_default_%s")  # in multi-form case, this one will be used for unique "bound" form
-        kwargs.setdefault("label_suffix", ":")  # no <br/>, not always a better presentation
+        # no explicit label_suffix: Django's default, the translated ":", gives the French " :" spacing
 
         super(BaseAbstractGameForm, self).__init__(**kwargs)
 
