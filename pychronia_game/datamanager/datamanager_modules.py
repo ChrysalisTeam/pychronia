@@ -91,45 +91,6 @@ class GameMasterManual(BaseDataManager):
 
 
 @register_module
-class DescentRpgData(BaseDataManager):
-    GAMEMASTER_ALL_MANUAL_PARTS = ("pdf_prefix", "html_prefix",
-                                   "truncation_message", "public_content",
-                                   "spoiler_content")
-
-    GAMEMASTER_WEB_MANUAL_PARTS = ("html_prefix", "public_content", "spoiler_content")
-
-    assert set(GAMEMASTER_WEB_MANUAL_PARTS) < set(GAMEMASTER_ALL_MANUAL_PARTS)
-
-    def _load_initial_data(self, **kwargs):
-        super(DescentRpgData, self)._load_initial_data(**kwargs)
-
-    def _check_database_coherence(self, **kwargs):
-        super(DescentRpgData, self)._check_database_coherence(**kwargs)
-
-
-        descent_data = self.data["descent_rpg"]
-
-        for entry in descent_data["common_equipments"]:
-            utilities.check_is_string(entry, multiline=False)
-
-        for player_id, player_data in list(descent_data["players"].items()):
-
-            utilities.check_is_slug(player_id)
-
-            utilities.check_is_string(player_data["name"], multiline=False)
-            utilities.check_is_string(player_data["missions"], multiline=True)
-
-            for stat_name in "constitution agility observation".split():
-                stat = player_data["stats"][stat_name]
-                utilities.check_is_int(stat)
-                assert 1 <= stat <= 5  # 6 on dice is a FUMBLE always
-
-            for entry in player_data["abilities"] + player_data["equipments"]:
-                utilities.check_is_string(entry, multiline=False)
-
-
-
-@register_module
 class GameGlobalParameters(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(GameGlobalParameters, self)._load_initial_data(**kwargs)

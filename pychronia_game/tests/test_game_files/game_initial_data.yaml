@@ -771,31 +771,4 @@ gamemaster_manual:
 
         Ceci est plein de spoilers !!
 
-
-
-descent_rpg:
-
-    common_equipments:
-      - sac à dos étanche
-
-    players:
-
-        protector:
-
-            name: "Nom du Protecteur"
-
-            stats:
-                constitution: 2
-                agility: 3
-                observation: 4
-
-            missions: |
-               Défendre les amis.
-
-            abilities:
-                - combat
-
-            equipments:
-            - 1 truc
-            - 2 autres trucs
 ...
