@@ -2110,15 +2110,15 @@ input[readonly=True] {
 #full_content form .markItUp {
   display: block;
 }
-:where(#full_content form) input[type=text],
-:where(#full_content form) input[type=email],
-:where(#full_content form) input[type=number],
-:where(#full_content form) input[type=tel],
-:where(#full_content form) input[type=password],
+#full_content form input[type=text], #full_content form input[type=email],
+#full_content form input[type=number], #full_content form input[type=tel],
+#full_content form input[type=password], #full_content form textarea,
+#full_content form select, #full_content form .select2-container,
+#full_content form .markItUp {
+  width: 100%;
+}
 :where(#full_content form) input[type=submit],
-:where(#full_content form) input[type=button], :where(#full_content form) textarea,
-:where(#full_content form) select, :where(#full_content form) .select2-container,
-:where(#full_content form) .markItUp {
+:where(#full_content form) input[type=button] {
   width: 100%;
 }
 .scroll_yellow_rolled input[type=text], .scroll_yellow_rolled input[type=email],
@@ -2575,6 +2575,7 @@ table.realtable input[type=button]:not(.digit),
 .form_scroll_big input[type=button]:not(.digit),
 .hentry input[type=submit]:not(.digit), .hentry input[type=button]:not(.digit) {
   width: auto;
+  max-width: 100%;
   margin: 20px auto 0;
   padding: 5px 22px;
   background: transparent;
@@ -2642,6 +2643,36 @@ table.realtable input[type=button]:not(.digit):disabled,
 .hentry input[type=button]:not(.digit):disabled {
   opacity: 0.5;
   cursor: default;
+}
+@media (max-width: 991px) {
+  .scroll_yellow_rolled input[type=submit]:not(.digit),
+  .scroll_yellow_rolled input[type=button]:not(.digit),
+  .scroll_yellow_flat input[type=submit]:not(.digit),
+  .scroll_yellow_flat input[type=button]:not(.digit),
+  .scroll_realistic input[type=submit]:not(.digit),
+  .scroll_realistic input[type=button]:not(.digit),
+  .scroll_realistic_thin_ends input[type=submit]:not(.digit),
+  .scroll_realistic_thin_ends input[type=button]:not(.digit),
+  .post-it input[type=submit]:not(.digit), .post-it input[type=button]:not(.digit),
+  .rice_paper_beige input[type=submit]:not(.digit),
+  .rice_paper_beige input[type=button]:not(.digit),
+  .rice_paper_rose input[type=submit]:not(.digit),
+  .rice_paper_rose input[type=button]:not(.digit),
+  table.realtable input[type=submit]:not(.digit),
+  table.realtable input[type=button]:not(.digit),
+  .missing-content input[type=submit]:not(.digit),
+  .missing-content input[type=button]:not(.digit),
+  .form_scroll_thin input[type=submit]:not(.digit),
+  .form_scroll_thin input[type=button]:not(.digit),
+  .form_scroll_medium input[type=submit]:not(.digit),
+  .form_scroll_medium input[type=button]:not(.digit),
+  .form_scroll_big input[type=submit]:not(.digit),
+  .form_scroll_big input[type=button]:not(.digit),
+  .hentry input[type=submit]:not(.digit), .hentry input[type=button]:not(.digit) {
+    padding: 5px 10px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
 }
 @media (min-width: 992px) {
   .main_frame_content input[type=text], .main_frame_content input[type=email],
@@ -2722,6 +2753,7 @@ table.realtable input[type=button]:not(.digit):disabled,
   .main_frame_content input[type=submit]:not(.digit),
   .main_frame_content input[type=button]:not(.digit) {
     width: auto;
+    max-width: 100%;
     margin: 20px auto 0;
     padding: 5px 22px;
     background: transparent;
@@ -2741,6 +2773,14 @@ table.realtable input[type=button]:not(.digit):disabled,
   .main_frame_content input[type=button]:not(.digit):disabled {
     opacity: 0.5;
     cursor: default;
+  }
+}
+@media (min-width: 992px) and (max-width: 991px) {
+  .main_frame_content input[type=submit]:not(.digit),
+  .main_frame_content input[type=button]:not(.digit) {
+    padding: 5px 10px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
   }
 }
 table.realtable td input[type=submit]:not(.digit),

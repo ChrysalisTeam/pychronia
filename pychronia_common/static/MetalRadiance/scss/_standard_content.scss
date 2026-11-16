@@ -291,14 +291,19 @@ input[readonly=True] {
         display: block;
     }
 
+    // the ID specificity is REQUIRED here, else the own stylesheets of select2/markItUp shrink these widgets
+    input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password], textarea, select, .select2-container, .markItUp {
+        width: 100%;
+    }
+
     label {
     }
 
 }
 
 :where(#full_content form) {
-    // overridden for buttons by parchment_form_controls, hence the ":where()" cancelling the ID specificity
-    input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password], input[type=submit], input[type=button], textarea, select, .select2-container, .markItUp {
+    // overridden by the (narrower, centered) buttons of parchment_form_controls, hence the ":where()" cancelling the ID specificity
+    input[type=submit], input[type=button] {
         width: 100%;
     }
 }
@@ -376,6 +381,7 @@ input[readonly=True] {
     // ".digit" buttons are the keypad of the house locking ability, which has its own look
     input[type=submit]:not(.digit), input[type=button]:not(.digit) {
         width: auto;
+        max-width: 100%; // lets the button shrink in table cells, instead of widening the table beyond its parchment
         margin: 20px auto 0;
         padding: 5px 22px;
         background: transparent;
@@ -394,6 +400,13 @@ input[readonly=True] {
         &:disabled {
             opacity: 0.5;
             cursor: default;
+        }
+
+        @include mobile-only {
+            // input buttons can't wrap their text, so keep them compact on narrow screens
+            padding: 5px 10px;
+            font-size: 12px;
+            letter-spacing: 0.5px;
         }
     }
 }
