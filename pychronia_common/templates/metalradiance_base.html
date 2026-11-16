@@ -9,7 +9,8 @@
         {# <link href="{{ STATIC_URL }}libs/fasw.transitions/transition.css" rel="stylesheet" type="text/css"/> #}
         <link href="{{ STATIC_URL }}FontAwesome/css/font-awesome.css" type="text/css" rel="stylesheet" />
         <link href="{{ STATIC_URL }}libs/fancybox/jquery.fancybox.css" rel="stylesheet" type="text/css" />
-        <link href="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/blue.monday/jplayer.blue.monday.css" rel="stylesheet" type="text/css"/>
+        <link href="{{ STATIC_URL }}libs/plyr/plyr.css" rel="stylesheet" type="text/css"/>
+        <link href="{{ STATIC_URL }}MetalRadiance/pychronia_media.css" rel="stylesheet" type="text/css"/>
         <link href="{{ STATIC_URL }}libs/jquery-mmenu/dist/core/css/jquery.mmenu.all.css" type="text/css" rel="stylesheet" />
 
         <!--[if lte IE 9]> {# remove that old stuff asap... #}
@@ -36,11 +37,9 @@
         <script src="{{ STATIC_URL }}libs/jquery.dropmenu-1.1.4-edited.js" type="text/javascript"></script>
         <!--script src="{{ STATIC_URL }}libs/jquery.doubletaptogo.js" type="text/javascript"></script-->
         <script src="{{ STATIC_URL }}libs/fancybox/jquery.fancybox.js" type="text/javascript"></script>
-        <script src="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/jquery.jplayer.min.js" type="text/javascript"></script>
-        <script src="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/add-on/jplayer.playlist.min.js" type="text/javascript"></script>
         <script src="{{ STATIC_URL }}libs/jquery.css3finalize-v3.x.js" type="text/javascript"></script>
         <script src="{{ STATIC_URL }}libs/jquery-mmenu/dist/core/js/jquery.mmenu.min.all.js" type="text/javascript"></script>
-        <script src="{{ STATIC_URL }}libs/audioplayer/audio-player.js" type="text/javascript"></script>
+        {% include "_pychronia_media_js.html" %}
 
         <!--script src="{{ STATIC_URL }}libs/jquery-disabler/jquery-disabler.js" type="text/javascript"></script DISABLED-->
         <!--script src="{{ STATIC_URL }}libs/fasw.transitions/fasw.transitions.js" type="text/javascript"></script DISABLED-->
@@ -95,29 +94,6 @@
         }
         */
 
-        /* Needed IMMEDIATELY, since tags are generated via "onload" scripts */
-        AudioPlayer.setup("{{ STATIC_URL }}libs/audioplayer/player.swf", {
-            width: 290,
-            height: 24,
-            bg: "EFDCC2",
-            leftbg: "DFBD99",
-            lefticon: "6F5129",
-            voltrack: "EFDCC2",
-            volslider: "6F5129",
-            rightbg: "DFBD99",
-            rightbghover: "CFAD89",
-            righticon: "6F5129",
-            righticonhover: "ffffff",
-            text: "6F5129",
-            track: "EFDCC2" ,
-            tracker: "DFBD99",
-            border: "6F5129",
-            loader: "DFBD99",
-            skip: "6F5129",
-            loop: "no",
-            animation: "no", // shrinking/extending of the player
-            initialvolume: "60"
-        });
 
     {% endaddtoblock %}
 

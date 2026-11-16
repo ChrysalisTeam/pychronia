@@ -6,6 +6,8 @@ from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_game_view import AbstractGameView, register_view
 from pychronia_game import forms
 from django.http import Http404, HttpResponseRedirect, HttpResponse
+import base64
+import binascii
 import json
 
 from pychronia_game.forms import HiddenClueForm
@@ -229,16 +231,26 @@ class EncyclopediaView(AbstractGameView):
 view_encyclopedia = EncyclopediaView.as_view
 
 
+def _encode_audio_id(audio_id):
+    return base64.urlsafe_b64encode(audio_id.encode("utf8")).decode("ascii")
+
+
+def _decode_audio_id(encoded_audio_id):
+    """Raises ValueError if the encoded id is invalid."""
+    try:
+        return base64.urlsafe_b64decode(encoded_audio_id.encode("ascii")).decode("utf8")
+    except (TypeError, AttributeError, UnicodeError, binascii.Error) as e:
+        raise ValueError("Invalid audio id %r" % encoded_audio_id) from e
+
+
 # we don't put any security there, at worst a pirate might play with this and prevent playing
 # some audio notifications, but it's neither critical nor discreet
 @register_view(access=UserAccess.anonymous, requires_global_permission=False,
                title=ugettext_lazy("Ajax Audio Message Finished"))
 def ajax_notify_audio_message_finished(request, requires_global_permission=False):
-    audio_id = request.GET.get("audio_id", None)
-
     try:
-        audio_id = audio_id.decode("base64")
-    except:
+        audio_id = _decode_audio_id(request.GET.get("audio_id", None))
+    except ValueError:
         return HttpResponse("ERROR")
 
     res = request.datamanager.notify_audio_message_termination(audio_id)
@@ -253,18 +265,17 @@ def ajax_notify_audio_message_finished(request, requires_global_permission=False
 def ajax_get_next_audio_message(request):
     radio_is_on = request.datamanager.get_global_parameter("radio_is_on")
 
-    if radio_is_on:
-        next_audio_id = request.datamanager.get_next_audio_message()
-        if next_audio_id:
-            fileurl = determine_asset_url(request.datamanager.get_audio_message_properties(next_audio_id))
-            next_audio_id = next_audio_id.encode("base64")
-        else:
-            fileurl = None
-    else:
-        next_audio_id = fileurl = None
+    next_audio_id = fileurl = None
 
-    response = json.dumps([next_audio_id, fileurl])
-    return HttpResponse(response)
+    if radio_is_on:
+        audio_id = request.datamanager.get_next_audio_message()
+        if audio_id:
+            fileurl = determine_asset_url(request.datamanager.get_audio_message_properties(audio_id),
+                                          absolute=False)  # same-origin url for the HTML5 player
+            next_audio_id = _encode_audio_id(audio_id)
+
+    response = json.dumps([next_audio_id, fileurl or None])
+    return HttpResponse(response, content_type="application/json")
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Pangea Webradio"))
@@ -287,27 +298,30 @@ def personal_webradio_popup(request, template_name='information/web_radio_popup.
                   template_name)
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Radio Conf"))
-def get_radio_xml_conf(request, template_name='information/web_radio_conf.xml'):
+@register_view(access=UserAccess.anonymous, requires_global_permission=False,
+               title=ugettext_lazy("Ajax Radio Playlist"))
+def ajax_get_radio_playlist(request):
+    """
+    Current playlist of the personal webradio (popup and page), periodically polled by the player.
+
+    The "listening" GET parameter tells us whether the player is actually playing,
+    in which case the current playlist is marked as read for the user.
+    """
     dm = request.datamanager
-    current_playlist = dm.get_all_next_audio_messages()
-    current_audio_messages = [dm.get_audio_message_properties(audio_id) for audio_id in current_playlist]
 
-    if not current_audio_messages:
-        # we had better not let the player empty, it's not tweaked for that case
-        current_audio_messages = [dict(file="[None]", title=_("[No radio spot currently available]"))]
+    playlist = []
+    for audio_id in dm.get_all_next_audio_messages():
+        properties = dm.get_audio_message_properties(audio_id)
+        fileurl = determine_asset_url(properties, absolute=False)  # same-origin url for the HTML5 player
+        if fileurl:
+            playlist.append(dict(id=audio_id, url=fileurl, title=properties["title"]))
 
-    audio_urls = "|".join(
-        [determine_asset_url(msg) for msg in current_audio_messages])  # we expect no "|" inside a single url
-    audio_titles = "|".join([msg["title"].replace("|", "") for msg in current_audio_messages])  # here we can cleanup
+    if request.GET.get("listening") == "1" and playlist and dm.is_game_writable():
+        if not dm.has_read_current_playlist():  # avoids useless DB transactions on each polling
+            dm.mark_current_playlist_read()
 
-    if dm.is_game_writable():
-        dm.mark_current_playlist_read()  # THAT view is symptomatic of actual listening of personal radio (in both popup and normal window)
-
-    return render(request,
-                  template_name,
-                  dict(audio_urls=audio_urls,
-                       audio_titles=audio_titles))
+    response = json.dumps(dict(playlist=playlist))
+    return HttpResponse(response, content_type="application/json")
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Radio Station"))

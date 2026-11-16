@@ -259,18 +259,22 @@ function launch() {
 	refresh_visible_image();
 	
 	{% load helpers %} 
-	//player = "{% if settings.music %}{{ settings.music|mediaplayer:"true"|escapejs }}{% endif %}";
 	{% if settings.music_url %}
-    player = '<object width="300px" height="24px" type="application/x-shockwave-flash" data="{{ STATIC_URL }}/libs/audioplayer/player.swf" class="audioplayer">\
-            <param name="movie" value="{{ STATIC_URL }}/libs/audioplayer/player.swf" />\
-            <param name="FlashVars" value="bg=0x000000&leftbg=0x000000&lefticon=0x000000&voltrack=0x000000&volslider=0x000000&rightbg=0x000000&rightbghover=0x000000&righticon=0x000000&righticonhover=0x000000&text=0x000000&track=0x000000&tracker=0x000000&border=0x000000&loader=0x000000&skip=0x000000&loop=yes&autostart=yes&animation=no&initialvolume=60&soundFile={{ settings.music_url }}" />\
-            <param name="quality" value="high" />\
-            <param name="scale" value="showall" />\
-            <param name="menu" value="true" />  <!-- add or not additional right-click menu entries -->\
-            <param name="wmode" value="opaque" /> <!--  opacity of background in shrinked mode - alternatives : transparent, opaque, window -->\
-            <p>Error - Your browser does not seem to support Flash, please install it from <a target="_blank" href="http://get.adobe.com/flashplayer/">the Adobe site</a>.</p>\
-            </object>';
-	document.getElementById('music').innerHTML = player;
+	// looping background music, without visible controls; browsers usually forbid autoplay
+	// before any user interaction, so we then start it on the first click/touch/key press
+	var music = new Audio('{{ settings.music_url|escapejs }}');
+	music.loop = true;
+	music.volume = 0.6;
+	var start_music = function () {
+		var promise = music.play();
+		if (promise && promise.then) {
+			promise.then(function () {
+				['pointerdown', 'keydown', 'touchstart'].forEach(function (name) { document.removeEventListener(name, start_music, true); });
+			}, function () {});
+		}
+	};
+	['pointerdown', 'keydown', 'touchstart'].forEach(function (name) { document.addEventListener(name, start_music, true); });
+	start_music();
 	{% endif %}
 	
 	

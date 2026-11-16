@@ -272,6 +272,6 @@ def MEDIA_TEST(request):
                                        mediaplayers.generate_media_player(
                                            game_file_url("test_samples/video." + extension),
                                            game_file_url('test_samples/image.jpg'))
-                                       for extensions in mediaplayers._media_player_templates
-                                       for extension in extensions]
+                                       for extension in sorted(mediaplayers.VIDEO_MIMETYPES) +
+                                                        list(mediaplayers.LEGACY_VIDEO_EXTENSIONS)]
                   })

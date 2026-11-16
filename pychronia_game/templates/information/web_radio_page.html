@@ -7,12 +7,7 @@
 
 {% block content %}
 
-    <div align="center">
-     <br/>
-     {% game_view_url "pychronia_game.views.get_radio_xml_conf" as player_conf_url %}
-     {% include "utilities/multi_mp3_player.html" with player_width="400" player_height="200" player_conf_url=player_conf_url %}
-     <br/>
-    </div>
+    {% include "utilities/personal_radio_player.html" %}
 
     {% if playlist %}
     <h2>{% trans "Standalone radio spots" %}</h2>
@@ -26,7 +21,3 @@
     {% endif %}
 
 {% endblock %}
-
-
-
-

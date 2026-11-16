@@ -2,6 +2,7 @@
 
 
 
+import json
 import random
 from textwrap import dedent
 import tempfile
@@ -108,12 +109,19 @@ class TestUtilities(BaseGameTestCase):
 
         print("------>", html)
 
-        for mystr in (
-        "<object", "AudioPlayer.embed", "http://mydomain.com/myfile<ABC"):  # IMPORTANT - url-escaping of file url
+        assert "<object" not in html  # no more Flash
+        assert "PychroniaMedia.init()" in html
+
+        for mystr in ('<audio class="pychronia-media-element"',
+                      '<source src="http://mydomain.com/myfile&lt;ABC" />'):  # IMPORTANT - html-escaping of file url
             assert mystr in html
 
-        for mystr in ("<object", "mediaplayer",
-                      "https://hi.com/a&amp;b.flv"):  # AT LEAST html-escaped, but urlescaping could be necessary for some media types
+        # legacy video formats are only playable via their converted ".mp4" counterparts, which external urls can't have
+        for mystr in ('class="medialink"', "https://hi.com/a&amp;b.flv"):  # AT LEAST html-escaped
+            assert mystr in html
+
+        for mystr in ('<video class="pychronia-media-element"',
+                      '<source src="https://hi.com/cantwork.mp4" type="video/mp4" />'):
             assert mystr in html
 
         for mystr in ("<img class=\"imageviewer align-center\"", "https://hisss.com/a&amp;b.jpg", "max-width: 500px"):
@@ -370,6 +378,38 @@ class TestUtilities(BaseGameTestCase):
             utilities.load_yaml_fixture("/badpath")
         shutil.rmtree(tmp_dir)
 
+    def test_html5_media_players(self):
+
+        from pychronia_game.utilities import mediaplayers
+
+        legacy_url = game_file_url("test_samples/legacy_video.flv")
+        html = mediaplayers.build_proper_viewer(legacy_url, autostart=True)
+        assert "<object" not in html
+        assert '<video class="pychronia-media-element"' in html
+        assert 'data-autostart="true"' in html
+        assert game_file_url("test_samples/legacy_video.mp4") in html  # converted counterpart, with its own hash
+        assert ".flv" not in html
+        assert ('<track kind="subtitles" src="%s" srclang="fr"' % game_file_url("test_samples/legacy_video.fr.vtt")) in html
+        assert "unrelated" not in html
+        assert html.count("<track ") == 1
+
+        # absolute urls of our own site become root-relative, to avoid mixed content problems
+        html = mediaplayers.build_proper_viewer(config.SITE_DOMAIN + game_file_url("test_samples/legacy_video.mp4"))
+        assert ('<source src="%s" type="video/mp4" />' % game_file_url("test_samples/legacy_video.mp4")) in html
+
+        # legacy file without converted counterpart: just a link
+        html = mediaplayers.build_proper_viewer(game_file_url("test_samples/video.avi"))
+        assert 'class="medialink"' in html and "<video" not in html
+
+        html = mediaplayers.build_proper_viewer(game_file_url("audio/radio_spots/amelie.mp3"), title="Amélie & co")
+        assert '<audio class="pychronia-media-element"' in html
+        assert 'type="audio/mpeg"' in html
+        assert "Amélie &amp; co" in html
+        assert "data-autostart" not in html
+
+        html = mediaplayers.build_proper_viewer("")
+        assert "mediaplayer_fallback" in html
+
     def test_file_server_backends(self):
 
         path = os.path.join(config.GAME_FILES_ROOT, "README.txt")
@@ -387,6 +427,29 @@ class TestUtilities(BaseGameTestCase):
         response = fileservers.serve_file(request, path, **kwargs)
         assert response.content
         _check_standard_headers(response)
+
+        # single byte ranges are honored by the default backend, for HTML5 media seeking
+        with open(path, "rb") as f:
+            file_content = f.read()
+        file_size = len(file_content)
+        for range_header, expected_status, expected_content in [
+                ("bytes=0-9", 206, file_content[0:10]),
+                ("bytes=5-", 206, file_content[5:]),
+                ("bytes=-7", 206, file_content[-7:]),
+                ("bytes=3-%d" % (file_size + 1000), 206, file_content[3:]),  # end is clamped
+                ("bytes=%d-" % file_size, 416, b""),
+                ("bytes=0-1,5-6", 200, file_content),  # multi-range is not supported, full file is sent
+                ("garbage", 200, file_content)]:
+            ranged_request = RequestFactory().get("/path/to/file.zip", HTTP_RANGE=range_header)
+            response = fileservers.serve_file(ranged_request, path)
+            assert response.status_code == expected_status, range_header
+            assert response.content == expected_content, range_header
+            assert response["Accept-Ranges"] == "bytes"
+            if expected_status == 206:
+                assert response["Content-Length"] == str(len(expected_content))
+                assert response["Content-Range"].endswith("/%d" % file_size)
+            elif expected_status == 416:
+                assert response["Content-Range"] == "bytes */%d" % file_size
 
         response = fileservers.serve_file(request, path, backend_name="nginx", **kwargs)
         print(response._headers)
@@ -4628,6 +4691,66 @@ class TestHttpRequests(BaseGameTestCase):
 
         assert "testcookie" in self.client.session  # we get it once more thanks to the assertRedirects() above
         assert SESSION_TICKET_KEY in self.client.session
+
+    def test_webradio_ajax_endpoints(self):
+
+        self._player_auth("guy1")
+        root_url = ROOT_GAME_URL + "/guy1/"
+
+        self.dm.set_radio_messages([])
+        self.dm.commit()
+
+        response = self.client.get(root_url + "ajax_get_radio_playlist/")
+        self.assertEqual(response.status_code, 200)
+        assert json.loads(response.content) == {"playlist": []}
+
+        audio_ids = sorted(self.dm.get_all_available_audio_messages().keys())[0:2]
+        self.dm.set_radio_messages(audio_ids)
+        self.dm.set_radio_state(is_on=True)
+        self.dm.commit()
+
+        assert not self.dm.has_read_current_playlist("guy1")
+
+        response = self.client.get(root_url + "ajax_get_radio_playlist/?listening=0")
+        playlist = json.loads(response.content)["playlist"]
+        assert [item["id"] for item in playlist] == audio_ids
+        for item in playlist:
+            assert item["url"].startswith("/")  # same-origin url
+            assert item["title"]
+        assert not self.dm.has_read_current_playlist("guy1")  # not actually listening
+
+        response = self.client.get(root_url + "ajax_get_radio_playlist/?listening=1")
+        assert len(json.loads(response.content)["playlist"]) == 2
+        assert self.dm.has_read_current_playlist("guy1")
+
+        # public radio: consumes the queue, with base64-encoded audio ids
+        response = self.client.get(root_url + "ajax_get_next_audio_message/")
+        audio_id_encoded, fileurl = json.loads(response.content)
+        assert fileurl.startswith("/")
+        assert audio_id_encoded != audio_ids[0]
+
+        response = self.client.get(root_url + "ajax_notify_audio_success/", {"audio_id": "%%%badid"})
+        assert response.content == b"ERROR"
+
+        response = self.client.get(root_url + "ajax_notify_audio_success/", {"audio_id": audio_id_encoded})
+        assert response.content == b"OK"
+        response = self.client.get(root_url + "ajax_notify_audio_success/", {"audio_id": audio_id_encoded})
+        assert response.content == b"IGNORED"  # already removed from queue
+
+        response = self.client.get(root_url + "ajax_get_next_audio_message/")
+        audio_id_encoded, fileurl = json.loads(response.content)
+        response = self.client.get(root_url + "ajax_notify_audio_success/", {"audio_id": audio_id_encoded})
+        assert response.content == b"OK"
+
+        response = self.client.get(root_url + "ajax_get_next_audio_message/")
+        assert json.loads(response.content) == [None, None]  # queue empty, radio switched off
+        assert not self.dm.get_global_parameter("radio_is_on")
+
+        for page in ("personal_webradio_page/", "personal_webradio_popup/"):
+            response = self.client.get(root_url + page)
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, "PychroniaMedia.PersonalRadio")
+            self.assertNotContains(response, "shockwave")
 
     def _test_special_pages(self):
         self._reset_django_db()

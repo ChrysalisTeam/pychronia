@@ -1,0 +1,162 @@
+/*
+ * MetalRadiance theme for the Plyr media players and the webradios (see pychronia_media.js).
+ * Plain CSS (not SCSS), since pyscss doesn't support CSS custom properties.
+ */
+
+:root {
+    --plyr-color-main: #8a6a1c;  /* darkened brass, readable on parchment and behind white icons */
+    --plyr-font-family: inherit;
+    --plyr-audio-controls-background: rgba(246, 233, 196, 0.75);
+    --plyr-audio-control-color: #2b1a08;
+    --plyr-audio-control-color-hover: #ffffff;
+    --plyr-audio-progress-buffered-background: rgba(60, 35, 10, 0.25);
+    --plyr-range-track-height: 4px;
+    --plyr-range-thumb-background: #f6e9c4;
+    --plyr-range-thumb-shadow: 0 1px 1px rgba(40, 20, 0, 0.45), 0 0 0 1px rgba(40, 20, 0, 0.35);
+    --plyr-menu-background: rgba(246, 233, 196, 0.95);
+    --plyr-menu-color: #2b1a08;
+    --plyr-tooltip-background: rgba(246, 233, 196, 0.95);
+    --plyr-tooltip-color: #2b1a08;
+    --plyr-captions-background: rgba(0, 0, 0, 0.7);
+}
+
+
+/* Standalone audio/video players (messages, encyclopedia, radio spots administration...) */
+
+.pychronia-media {
+    margin: 10px auto;
+    max-width: 100%;
+}
+
+.pychronia-audio {
+    width: 400px;
+}
+
+.pychronia-video {
+    width: 100%;
+    max-width: 640px;
+}
+
+.pychronia-media audio,
+.pychronia-media video {
+    width: 100%;  /* without javascript, native controls take the whole width */
+}
+
+.pychronia-media .plyr--audio {
+    border: 1px solid rgba(60, 35, 10, 0.35);
+    border-radius: 6px;
+    box-shadow: inset 0 1px 2px rgba(40, 20, 0, 0.25);
+}
+
+.pychronia-media .plyr--audio .plyr__controls {
+    border-radius: 6px;
+    padding: 4px 8px;
+}
+
+.pychronia-media .plyr--video {
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(40, 20, 0, 0.55);
+}
+
+.pychronia-media-title {
+    font-size: 0.9em;
+    font-style: italic;
+    margin-bottom: 3px;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* the media element's fallback content (download link) is only shown by browsers without HTML5 media */
+
+
+/* Webradios (personal popup/page and public radio station) */
+
+.pychronia-radio {
+    max-width: 480px;
+    margin: 10px auto;
+    text-align: center;
+}
+
+.pychronia-radio .radio-status {
+    font-weight: bold;
+    margin: 6px 0;
+    min-height: 1.3em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pychronia-radio .radio-start-button {
+    display: inline-block;
+    margin: 8px auto;
+    padding: 8px 18px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    color: #ffffff;
+    background: #8a6a1c;
+    border: 1px solid #5a4410;
+    border-radius: 20px;
+    box-shadow: 0 1px 3px rgba(40, 20, 0, 0.55);
+}
+
+.pychronia-radio .radio-start-button:hover,
+.pychronia-radio .radio-start-button:focus {
+    background: #6f5416;
+}
+
+.pychronia-radio .radio-playlist {
+    text-align: left;
+    margin: 10px 0 0 0;
+    padding: 0 0 0 2em;
+    max-height: 12em;
+    overflow-y: auto;
+}
+
+.pychronia-radio .radio-playlist li {
+    margin: 2px 0;
+}
+
+.pychronia-radio .radio-playlist li.current a {
+    font-weight: bold;
+}
+
+.pychronia-radio .radio-playlist li.current a:before {
+    content: "\25B6\00A0";  /* "play" triangle */
+}
+
+.pychronia-radio .radio-playlist li.novelty a:after {
+    content: "\00A0\2605";  /* star */
+    color: #8E0D0D;
+}
+
+
+/* Standalone radio popup window */
+
+body.radio-popup {
+    margin: 0;
+    padding: 8px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 14px;
+    color: #2b1a08;
+    background: #e8d6a8 linear-gradient(#f3e4bc, #dcc58f);
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+body.radio-popup .pychronia-radio {
+    margin: 0 auto;
+}
+
+body.radio-popup h1 {
+    font-size: 1.2em;
+    margin: 0 0 4px 0;
+    text-align: center;
+    letter-spacing: 0.05em;
+}
+
+body.radio-popup a {
+    color: #2A5320;
+}

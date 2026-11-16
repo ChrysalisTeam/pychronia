@@ -1,0 +1,19 @@
+{% load i18n helpers %}{# Personal webradio widget, requires the headers of _pychronia_media_js.html #}
+{% game_view_url "pychronia_game.views.ajax_get_radio_playlist" as playlist_url %}
+<div class="pychronia-radio" id="personal_radio">
+    <div class="radio-status"></div>
+    <audio preload="none" controls></audio>
+    <button type="button" class="radio-start-button" style="display: none;">&#9654;&nbsp;{% trans "Listen to the radio" %}</button>
+    <ol class="radio-playlist"></ol>
+</div>
+<script type="text/javascript">
+    new PychroniaMedia.PersonalRadio(document.getElementById("personal_radio"), {
+        playlistUrl: "{{ playlist_url|escapejs }}",
+        pollDelayMs: 15000,
+        labels: {
+            loading: "{{ _('Tuning in...')|escapejs }}",
+            empty: "{{ _('[No radio spot currently available]')|escapejs }}",
+            connectionProblem: "{{ _('Radio signal lost, retrying...')|escapejs }}"
+        }
+    });
+</script>

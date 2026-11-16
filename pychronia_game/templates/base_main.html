@@ -74,9 +74,20 @@
 
     {% game_view_url "pychronia_game.views.personal_webradio_popup" as player_view_url %}
     function open_webradio_popup(){
-        window.open('{{ player_view_url|escapejs }}', 'webradio_popup',
-                    'width=400,height=200,directories=no,location=no,menubar=no,resizeable=yes,scrollbars=no,status=no,titlebar=no,toolbar=no',
-                    false); // no replace : we create new history entry
+        // an empty url returns the already opened popup (if any) WITHOUT reloading it, so that the radio isn't interrupted
+        var popup = window.open('', 'webradio_popup',
+                    'width=440,height=380,directories=no,location=no,menubar=no,resizable=yes,scrollbars=yes,status=no,titlebar=no,toolbar=no');
+        if (!popup) {
+            return; // popup blocker
+        }
+        var already_loaded = false;
+        try {
+            already_loaded = (popup.location.pathname === '{{ player_view_url|escapejs }}');
+        } catch (e) {} // not yet same-origin
+        if (!already_loaded) {
+            popup.location.href = '{{ player_view_url|escapejs }}';
+        }
+        popup.focus();
     }
 
     function display_bug_report_panel(){

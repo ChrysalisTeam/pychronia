@@ -1,0 +1,29 @@
+{% load i18n %}{# Plyr-based media players, see MetalRadiance/pychronia_media.js - must be loaded in <head>, since player snippets initialize themselves inline #}
+<script src="{{ STATIC_URL }}libs/plyr/plyr.min.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}MetalRadiance/pychronia_media.js" type="text/javascript"></script>
+<script type="text/javascript">
+    PychroniaMedia.setI18n({
+        play: "{{ _('Play')|escapejs }}",
+        pause: "{{ _('Pause')|escapejs }}",
+        seek: "{{ _('Seek')|escapejs }}",
+        seekLabel: "{{ _('{currentTime} of {duration}')|escapejs }}",
+        played: "{{ _('Played')|escapejs }}",
+        buffered: "{{ _('Buffered')|escapejs }}",
+        currentTime: "{{ _('Current time')|escapejs }}",
+        duration: "{{ _('Duration')|escapejs }}",
+        volume: "{{ _('Volume')|escapejs }}",
+        mute: "{{ _('Mute')|escapejs }}",
+        unmute: "{{ _('Unmute')|escapejs }}",
+        enableCaptions: "{{ _('Enable subtitles')|escapejs }}",
+        disableCaptions: "{{ _('Disable subtitles')|escapejs }}",
+        enterFullscreen: "{{ _('Enter fullscreen')|escapejs }}",
+        exitFullscreen: "{{ _('Exit fullscreen')|escapejs }}",
+        captions: "{{ _('Subtitles')|escapejs }}",
+        settings: "{{ _('Settings')|escapejs }}",
+        menuBack: "{{ _('Go back to previous menu')|escapejs }}",
+        speed: "{{ _('Speed')|escapejs }}",
+        normal: "{{ _('Normal')|escapejs }}",
+        disabled: "{{ _('Disabled')|escapejs }}",
+        enabled: "{{ _('Enabled')|escapejs }}"
+    });
+</script>

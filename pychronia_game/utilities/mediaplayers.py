@@ -1,191 +1,231 @@
 # -*- coding: utf-8 -*-
 
+"""
+HTML5 media players (audio/video), enhanced client-side by Plyr (see static
+MetalRadiance/pychronia_media.js), plus the image thumbnail viewer.
 
+Each generated snippet is self-sufficient: it carries a tiny inline script which
+initializes Plyr on it, so that snippets inserted via ajax (eg. the personal folder's
+media viewer) work too. Without javascript, the native browser controls remain.
+"""
 
 from pychronia_game.common import *
 
-from django.utils.html import escape
+from django.utils import translation
+from django.utils.html import escape, format_html, format_html_join
+from django.utils.safestring import mark_safe
+from django.utils.translation import get_language_info
 from pychronia_game.storage import get_game_thumbnailer
-import json
 
-LIB_DIR = config.STATIC_URL + "libs/"
+AUDIO_MIMETYPES = {
+    "mp3": "audio/mpeg",
+    "ogg": "audio/ogg",
+    "oga": "audio/ogg",
+    "opus": "audio/ogg",
+    "wav": "audio/wav",
+    "m4a": "audio/mp4",
+    "aac": "audio/aac",
+    "flac": "audio/flac",
+    "weba": "audio/webm",
+}
 
-_media_player_templates = \
-    {
-        ("flv", "mp3"): """
-    <object type="application/x-shockwave-flash" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" data="%(lib_dir)svideoplayers/mediaplayer/simple_video_player.swf" title="%(title)s">
-        <param name="movie" value="%(lib_dir)svideoplayers/mediaplayer/simple_video_player.swf" />
-        <param name="quality" value="high" />
-        <param name="wmode" value="%(transparency)s" />
-        <param name="bgcolor" value="%(background)s" />
-        <param name="autoplay" value="%(autoplay)s" />
-        <param name="allowfullscreen" value="%(allowfullscreen)s" />
-        <param name="allowscriptaccess" value="always" />
-        <param name="scale" value="showall" />
-        <param name="flashvars" value="file=%(fileurl)s&image=%(image)s&autostart=%(autoplay)s&fullscreen=%(allowfullscreen)s%(additional_flash_vars)s" />
-    </object>
-    """,
+VIDEO_MIMETYPES = {
+    "mp4": "video/mp4",
+    "m4v": "video/mp4",
+    "webm": "video/webm",
+    "ogv": "video/ogg",
+}
 
-        #    ("swf",): """ NOT WORKING DUNNO WHY
-        #    <object type="application/x-shockwave-flash" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" data="%(fileurl)s" title="%(title)s>
-        #        <param name="movie" value="%(fileurl)s" />
-        #        <param name="quality" value="high" />
-        #        <param name="wmode" value="%(transparency)s" />
-        #        <param name="bgcolor" value="%(background)s" />
-        #        <param name="autoplay" value="%(autoplay)s" />
-        #        <param name="scale" value="showall" />
-        #    </object>
-        #    """,
+# Formats that no browser can play anymore (Flash video, DivX...): such game files
+# must be converted to H.264/AAC ".mp4" files, with the same base name, which are then
+# used transparently (so that old URLs, eg. in existing game databases, keep working).
+LEGACY_VIDEO_EXTENSIONS = ("flv", "avi", "divx")
 
-        #    UNUSABLE, NEEDS JS ESCAPING AND NOT HTML ESCAPING
-        #    # uses silverlight/moonlight - badly supported, preferably not used
-        #    ("wmv", "wma",): """
-        #    <span id="avID_%(id)s" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" title="%(title)s"></span>
-        #    <script type="text/javascript">
-        #
-        #    var cnt = document.getElementById('avID_%(id)s');
-        #    var src = '%(lib_dir)svideoplayers/wmvplayer/wmvplayer.xaml';
-        #    var cfg = {
-        #        file:'%(fileurl)s',
-        #        width:'%(width)s',
-        #        height:'%(height)s',
-        #        autostart:'%(autoplay)s',
-        #        image:'%(image)s'
-        #    };
-        #    var ply = new jeroenwijering.Player(cnt,src,cfg);
-        #    </script>
-        #    """,
+IMAGE_EXTENSIONS = ("jpg", "jpeg", "gif", "bmp", "png", "tif", "webp")
+
+_INIT_SCRIPT = mark_safe('<script type="text/javascript">'
+                         'if (window.PychroniaMedia) { PychroniaMedia.init(); }'
+                         '</script>')
 
 
-        ("avi", "divx"): """
-    <object type="video/divx" data="%(fileurl)s" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" title="%(title)s">
-        <param name="type" value="video/divx" />
-        <param name="src" value="%(fileurl)s" />
-        <param name="data" value="%(fileurl)s" />
-        <param name="codebase" value="%(fileurl)s" />
-        <param name="url" value="%(fileurl)s" />
-        <param name="mode" value="full" />
-        <param name="pluginspage" value="http://go.divx.com/plugin/download/" />
-        <param name="allowContextMenu" value="true" />
-        <param name="previewImage" value="%(image)s" />
-        <param name="autoplay" value="%(autoplay)s" />
-        <param name="minVersion" value="1.0.0" />
-        <param name="custommode" value="none" />
-        <p>No video? Get the DivX browser plug-in for <a href="http://download.divx.com/player/DivXWebPlayerInstaller.exe">Windows</a> or <a href="http://download.divx.com/player/DivXWebPlayer.dmg">Mac</a></p>
-    </object>
-    """,
-
-        #    UNUSED BECAUSE NEEDS JS ESCAPING FOR PARAMS, NOT HTML ENTITIES
-        #    # warning - quicktime videos have their controller right under the image,
-        #    # not at the bottom of the <object> area, so it's better to specify width/height
-        #    # with the right ratio...
-        #    ("mov", "mp4", "3gp", "mpg", "mpeg"): """
-        #    <span id="qtID_%(id)s" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" title="%(title)s"></span>
-        #    <script type="text/javascript">
-        #        html = QT_Generate_XHTML('%(fileurl)s', '%(width)s', '%(height)s', '', 'autoplay', '%(autoplay)s',
-        #        'bgcolor', '%(backgroundqt)s', 'scale', 'aspect', 'class', 'mediaplayer', 'title', '%(title)s');
-        #        document.getElementById("qtID_%(id)s").innerHTML = html;
-        #    </script>
-        #    """,
-
-        #    # Might be useful if silverlight isn't portable enough for avi/divx files...
-        #
-        #    ("divx", "avi"): """
-        #    <object type="video/divx" data="%(fileurl)s" style="width:%(width)spx;height:%(height)spx;" title="%(title)s">
-        #        <param name="type" value="video/divx" />
-        #        <param name="src" value="%(fileurl)s" />
-        #        <param name="data" value="%(fileurl)s" />
-        #        <param name="codebase" value="%(fileurl)s" />
-        #        <param name="url" value="%(fileurl)s" />
-        #        <param name="mode" value="full" />
-        #        <param name="pluginspage" value="http://go.divx.com/plugin/download/" />
-        #        <param name="allowContextMenu" value="true" />
-        #        <param name="previewImage" value="%(image)s" />
-        #        <param name="autoPlay" value="%(autoplay)s" />
-        #        <param name="minVersion" value="1.0.0" />
-        #        <param name="custommode" value="none" />
-        #        <p>No video? Get the DivX browser plug-in for <a href="http://download.divx.com/player/DivXWebPlayerInstaller.exe">Windows</a> or <a href="http://download.divx.com/player/DivXWebPlayer.dmg">Mac</a></p>
-        #    </object>
-        #    """
-    }
+def _get_extension(fileurl):
+    """Returns the lowercased extension of the url path (without dot), maybe an empty string."""
+    path = urlparse(fileurl).path
+    return os.path.splitext(path)[1][1:].lower()
 
 
-def generate_media_player(fileurl, image="", autostart=False, width=450, height=350, **kwargs):
+def _localize_url(fileurl):
     """
-    Warning - fileurl had better be an ABSOLUTE url, else some media players won't find the file !
-    
-    Returns a simple HTML link,  if file format is not supported
+    Turns absolute urls pointing to our own site into root-relative urls, so that
+    media files are always loaded from the current origin (no http/https mixed content,
+    no dependency on the exactness of SITE_DOMAIN).
     """
+    site_domain = config.SITE_DOMAIN
+    if site_domain and fileurl.startswith(site_domain + "/"):
+        return fileurl[len(site_domain):]
+    return fileurl
 
-    # NOT ALWAYS ABSOLUTE URLS, eg. for personal documents these are "/my/file.mp4" URLs - 
+
+def _get_game_file_abspath(rel_path):
+    return os.path.join(config.GAME_FILES_ROOT, rel_path)
+
+
+def _css_length(value):
+    """Normalizes a width option ("450", "450px", "80%"...) into a CSS length, or None if invalid."""
+    if value is None:
+        return None
+    value = str(value).strip()
+    if re.match(r"^\d+(\.\d+)?$", value):
+        return value + "px"
+    if re.match(r"^\d+(\.\d+)?(px|%|em|rem|vw)$", value):
+        return value
+    return None
+
+
+def _resolve_legacy_video_url(fileurl):
+    """
+    Returns the url of the ".mp4" counterpart of a legacy video game file, or None if there
+    is none (or if the url is external, since we can't check anything then).
+    """
+    rel_path = checked_game_file_path(fileurl)
+    if not rel_path:
+        return None
+    mp4_rel_path = os.path.splitext(rel_path)[0] + ".mp4"
+    if not os.path.exists(_get_game_file_abspath(mp4_rel_path)):
+        logging.warning("No .mp4 conversion found for legacy video game file %s", rel_path)
+        return None
+    return game_file_url(mp4_rel_path)  # new security hash, since the path changed
+
+
+def _find_subtitle_tracks(fileurl):
+    """
+    Finds WebVTT subtitles stored alongside a video game file, as "<basename>.<lang>.vtt"
+    (or "<basename>.vtt", then considered to be in the current language).
+    """
+    rel_path = checked_game_file_path(fileurl)
+    if not rel_path:
+        return []
+
+    base_rel_path = os.path.splitext(rel_path)[0]
+    abs_base_path = _get_game_file_abspath(base_rel_path)
+
+    tracks = []
+    for abs_vtt_path in sorted(glob.glob(glob.escape(abs_base_path) + "*.vtt")):
+        suffix = abs_vtt_path[len(abs_base_path):-len(".vtt")]  # eg. "" or ".fr"
+        if suffix and not re.match(r"^\.[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})?$", suffix):
+            continue  # unrelated file, like "<basename>_other.vtt"
+        lang = suffix[1:] or translation.get_language() or "en"
+        try:
+            label = get_language_info(lang)["name_local"]
+        except KeyError:
+            label = lang
+        tracks.append(dict(url=game_file_url(base_rel_path + suffix + ".vtt"), lang=lang, label=label))
+    return tracks
+
+
+def _render_fallback_link(fileurl):
+    name = os.path.basename(urlparse(fileurl).path)
+    return format_html('<div class="medialink">{} <a target="_blank" href="{}">{}</a></div>',
+                       _("Access file"), fileurl, name if name else _("here"))
+
+
+def generate_media_player(fileurl, image="", autostart=False, width=None, height=None, title="", **kwargs):
+    """
+    Returns an HTML5 video player for the given file url (or an audio player, for audio files).
+
+    Height is ignored, since the player keeps the aspect ratio of the video.
+
+    Returns a simple HTML link,  if file format is not supported.
+    """
+    del height, kwargs  # unused, the player keeps the aspect ratio of the video
+
+    # NOT ALWAYS ABSOLUTE URLS, eg. for personal documents these are "/my/file.mp4" URLs -
     assert fileurl.startswith("http") or fileurl.startswith("/"), fileurl
 
-    md5 = hashlib.md5()
-    md5.update(fileurl.encode('ascii', 'ignore'))
-    myhash = md5.hexdigest()[0:8]
+    extension = _get_extension(fileurl)
 
-    options = \
-        {
-            "title": "Video Viewer",
-            "id": myhash,  # risks of collision are ultra weak...
-            "lib_dir": escape(LIB_DIR),
-            "autoplay": "true" if autostart else "false",
-            "allowfullscreen": "true",
-            "transparency": "opaque",  # transparent, window
-            "background": "#000000",
-            "backgroundqt": "black",
-            "fileurl": escape(fileurl),  # warning, sometimes would need urlencoding actually!
-            "image": escape(image),  # warning - gif images aren't supported by all players !
-            "width": escape(width),
-            "height": escape(height),
-            "additional_flash_vars": ""  # must begin with '&' if present, and be escaped/urlencoded properly
-        }
-    options.update(kwargs)
+    if extension in AUDIO_MIMETYPES:
+        return generate_audio_player([fileurl], titles=[title] if title else None, autostart=autostart)
 
-    extension = os.path.splitext(fileurl)[1][
-                1:].lower()  # we remove the dot and lower-case the extension -> might result in an empty string
+    if extension in LEGACY_VIDEO_EXTENSIONS:
+        converted_url = _resolve_legacy_video_url(fileurl)
+        if not converted_url:
+            return _render_fallback_link(_localize_url(fileurl))
+        fileurl = converted_url
+        extension = "mp4"
 
-    for extensions in list(_media_player_templates.keys()):
-        if extension in extensions:
-            template = _media_player_templates[extensions]
-            return template % options
+    if extension not in VIDEO_MIMETYPES:
+        return _render_fallback_link(_localize_url(fileurl))
 
-    # if no extension matched, we fallback to a simple link...
-    name = os.path.basename(fileurl)
-    return '<div class="medialink">' + _("Access file") + ' <a target="_blank" href="%s">%s</a></div>' % \
-                                                          (escape(fileurl), escape(name if name else _("here")))
+    tracks = _find_subtitle_tracks(fileurl)
+    fileurl = _localize_url(fileurl)
 
+    max_width = _css_length(width)
+    tracks_html = format_html_join("", '<track kind="subtitles" src="{}" srclang="{}" label="{}" />',
+                                   ((track["url"], track["lang"], track["label"]) for track in tracks))
 
-# We could use the JS script to load this SWF in a safer way, but well...
-# <!--script language="JavaScript" src="{{ lib_dir }}audioplayer/audio-player.js"></script-->
-_mp3_template = """
-<p id="%(unikid)s">MP3 Flayer should appear here</p>
-<script type="text/javascript">  
-$(function(){AudioPlayer.embed("%(unikid)s", %(options)s)});
-</script>  
-"""
+    return format_html(
+        '<div class="pychronia-media pychronia-video"{style}>'
+        '<video class="pychronia-media-element" controls playsinline preload="metadata"'
+        '{poster}{autostart} title="{title}">'
+        '<source src="{src}" type="{mimetype}" />'
+        '{tracks}'
+        '<a target="_blank" href="{src}">{link_label}</a>'
+        '</video>'
+        '</div>'
+        '{init_script}',
+        style=format_html(' style="max-width: {}"', max_width) if max_width else "",
+        poster=format_html(' poster="{}"', _localize_url(image)) if image else "",
+        autostart=mark_safe(' data-autostart="true"') if autostart else "",
+        title=title,
+        src=fileurl,
+        mimetype=VIDEO_MIMETYPES[extension],
+        tracks=tracks_html,
+        link_label=_("Download the video"),
+        init_script=_INIT_SCRIPT,
+    )
 
 
-def generate_audio_player(files, titles=None, artists=None, autostart=False):
+def generate_audio_player(files, titles=None, artists=None, autostart=False, **kwargs):
+    """
+    Returns one HTML5 audio player per file url, with its (optional) title displayed above.
+    """
+    del kwargs  # eg. width/height options, irrelevant here
     assert files
 
-    unikid = str(random.randint(100000, 100000000000))
+    players = []
+    for index, fileurl in enumerate(files):
+        title = titles[index] if titles and index < len(titles) else ""
+        artist = artists[index] if artists and index < len(artists) else ""
+        full_title = " - ".join(x for x in (artist, title) if x)
 
-    options = {
-        "soundFile": ",".join(files),
-        "titles": ",".join(titles) if titles else "",
-        "artists": ",".join(artists) if artists else "",
-        "autostart": "yes" if autostart else "no",
-        "width": "70%"
-    }
+        extension = _get_extension(fileurl)
+        mimetype = AUDIO_MIMETYPES.get(extension)
+        fileurl = _localize_url(fileurl)
 
-    return _mp3_template % dict(options=json.dumps(options), unikid=unikid)
+        players.append(format_html(
+            '<div class="pychronia-media pychronia-audio">'
+            '{title_html}'
+            '<audio class="pychronia-media-element" controls preload="none"{autostart} title="{title}">'
+            '<source src="{src}"{type_attr} />'
+            '<a target="_blank" href="{src}">{link_label}</a>'
+            '</audio>'
+            '</div>',
+            title_html=format_html('<div class="pychronia-media-title">{}</div>', full_title) if full_title else "",
+            autostart=mark_safe(' data-autostart="true"') if autostart else "",
+            title=full_title,
+            src=fileurl,
+            type_attr=format_html(' type="{}"', mimetype) if mimetype else "",
+            link_label=_("Download the audio file"),
+        ))
+
+    return mark_safe("".join(players) + _INIT_SCRIPT)
 
 
 def generate_image_viewer(imageurl, width=500, height=400, preset=None, align="", **kwargs):
     """
     Generates an image thumbnail linking to the original image.
-    
+
     Align, if not empty, can be center/left/right.
     """
 
@@ -254,12 +294,12 @@ def build_proper_viewer(fileurl, **kwargs):  # interesting kwarg : "autostart"
         return """<span class="mediaplayer_fallback">{%s}<i></i></span>""" % escape(message)
 
     title = kwargs.pop("title", "") or get_medium_title_from_url(fileurl)
-    extension = os.path.splitext(fileurl)[1][1:].lower()  # no starting dot
+    extension = _get_extension(fileurl)
 
-    if extension == "mp3":  # fileurl may be a string of comma-separated mp3 urls - it works
+    if extension in AUDIO_MIMETYPES:
         return generate_audio_player([fileurl], [title], **kwargs)
-    elif extension in ["jpg", "jpeg", "gif", "bmp", "png", "tif"]:
+    elif extension in IMAGE_EXTENSIONS:
+        kwargs.pop("autostart", None)
         return generate_image_viewer(fileurl, **kwargs)
     else:
-        # warning - this media player also supports mp3, so put it after the audio player !
-        return generate_media_player(fileurl, **kwargs)
+        return generate_media_player(fileurl, title=title, **kwargs)

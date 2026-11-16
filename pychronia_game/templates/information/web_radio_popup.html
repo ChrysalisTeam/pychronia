@@ -1,11 +1,16 @@
-{% load i18n helpers %}  
-<html>
-    <body style="margin:0; padding:0; background-color:black;">
-         {% game_view_url "pychronia_game.views.get_radio_xml_conf" as player_conf_url %}
-         {% include "utilities/multi_mp3_player.html" with player_width="400" player_height="200" player_conf_url=player_conf_url %}
-    </body>
+<!DOCTYPE html>
+{% load i18n %}{% get_current_language as HTML_LANGUAGE %}
+<html lang="{{ HTML_LANGUAGE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% trans "Pangea Webradio" %}</title>
+    <link href="{{ STATIC_URL }}libs/plyr/plyr.css" rel="stylesheet" type="text/css"/>
+    <link href="{{ STATIC_URL }}MetalRadiance/pychronia_media.css" rel="stylesheet" type="text/css"/>
+    {% include "_pychronia_media_js.html" %}
+</head>
+<body class="radio-popup">
+    <h1>{% trans "Pangea Webradio" %}</h1>
+    {% include "utilities/personal_radio_player.html" %}
+</body>
 </html>
-        
-        
-       
-  

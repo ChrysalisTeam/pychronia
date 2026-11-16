@@ -52,7 +52,7 @@ inner_game_urlpatterns = patterns('pychronia_game.views',
 
                                   url(r'^personal_webradio_popup/$', 'personal_webradio_popup'),
                                   url(r'^personal_webradio_page/$', 'personal_webradio_page'),
-                                  url(r'^webradio_xml_conf/$', 'get_radio_xml_conf'),
+                                  url(r'^ajax_get_radio_playlist/$', 'ajax_get_radio_playlist'),
                                   url(r'^public_webradio/$', 'public_webradio'),
 
                                   url(r'^view_sales/$', 'view_sales'),

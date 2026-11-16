@@ -7,6 +7,14 @@
 {% block sekizai_calls %}
     {{ block.super }}
     {% addtoblock "css" %}
+        <link href="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/blue.monday/jplayer.blue.monday.css" rel="stylesheet" type="text/css"/>
+    {% endaddtoblock %}
+    {% addtoblock "js" %}
+        {# for the django-cms-jplayer plugin #}
+        <script src="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/jquery.jplayer.min.js" type="text/javascript"></script>
+        <script src="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/add-on/jplayer.playlist.min.js" type="text/javascript"></script>
+    {% endaddtoblock %}
+    {% addtoblock "css" %}
         <style type="text/css">
             {# flex box of block-level flags: no text line box (baseline/descender space) to offset them vertically, #}
             {# so the carving's "vertical-align: middle" table-cell centers exactly the flags' own height; then raised by #}

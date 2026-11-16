@@ -33,9 +33,9 @@ Categories
   sample value(s) -- hardcoded when they come from the static YAML fixture, or looked up
   live via the ``dm``/``game`` fixture when they come from the runtime baseline tweaks
   (``_configs.apply_baseline_tweaks``), e.g. message ids.
-- ``CATEGORY_AJAX_OR_NON_HTML``: views whose NAME contains "ajax", plus the
-  ``webradio_xml_conf`` XML endpoint (NAME ``get_radio_xml_conf``). Not meant to be
-  navigated directly as a "page"; exercised indirectly by the pages that call them.
+- ``CATEGORY_AJAX_OR_NON_HTML``: views whose NAME contains "ajax" (plus any name listed in
+  ``EXTRA_NON_HTML_NAMES``). Not meant to be navigated directly as a "page"; exercised
+  indirectly by the pages that call them.
 - ``CATEGORY_EXCLUDED``: genuinely dangerous/special views that must never be blindly
   visited: ``test_captcha``, ``CHARACTERS_IDENTITIES``, ``DATABASE_OPERATIONS``,
   ``FAIL_TEST``, ``MEDIA_TEST``, and ``logout`` (gets its own dedicated test elsewhere).
@@ -127,7 +127,7 @@ EXCLUDED_NAMES = frozenset([
 
 # Non-ajax-named endpoints that are nonetheless not real HTML "pages" (binary/XML/etc).
 EXTRA_NON_HTML_NAMES = frozenset([
-    "get_radio_xml_conf",   # webradio_xml_conf/ -- serves information/web_radio_conf.xml
+    # none currently (the webradio's former XML endpoint became "ajax_get_radio_playlist")
 ])
 
 # Entries with no URL capture group that must nonetheless be treated as "parametrized"
