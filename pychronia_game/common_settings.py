@@ -215,9 +215,15 @@ def generate_mindstorm_settings(chrysalis_data_dir):
             dm.propose_friendship(player_name, player_name_bis)
             dm.propose_friendship(player_name_bis, player_name)
 
-        # HERE we could complete address books of characters
-        #for (name, character) in dm.get_character_sets().items():
-        #    address_book = dm.get_character_address_book(name)
+        # mystery party: all players are in the same room, so they know each other's addresses from the start
+        from persistent.list import PersistentList
+        player_usernames = [name for name in dm.get_character_usernames()
+                            if not dm.get_character_properties(name)["is_npc"]]
+        player_emails = {name: dm.get_character_email(name) for name in player_usernames}
+        for name in player_usernames:
+            props = dm.get_character_properties(name)
+            other_emails = set(player_emails.values()) - {player_emails[name]}
+            props["address_book"] = PersistentList(set(props["address_book"]) | other_emails)  # unicity kept
 
         ml_address = dm.get_global_parameter("all_players_mailing_list")
         email_predispatches = [  # format: (template_id, params, offset_days)
