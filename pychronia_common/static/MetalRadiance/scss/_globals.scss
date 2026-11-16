@@ -104,6 +104,13 @@ $scroll_text_color: black;
 }
 
 @font-face {
+    font-family: "im_fell_english_sc";  // Google Fonts "IM Fell English SC", SIL OFL, see OFL.txt
+    src: url("#{$IMGS}fonts/im_fell_english_sc/IMFeENsc28P.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
     font-family: "open_sans";
     src: url("#{$IMGS}fonts/open_sans/OpenSans-Regular.eot");
     src: url("#{$IMGS}fonts/open_sans/OpenSans-Regular.eot?#iefix") format("embedded-opentype"),

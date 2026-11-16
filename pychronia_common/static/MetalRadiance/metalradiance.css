@@ -597,6 +597,12 @@ ul.auto-toc {
   font-style: normal;
 }
 @font-face {
+  font-family: "im_fell_english_sc";
+  src: url("img/fonts/im_fell_english_sc/IMFeENsc28P.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
   font-family: "open_sans";
   src: url("img/fonts/open_sans/OpenSans-Regular.eot");
   src: url("img/fonts/open_sans/OpenSans-Regular.eot?#iefix") format("embedded-opentype"),
@@ -2677,6 +2683,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     font-family: black_chancery, serif;
     margin: 2px;
     letter-spacing: 0px;
+    font-family: im_fell_english_sc, serif;
     text-align: left;
     font-size: 23px;
     margin: 0;

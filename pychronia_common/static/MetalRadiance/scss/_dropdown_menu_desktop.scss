@@ -24,6 +24,7 @@ ul.dropmenu {
             white-space: nowrap;
 
             @include header_common;
+            font-family: im_fell_english_sc, serif; // more readable than header_common's black_chancery
 
             text-align: left;
 
