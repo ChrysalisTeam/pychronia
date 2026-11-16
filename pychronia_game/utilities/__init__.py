@@ -770,7 +770,7 @@ def load_yaml_file(yaml_file, pretreatment=None, convert_types=False):
 
 YAML_FILE_GLOBS = ["*.yaml", "*.yml", "*/*.yaml", "*/*.yml"]  # works on windows too
 
-# fields which should be concatenated instead of replaces, when merging yaml trees
+# fields which should be concatenated instead of replaced, when merging yaml trees
 APPENDABLE_FIELDS = """manual_messages_templates messages_dispatched messages_queued game_items""".split()
 
 
