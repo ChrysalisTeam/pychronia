@@ -819,19 +819,22 @@ body {
   text-align: left;
 }
 table.realtable {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
   margin: 15px 0;
   padding: 0px;
   width: 100%;
-  box-shadow: 5px 5px 3px #888888;
-  border: 1px solid #000000;
+  border: 1px solid rgba(60, 35, 10, 0.45);
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(40, 20, 0, 0.35);
   color: black;
 }
 table.realtable tr:nth-child(odd) {
-  background-color: #eed892;
+  background-color: #f3e3ad;
 }
 table.realtable tr:nth-child(even) {
-  background-color: #F5DF8B;
+  background-color: #f8ecc2;
 }
 table.realtable a:link {
   color: #386D2C;
@@ -851,6 +854,8 @@ table.realtable a:active {
     border-spacing: 0 6px;
     box-shadow: none;
     border: none;
+    border-radius: 0;
+    overflow: visible;
   }
   table.realtable thead, table.realtable tfoot {
     display: none;
@@ -878,7 +883,7 @@ table.realtable a:active {
     text-align: center;
     padding: 4px 12px;
     font-size: 1.1em;
-    font-family: Arial;
+    font-family: Georgia, serif;
     font-weight: normal;
   }
 }
@@ -887,28 +892,28 @@ table.realtable a:active {
     width: 160px;
     background-color: white;
   }
-  table.realtable thead th {
-    background-color: #E1B151;
-    border: 0px solid #000000;
-    border-width: 0px 0px 1px 1px;
-    font-size: 1.3em;
-    font-weight: bold;
-  }
-  table.realtable thead th:first-child {
-    border-width: 0px 0px 1px 0px;
-  }
-  table.realtable thead th:last-child {
-    border-width: 0px 0px 1px 1px;
-  }
   table.realtable th, table.realtable td {
     vertical-align: middle;
-    border: 1px solid #000000;
-    border-width: 1px 1px 1px 1px;
+    border: none;
+    border-top: 1px solid rgba(60, 35, 10, 0.18);
     text-align: center;
     padding: 7px;
     font-size: 1.1em;
-    font-family: Arial;
+    font-family: Georgia, serif;
     font-weight: normal;
+  }
+  table.realtable thead th, table.realtable tr:first-child > th,
+  table.realtable tr:first-child > td {
+    border-top: none;
+  }
+  table.realtable thead th {
+    background-image: linear-gradient(#f0d58a, #dcb560);
+    border-bottom: 1px solid rgba(60, 35, 10, 0.45);
+    color: #3d2a0a;
+    font-size: 1.2em;
+    font-weight: bold;
+    font-variant: small-caps;
+    letter-spacing: 0.5px;
   }
 }
 .video-container {
@@ -1447,10 +1452,11 @@ table.footnote {
 .scroll_yellow_rolled, .form_scroll_thin, .form_scroll_medium, .form_scroll_big {
   color: black;
   margin: 10px 0;
-  padding: 45px 20px;
-  background-image: url('img/backgrounds/scroll_yellow_rolled.png');
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
+  padding: 8px 10px 24px;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 40px 12px 40px 12px;
+  border-image: url('img/backgrounds/scroll_yellow_rolled.png') 32 12 31 12 fill stretch stretch;
   image-rendering: optimizequality;
 }
 .scroll_yellow_rolled a:link, .form_scroll_thin a:link, .form_scroll_medium a:link,
@@ -2077,6 +2083,14 @@ input[type=submit] {
 input[readonly=True] {
   background-color: lightgrey !important;
 }
+:where(#full_content form) select, :where(#full_content form) input[type=text],
+:where(#full_content form) input[type=email],
+:where(#full_content form) input[type=number],
+:where(#full_content form) input[type=tel],
+:where(#full_content form) input[type=password] {
+  border: 1px solid #aaa;
+  padding: 1px 3px;
+}
 #full_content form p:not(.required) label {
   font-style: italic;
 }
@@ -2084,8 +2098,6 @@ input[readonly=True] {
 #full_content form input[type=email], #full_content form input[type=number],
 #full_content form input[type=tel], #full_content form input[type=password] {
   min-height: 29px;
-  border: 1px solid #aaa;
-  padding: 1px 3px;
 }
 #full_content form .select2-choices input {
   min-height: 0;
@@ -2096,8 +2108,644 @@ input[readonly=True] {
 #full_content form input[type=button], #full_content form textarea,
 #full_content form select, #full_content form .select2-container,
 #full_content form .markItUp {
-  width: 100%;
   display: block;
+}
+:where(#full_content form) input[type=text],
+:where(#full_content form) input[type=email],
+:where(#full_content form) input[type=number],
+:where(#full_content form) input[type=tel],
+:where(#full_content form) input[type=password],
+:where(#full_content form) input[type=submit],
+:where(#full_content form) input[type=button], :where(#full_content form) textarea,
+:where(#full_content form) select, :where(#full_content form) .select2-container,
+:where(#full_content form) .markItUp {
+  width: 100%;
+}
+.scroll_yellow_rolled input[type=text], .scroll_yellow_rolled input[type=email],
+.scroll_yellow_rolled input[type=number], .scroll_yellow_rolled input[type=tel],
+.scroll_yellow_rolled input[type=password],
+.scroll_yellow_rolled input[type=search], .scroll_yellow_rolled input[type=url],
+.scroll_yellow_rolled select, .scroll_yellow_rolled textarea,
+.scroll_yellow_rolled .select2-container-multi .select2-choices,
+.scroll_yellow_rolled .ui-dropdownchecklist-selector-wrapper,
+.scroll_yellow_flat input[type=text], .scroll_yellow_flat input[type=email],
+.scroll_yellow_flat input[type=number], .scroll_yellow_flat input[type=tel],
+.scroll_yellow_flat input[type=password], .scroll_yellow_flat input[type=search],
+.scroll_yellow_flat input[type=url], .scroll_yellow_flat select,
+.scroll_yellow_flat textarea,
+.scroll_yellow_flat .select2-container-multi .select2-choices,
+.scroll_yellow_flat .ui-dropdownchecklist-selector-wrapper,
+.scroll_realistic input[type=text], .scroll_realistic input[type=email],
+.scroll_realistic input[type=number], .scroll_realistic input[type=tel],
+.scroll_realistic input[type=password], .scroll_realistic input[type=search],
+.scroll_realistic input[type=url], .scroll_realistic select,
+.scroll_realistic textarea,
+.scroll_realistic .select2-container-multi .select2-choices,
+.scroll_realistic .ui-dropdownchecklist-selector-wrapper,
+.scroll_realistic_thin_ends input[type=text],
+.scroll_realistic_thin_ends input[type=email],
+.scroll_realistic_thin_ends input[type=number],
+.scroll_realistic_thin_ends input[type=tel],
+.scroll_realistic_thin_ends input[type=password],
+.scroll_realistic_thin_ends input[type=search],
+.scroll_realistic_thin_ends input[type=url], .scroll_realistic_thin_ends select,
+.scroll_realistic_thin_ends textarea,
+.scroll_realistic_thin_ends .select2-container-multi .select2-choices,
+.scroll_realistic_thin_ends .ui-dropdownchecklist-selector-wrapper,
+.post-it input[type=text], .post-it input[type=email], .post-it input[type=number],
+.post-it input[type=tel], .post-it input[type=password],
+.post-it input[type=search], .post-it input[type=url], .post-it select,
+.post-it textarea, .post-it .select2-container-multi .select2-choices,
+.post-it .ui-dropdownchecklist-selector-wrapper,
+.rice_paper_beige input[type=text], .rice_paper_beige input[type=email],
+.rice_paper_beige input[type=number], .rice_paper_beige input[type=tel],
+.rice_paper_beige input[type=password], .rice_paper_beige input[type=search],
+.rice_paper_beige input[type=url], .rice_paper_beige select,
+.rice_paper_beige textarea,
+.rice_paper_beige .select2-container-multi .select2-choices,
+.rice_paper_beige .ui-dropdownchecklist-selector-wrapper,
+.rice_paper_rose input[type=text], .rice_paper_rose input[type=email],
+.rice_paper_rose input[type=number], .rice_paper_rose input[type=tel],
+.rice_paper_rose input[type=password], .rice_paper_rose input[type=search],
+.rice_paper_rose input[type=url], .rice_paper_rose select,
+.rice_paper_rose textarea,
+.rice_paper_rose .select2-container-multi .select2-choices,
+.rice_paper_rose .ui-dropdownchecklist-selector-wrapper,
+table.realtable input[type=text], table.realtable input[type=email],
+table.realtable input[type=number], table.realtable input[type=tel],
+table.realtable input[type=password], table.realtable input[type=search],
+table.realtable input[type=url], table.realtable select, table.realtable textarea,
+table.realtable .select2-container-multi .select2-choices,
+table.realtable .ui-dropdownchecklist-selector-wrapper,
+.missing-content input[type=text], .missing-content input[type=email],
+.missing-content input[type=number], .missing-content input[type=tel],
+.missing-content input[type=password], .missing-content input[type=search],
+.missing-content input[type=url], .missing-content select,
+.missing-content textarea,
+.missing-content .select2-container-multi .select2-choices,
+.missing-content .ui-dropdownchecklist-selector-wrapper,
+.form_scroll_thin input[type=text], .form_scroll_thin input[type=email],
+.form_scroll_thin input[type=number], .form_scroll_thin input[type=tel],
+.form_scroll_thin input[type=password], .form_scroll_thin input[type=search],
+.form_scroll_thin input[type=url], .form_scroll_thin select,
+.form_scroll_thin textarea,
+.form_scroll_thin .select2-container-multi .select2-choices,
+.form_scroll_thin .ui-dropdownchecklist-selector-wrapper,
+.form_scroll_medium input[type=text], .form_scroll_medium input[type=email],
+.form_scroll_medium input[type=number], .form_scroll_medium input[type=tel],
+.form_scroll_medium input[type=password], .form_scroll_medium input[type=search],
+.form_scroll_medium input[type=url], .form_scroll_medium select,
+.form_scroll_medium textarea,
+.form_scroll_medium .select2-container-multi .select2-choices,
+.form_scroll_medium .ui-dropdownchecklist-selector-wrapper,
+.form_scroll_big input[type=text], .form_scroll_big input[type=email],
+.form_scroll_big input[type=number], .form_scroll_big input[type=tel],
+.form_scroll_big input[type=password], .form_scroll_big input[type=search],
+.form_scroll_big input[type=url], .form_scroll_big select,
+.form_scroll_big textarea,
+.form_scroll_big .select2-container-multi .select2-choices,
+.form_scroll_big .ui-dropdownchecklist-selector-wrapper, .hentry input[type=text],
+.hentry input[type=email], .hentry input[type=number], .hentry input[type=tel],
+.hentry input[type=password], .hentry input[type=search], .hentry input[type=url],
+.hentry select, .hentry textarea,
+.hentry .select2-container-multi .select2-choices,
+.hentry .ui-dropdownchecklist-selector-wrapper {
+  background-color: transparent;
+  border: 1px solid rgba(40, 20, 0, 0.22);
+  border-radius: 4px;
+  padding: 4px 7px;
+  box-shadow: inset 0 2px 4px rgba(40, 20, 0, 0.55), inset 0 -1px 0 rgba(255, 240, 200,
+    0.3), 0 1px 0 rgba(255, 240, 200, 0.5);
+  font-family: Georgia, serif;
+  font-size: 15px;
+  color: #2b1a08;
+}
+.scroll_yellow_rolled input[type=text]:focus,
+.scroll_yellow_rolled input[type=email]:focus,
+.scroll_yellow_rolled input[type=number]:focus,
+.scroll_yellow_rolled input[type=tel]:focus,
+.scroll_yellow_rolled input[type=password]:focus,
+.scroll_yellow_rolled input[type=search]:focus,
+.scroll_yellow_rolled input[type=url]:focus, .scroll_yellow_rolled select:focus,
+.scroll_yellow_rolled textarea:focus,
+.scroll_yellow_rolled .select2-container-multi .select2-choices:focus,
+.scroll_yellow_rolled .ui-dropdownchecklist-selector-wrapper:focus,
+.scroll_yellow_flat input[type=text]:focus,
+.scroll_yellow_flat input[type=email]:focus,
+.scroll_yellow_flat input[type=number]:focus,
+.scroll_yellow_flat input[type=tel]:focus,
+.scroll_yellow_flat input[type=password]:focus,
+.scroll_yellow_flat input[type=search]:focus,
+.scroll_yellow_flat input[type=url]:focus, .scroll_yellow_flat select:focus,
+.scroll_yellow_flat textarea:focus,
+.scroll_yellow_flat .select2-container-multi .select2-choices:focus,
+.scroll_yellow_flat .ui-dropdownchecklist-selector-wrapper:focus,
+.scroll_realistic input[type=text]:focus,
+.scroll_realistic input[type=email]:focus,
+.scroll_realistic input[type=number]:focus,
+.scroll_realistic input[type=tel]:focus,
+.scroll_realistic input[type=password]:focus,
+.scroll_realistic input[type=search]:focus,
+.scroll_realistic input[type=url]:focus, .scroll_realistic select:focus,
+.scroll_realistic textarea:focus,
+.scroll_realistic .select2-container-multi .select2-choices:focus,
+.scroll_realistic .ui-dropdownchecklist-selector-wrapper:focus,
+.scroll_realistic_thin_ends input[type=text]:focus,
+.scroll_realistic_thin_ends input[type=email]:focus,
+.scroll_realistic_thin_ends input[type=number]:focus,
+.scroll_realistic_thin_ends input[type=tel]:focus,
+.scroll_realistic_thin_ends input[type=password]:focus,
+.scroll_realistic_thin_ends input[type=search]:focus,
+.scroll_realistic_thin_ends input[type=url]:focus,
+.scroll_realistic_thin_ends select:focus,
+.scroll_realistic_thin_ends textarea:focus,
+.scroll_realistic_thin_ends .select2-container-multi .select2-choices:focus,
+.scroll_realistic_thin_ends .ui-dropdownchecklist-selector-wrapper:focus,
+.post-it input[type=text]:focus, .post-it input[type=email]:focus,
+.post-it input[type=number]:focus, .post-it input[type=tel]:focus,
+.post-it input[type=password]:focus, .post-it input[type=search]:focus,
+.post-it input[type=url]:focus, .post-it select:focus, .post-it textarea:focus,
+.post-it .select2-container-multi .select2-choices:focus,
+.post-it .ui-dropdownchecklist-selector-wrapper:focus,
+.rice_paper_beige input[type=text]:focus,
+.rice_paper_beige input[type=email]:focus,
+.rice_paper_beige input[type=number]:focus,
+.rice_paper_beige input[type=tel]:focus,
+.rice_paper_beige input[type=password]:focus,
+.rice_paper_beige input[type=search]:focus,
+.rice_paper_beige input[type=url]:focus, .rice_paper_beige select:focus,
+.rice_paper_beige textarea:focus,
+.rice_paper_beige .select2-container-multi .select2-choices:focus,
+.rice_paper_beige .ui-dropdownchecklist-selector-wrapper:focus,
+.rice_paper_rose input[type=text]:focus, .rice_paper_rose input[type=email]:focus,
+.rice_paper_rose input[type=number]:focus, .rice_paper_rose input[type=tel]:focus,
+.rice_paper_rose input[type=password]:focus,
+.rice_paper_rose input[type=search]:focus, .rice_paper_rose input[type=url]:focus,
+.rice_paper_rose select:focus, .rice_paper_rose textarea:focus,
+.rice_paper_rose .select2-container-multi .select2-choices:focus,
+.rice_paper_rose .ui-dropdownchecklist-selector-wrapper:focus,
+table.realtable input[type=text]:focus, table.realtable input[type=email]:focus,
+table.realtable input[type=number]:focus, table.realtable input[type=tel]:focus,
+table.realtable input[type=password]:focus,
+table.realtable input[type=search]:focus, table.realtable input[type=url]:focus,
+table.realtable select:focus, table.realtable textarea:focus,
+table.realtable .select2-container-multi .select2-choices:focus,
+table.realtable .ui-dropdownchecklist-selector-wrapper:focus,
+.missing-content input[type=text]:focus, .missing-content input[type=email]:focus,
+.missing-content input[type=number]:focus, .missing-content input[type=tel]:focus,
+.missing-content input[type=password]:focus,
+.missing-content input[type=search]:focus, .missing-content input[type=url]:focus,
+.missing-content select:focus, .missing-content textarea:focus,
+.missing-content .select2-container-multi .select2-choices:focus,
+.missing-content .ui-dropdownchecklist-selector-wrapper:focus,
+.form_scroll_thin input[type=text]:focus,
+.form_scroll_thin input[type=email]:focus,
+.form_scroll_thin input[type=number]:focus,
+.form_scroll_thin input[type=tel]:focus,
+.form_scroll_thin input[type=password]:focus,
+.form_scroll_thin input[type=search]:focus,
+.form_scroll_thin input[type=url]:focus, .form_scroll_thin select:focus,
+.form_scroll_thin textarea:focus,
+.form_scroll_thin .select2-container-multi .select2-choices:focus,
+.form_scroll_thin .ui-dropdownchecklist-selector-wrapper:focus,
+.form_scroll_medium input[type=text]:focus,
+.form_scroll_medium input[type=email]:focus,
+.form_scroll_medium input[type=number]:focus,
+.form_scroll_medium input[type=tel]:focus,
+.form_scroll_medium input[type=password]:focus,
+.form_scroll_medium input[type=search]:focus,
+.form_scroll_medium input[type=url]:focus, .form_scroll_medium select:focus,
+.form_scroll_medium textarea:focus,
+.form_scroll_medium .select2-container-multi .select2-choices:focus,
+.form_scroll_medium .ui-dropdownchecklist-selector-wrapper:focus,
+.form_scroll_big input[type=text]:focus, .form_scroll_big input[type=email]:focus,
+.form_scroll_big input[type=number]:focus, .form_scroll_big input[type=tel]:focus,
+.form_scroll_big input[type=password]:focus,
+.form_scroll_big input[type=search]:focus, .form_scroll_big input[type=url]:focus,
+.form_scroll_big select:focus, .form_scroll_big textarea:focus,
+.form_scroll_big .select2-container-multi .select2-choices:focus,
+.form_scroll_big .ui-dropdownchecklist-selector-wrapper:focus,
+.hentry input[type=text]:focus, .hentry input[type=email]:focus,
+.hentry input[type=number]:focus, .hentry input[type=tel]:focus,
+.hentry input[type=password]:focus, .hentry input[type=search]:focus,
+.hentry input[type=url]:focus, .hentry select:focus, .hentry textarea:focus,
+.hentry .select2-container-multi .select2-choices:focus,
+.hentry .ui-dropdownchecklist-selector-wrapper:focus {
+  outline: none;
+  border-color: rgba(142, 13, 13, 0.6);
+  box-shadow: inset 0 2px 5px rgba(40, 20, 0, 0.65), 0 1px 0 rgba(255, 240, 200, 0.5);
+}
+.scroll_yellow_rolled input[type=text]:disabled,
+.scroll_yellow_rolled input[type=email]:disabled,
+.scroll_yellow_rolled input[type=number]:disabled,
+.scroll_yellow_rolled input[type=tel]:disabled,
+.scroll_yellow_rolled input[type=password]:disabled,
+.scroll_yellow_rolled input[type=search]:disabled,
+.scroll_yellow_rolled input[type=url]:disabled,
+.scroll_yellow_rolled select:disabled, .scroll_yellow_rolled textarea:disabled,
+.scroll_yellow_rolled .select2-container-multi .select2-choices:disabled,
+.scroll_yellow_rolled .ui-dropdownchecklist-selector-wrapper:disabled,
+.scroll_yellow_flat input[type=text]:disabled,
+.scroll_yellow_flat input[type=email]:disabled,
+.scroll_yellow_flat input[type=number]:disabled,
+.scroll_yellow_flat input[type=tel]:disabled,
+.scroll_yellow_flat input[type=password]:disabled,
+.scroll_yellow_flat input[type=search]:disabled,
+.scroll_yellow_flat input[type=url]:disabled, .scroll_yellow_flat select:disabled,
+.scroll_yellow_flat textarea:disabled,
+.scroll_yellow_flat .select2-container-multi .select2-choices:disabled,
+.scroll_yellow_flat .ui-dropdownchecklist-selector-wrapper:disabled,
+.scroll_realistic input[type=text]:disabled,
+.scroll_realistic input[type=email]:disabled,
+.scroll_realistic input[type=number]:disabled,
+.scroll_realistic input[type=tel]:disabled,
+.scroll_realistic input[type=password]:disabled,
+.scroll_realistic input[type=search]:disabled,
+.scroll_realistic input[type=url]:disabled, .scroll_realistic select:disabled,
+.scroll_realistic textarea:disabled,
+.scroll_realistic .select2-container-multi .select2-choices:disabled,
+.scroll_realistic .ui-dropdownchecklist-selector-wrapper:disabled,
+.scroll_realistic_thin_ends input[type=text]:disabled,
+.scroll_realistic_thin_ends input[type=email]:disabled,
+.scroll_realistic_thin_ends input[type=number]:disabled,
+.scroll_realistic_thin_ends input[type=tel]:disabled,
+.scroll_realistic_thin_ends input[type=password]:disabled,
+.scroll_realistic_thin_ends input[type=search]:disabled,
+.scroll_realistic_thin_ends input[type=url]:disabled,
+.scroll_realistic_thin_ends select:disabled,
+.scroll_realistic_thin_ends textarea:disabled,
+.scroll_realistic_thin_ends .select2-container-multi .select2-choices:disabled,
+.scroll_realistic_thin_ends .ui-dropdownchecklist-selector-wrapper:disabled,
+.post-it input[type=text]:disabled, .post-it input[type=email]:disabled,
+.post-it input[type=number]:disabled, .post-it input[type=tel]:disabled,
+.post-it input[type=password]:disabled, .post-it input[type=search]:disabled,
+.post-it input[type=url]:disabled, .post-it select:disabled,
+.post-it textarea:disabled,
+.post-it .select2-container-multi .select2-choices:disabled,
+.post-it .ui-dropdownchecklist-selector-wrapper:disabled,
+.rice_paper_beige input[type=text]:disabled,
+.rice_paper_beige input[type=email]:disabled,
+.rice_paper_beige input[type=number]:disabled,
+.rice_paper_beige input[type=tel]:disabled,
+.rice_paper_beige input[type=password]:disabled,
+.rice_paper_beige input[type=search]:disabled,
+.rice_paper_beige input[type=url]:disabled, .rice_paper_beige select:disabled,
+.rice_paper_beige textarea:disabled,
+.rice_paper_beige .select2-container-multi .select2-choices:disabled,
+.rice_paper_beige .ui-dropdownchecklist-selector-wrapper:disabled,
+.rice_paper_rose input[type=text]:disabled,
+.rice_paper_rose input[type=email]:disabled,
+.rice_paper_rose input[type=number]:disabled,
+.rice_paper_rose input[type=tel]:disabled,
+.rice_paper_rose input[type=password]:disabled,
+.rice_paper_rose input[type=search]:disabled,
+.rice_paper_rose input[type=url]:disabled, .rice_paper_rose select:disabled,
+.rice_paper_rose textarea:disabled,
+.rice_paper_rose .select2-container-multi .select2-choices:disabled,
+.rice_paper_rose .ui-dropdownchecklist-selector-wrapper:disabled,
+table.realtable input[type=text]:disabled,
+table.realtable input[type=email]:disabled,
+table.realtable input[type=number]:disabled,
+table.realtable input[type=tel]:disabled,
+table.realtable input[type=password]:disabled,
+table.realtable input[type=search]:disabled,
+table.realtable input[type=url]:disabled, table.realtable select:disabled,
+table.realtable textarea:disabled,
+table.realtable .select2-container-multi .select2-choices:disabled,
+table.realtable .ui-dropdownchecklist-selector-wrapper:disabled,
+.missing-content input[type=text]:disabled,
+.missing-content input[type=email]:disabled,
+.missing-content input[type=number]:disabled,
+.missing-content input[type=tel]:disabled,
+.missing-content input[type=password]:disabled,
+.missing-content input[type=search]:disabled,
+.missing-content input[type=url]:disabled, .missing-content select:disabled,
+.missing-content textarea:disabled,
+.missing-content .select2-container-multi .select2-choices:disabled,
+.missing-content .ui-dropdownchecklist-selector-wrapper:disabled,
+.form_scroll_thin input[type=text]:disabled,
+.form_scroll_thin input[type=email]:disabled,
+.form_scroll_thin input[type=number]:disabled,
+.form_scroll_thin input[type=tel]:disabled,
+.form_scroll_thin input[type=password]:disabled,
+.form_scroll_thin input[type=search]:disabled,
+.form_scroll_thin input[type=url]:disabled, .form_scroll_thin select:disabled,
+.form_scroll_thin textarea:disabled,
+.form_scroll_thin .select2-container-multi .select2-choices:disabled,
+.form_scroll_thin .ui-dropdownchecklist-selector-wrapper:disabled,
+.form_scroll_medium input[type=text]:disabled,
+.form_scroll_medium input[type=email]:disabled,
+.form_scroll_medium input[type=number]:disabled,
+.form_scroll_medium input[type=tel]:disabled,
+.form_scroll_medium input[type=password]:disabled,
+.form_scroll_medium input[type=search]:disabled,
+.form_scroll_medium input[type=url]:disabled, .form_scroll_medium select:disabled,
+.form_scroll_medium textarea:disabled,
+.form_scroll_medium .select2-container-multi .select2-choices:disabled,
+.form_scroll_medium .ui-dropdownchecklist-selector-wrapper:disabled,
+.form_scroll_big input[type=text]:disabled,
+.form_scroll_big input[type=email]:disabled,
+.form_scroll_big input[type=number]:disabled,
+.form_scroll_big input[type=tel]:disabled,
+.form_scroll_big input[type=password]:disabled,
+.form_scroll_big input[type=search]:disabled,
+.form_scroll_big input[type=url]:disabled, .form_scroll_big select:disabled,
+.form_scroll_big textarea:disabled,
+.form_scroll_big .select2-container-multi .select2-choices:disabled,
+.form_scroll_big .ui-dropdownchecklist-selector-wrapper:disabled,
+.hentry input[type=text]:disabled, .hentry input[type=email]:disabled,
+.hentry input[type=number]:disabled, .hentry input[type=tel]:disabled,
+.hentry input[type=password]:disabled, .hentry input[type=search]:disabled,
+.hentry input[type=url]:disabled, .hentry select:disabled,
+.hentry textarea:disabled,
+.hentry .select2-container-multi .select2-choices:disabled,
+.hentry .ui-dropdownchecklist-selector-wrapper:disabled {
+  background-color: transparent;
+  border-style: dashed;
+  box-shadow: none;
+  color: rgba(60, 35, 10, 0.5);
+}
+.scroll_yellow_rolled select, .scroll_yellow_flat select, .scroll_realistic select,
+.scroll_realistic_thin_ends select, .post-it select, .rice_paper_beige select,
+.rice_paper_rose select, table.realtable select, .missing-content select,
+.form_scroll_thin select, .form_scroll_medium select, .form_scroll_big select,
+.hentry select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent url("img/icons/select_arrow_ink.svg") no-repeat right 10px center;
+  padding-right: 28px;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.scroll_yellow_rolled select[multiple], .scroll_yellow_flat select[multiple],
+.scroll_realistic select[multiple], .scroll_realistic_thin_ends select[multiple],
+.post-it select[multiple], .rice_paper_beige select[multiple],
+.rice_paper_rose select[multiple], table.realtable select[multiple],
+.missing-content select[multiple], .form_scroll_thin select[multiple],
+.form_scroll_medium select[multiple], .form_scroll_big select[multiple],
+.hentry select[multiple] {
+  background-image: none;
+  padding-right: 7px;
+}
+.scroll_yellow_rolled select option, .scroll_yellow_flat select option,
+.scroll_realistic select option, .scroll_realistic_thin_ends select option,
+.post-it select option, .rice_paper_beige select option,
+.rice_paper_rose select option, table.realtable select option,
+.missing-content select option, .form_scroll_thin select option,
+.form_scroll_medium select option, .form_scroll_big select option,
+.hentry select option {
+  background-color: #f6e9c4;
+  color: #2b1a08;
+}
+.scroll_yellow_rolled .select2-container-multi .select2-choices .select2-search-field input,
+.scroll_yellow_flat .select2-container-multi .select2-choices .select2-search-field input,
+.scroll_realistic .select2-container-multi .select2-choices .select2-search-field input,
+.scroll_realistic_thin_ends .select2-container-multi .select2-choices .select2-search-field input,
+.post-it .select2-container-multi .select2-choices .select2-search-field input,
+.rice_paper_beige .select2-container-multi .select2-choices .select2-search-field input,
+.rice_paper_rose .select2-container-multi .select2-choices .select2-search-field input,
+table.realtable .select2-container-multi .select2-choices .select2-search-field input,
+.missing-content .select2-container-multi .select2-choices .select2-search-field input,
+.form_scroll_thin .select2-container-multi .select2-choices .select2-search-field input,
+.form_scroll_medium .select2-container-multi .select2-choices .select2-search-field input,
+.form_scroll_big .select2-container-multi .select2-choices .select2-search-field input,
+.hentry .select2-container-multi .select2-choices .select2-search-field input {
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+.scroll_yellow_rolled input::placeholder,
+.scroll_yellow_rolled textarea::placeholder,
+.scroll_yellow_flat input::placeholder, .scroll_yellow_flat textarea::placeholder,
+.scroll_realistic input::placeholder, .scroll_realistic textarea::placeholder,
+.scroll_realistic_thin_ends input::placeholder,
+.scroll_realistic_thin_ends textarea::placeholder, .post-it input::placeholder,
+.post-it textarea::placeholder, .rice_paper_beige input::placeholder,
+.rice_paper_beige textarea::placeholder, .rice_paper_rose input::placeholder,
+.rice_paper_rose textarea::placeholder, table.realtable input::placeholder,
+table.realtable textarea::placeholder, .missing-content input::placeholder,
+.missing-content textarea::placeholder, .form_scroll_thin input::placeholder,
+.form_scroll_thin textarea::placeholder, .form_scroll_medium input::placeholder,
+.form_scroll_medium textarea::placeholder, .form_scroll_big input::placeholder,
+.form_scroll_big textarea::placeholder, .hentry input::placeholder,
+.hentry textarea::placeholder {
+  color: rgba(60, 35, 10, 0.45);
+  font-style: italic;
+}
+.scroll_yellow_rolled input[type=checkbox],
+.scroll_yellow_rolled input[type=radio], .scroll_yellow_flat input[type=checkbox],
+.scroll_yellow_flat input[type=radio], .scroll_realistic input[type=checkbox],
+.scroll_realistic input[type=radio],
+.scroll_realistic_thin_ends input[type=checkbox],
+.scroll_realistic_thin_ends input[type=radio], .post-it input[type=checkbox],
+.post-it input[type=radio], .rice_paper_beige input[type=checkbox],
+.rice_paper_beige input[type=radio], .rice_paper_rose input[type=checkbox],
+.rice_paper_rose input[type=radio], table.realtable input[type=checkbox],
+table.realtable input[type=radio], .missing-content input[type=checkbox],
+.missing-content input[type=radio], .form_scroll_thin input[type=checkbox],
+.form_scroll_thin input[type=radio], .form_scroll_medium input[type=checkbox],
+.form_scroll_medium input[type=radio], .form_scroll_big input[type=checkbox],
+.form_scroll_big input[type=radio], .hentry input[type=checkbox],
+.hentry input[type=radio] {
+  accent-color: #8E0D0D;
+}
+.scroll_yellow_rolled input[type=submit]:not(.digit),
+.scroll_yellow_rolled input[type=button]:not(.digit),
+.scroll_yellow_flat input[type=submit]:not(.digit),
+.scroll_yellow_flat input[type=button]:not(.digit),
+.scroll_realistic input[type=submit]:not(.digit),
+.scroll_realistic input[type=button]:not(.digit),
+.scroll_realistic_thin_ends input[type=submit]:not(.digit),
+.scroll_realistic_thin_ends input[type=button]:not(.digit),
+.post-it input[type=submit]:not(.digit), .post-it input[type=button]:not(.digit),
+.rice_paper_beige input[type=submit]:not(.digit),
+.rice_paper_beige input[type=button]:not(.digit),
+.rice_paper_rose input[type=submit]:not(.digit),
+.rice_paper_rose input[type=button]:not(.digit),
+table.realtable input[type=submit]:not(.digit),
+table.realtable input[type=button]:not(.digit),
+.missing-content input[type=submit]:not(.digit),
+.missing-content input[type=button]:not(.digit),
+.form_scroll_thin input[type=submit]:not(.digit),
+.form_scroll_thin input[type=button]:not(.digit),
+.form_scroll_medium input[type=submit]:not(.digit),
+.form_scroll_medium input[type=button]:not(.digit),
+.form_scroll_big input[type=submit]:not(.digit),
+.form_scroll_big input[type=button]:not(.digit),
+.hentry input[type=submit]:not(.digit), .hentry input[type=button]:not(.digit) {
+  width: auto;
+  margin: 20px auto 0;
+  padding: 5px 22px;
+  background: transparent;
+  border: 1px solid #5a3a14;
+  border-radius: 2px;
+  font: bold 13px Georgia, serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #5a3a14;
+  cursor: pointer;
+}
+.scroll_yellow_rolled input[type=submit]:not(.digit):hover,
+.scroll_yellow_rolled input[type=button]:not(.digit):hover,
+.scroll_yellow_flat input[type=submit]:not(.digit):hover,
+.scroll_yellow_flat input[type=button]:not(.digit):hover,
+.scroll_realistic input[type=submit]:not(.digit):hover,
+.scroll_realistic input[type=button]:not(.digit):hover,
+.scroll_realistic_thin_ends input[type=submit]:not(.digit):hover,
+.scroll_realistic_thin_ends input[type=button]:not(.digit):hover,
+.post-it input[type=submit]:not(.digit):hover,
+.post-it input[type=button]:not(.digit):hover,
+.rice_paper_beige input[type=submit]:not(.digit):hover,
+.rice_paper_beige input[type=button]:not(.digit):hover,
+.rice_paper_rose input[type=submit]:not(.digit):hover,
+.rice_paper_rose input[type=button]:not(.digit):hover,
+table.realtable input[type=submit]:not(.digit):hover,
+table.realtable input[type=button]:not(.digit):hover,
+.missing-content input[type=submit]:not(.digit):hover,
+.missing-content input[type=button]:not(.digit):hover,
+.form_scroll_thin input[type=submit]:not(.digit):hover,
+.form_scroll_thin input[type=button]:not(.digit):hover,
+.form_scroll_medium input[type=submit]:not(.digit):hover,
+.form_scroll_medium input[type=button]:not(.digit):hover,
+.form_scroll_big input[type=submit]:not(.digit):hover,
+.form_scroll_big input[type=button]:not(.digit):hover,
+.hentry input[type=submit]:not(.digit):hover,
+.hentry input[type=button]:not(.digit):hover {
+  background: rgba(90, 58, 20, 0.12);
+}
+.scroll_yellow_rolled input[type=submit]:not(.digit):disabled,
+.scroll_yellow_rolled input[type=button]:not(.digit):disabled,
+.scroll_yellow_flat input[type=submit]:not(.digit):disabled,
+.scroll_yellow_flat input[type=button]:not(.digit):disabled,
+.scroll_realistic input[type=submit]:not(.digit):disabled,
+.scroll_realistic input[type=button]:not(.digit):disabled,
+.scroll_realistic_thin_ends input[type=submit]:not(.digit):disabled,
+.scroll_realistic_thin_ends input[type=button]:not(.digit):disabled,
+.post-it input[type=submit]:not(.digit):disabled,
+.post-it input[type=button]:not(.digit):disabled,
+.rice_paper_beige input[type=submit]:not(.digit):disabled,
+.rice_paper_beige input[type=button]:not(.digit):disabled,
+.rice_paper_rose input[type=submit]:not(.digit):disabled,
+.rice_paper_rose input[type=button]:not(.digit):disabled,
+table.realtable input[type=submit]:not(.digit):disabled,
+table.realtable input[type=button]:not(.digit):disabled,
+.missing-content input[type=submit]:not(.digit):disabled,
+.missing-content input[type=button]:not(.digit):disabled,
+.form_scroll_thin input[type=submit]:not(.digit):disabled,
+.form_scroll_thin input[type=button]:not(.digit):disabled,
+.form_scroll_medium input[type=submit]:not(.digit):disabled,
+.form_scroll_medium input[type=button]:not(.digit):disabled,
+.form_scroll_big input[type=submit]:not(.digit):disabled,
+.form_scroll_big input[type=button]:not(.digit):disabled,
+.hentry input[type=submit]:not(.digit):disabled,
+.hentry input[type=button]:not(.digit):disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+@media (min-width: 992px) {
+  .main_frame_content input[type=text], .main_frame_content input[type=email],
+  .main_frame_content input[type=number], .main_frame_content input[type=tel],
+  .main_frame_content input[type=password], .main_frame_content input[type=search],
+  .main_frame_content input[type=url], .main_frame_content select,
+  .main_frame_content textarea,
+  .main_frame_content .select2-container-multi .select2-choices,
+  .main_frame_content .ui-dropdownchecklist-selector-wrapper {
+    background-color: transparent;
+    border: 1px solid rgba(40, 20, 0, 0.22);
+    border-radius: 4px;
+    padding: 4px 7px;
+    box-shadow: inset 0 2px 4px rgba(40, 20, 0, 0.55), inset 0 -1px 0 rgba(255, 240, 200,
+        0.3), 0 1px 0 rgba(255, 240, 200, 0.5);
+    font-family: Georgia, serif;
+    font-size: 15px;
+    color: #2b1a08;
+  }
+  .main_frame_content input[type=text]:focus,
+  .main_frame_content input[type=email]:focus,
+  .main_frame_content input[type=number]:focus,
+  .main_frame_content input[type=tel]:focus,
+  .main_frame_content input[type=password]:focus,
+  .main_frame_content input[type=search]:focus,
+  .main_frame_content input[type=url]:focus, .main_frame_content select:focus,
+  .main_frame_content textarea:focus,
+  .main_frame_content .select2-container-multi .select2-choices:focus,
+  .main_frame_content .ui-dropdownchecklist-selector-wrapper:focus {
+    outline: none;
+    border-color: rgba(142, 13, 13, 0.6);
+    box-shadow: inset 0 2px 5px rgba(40, 20, 0, 0.65), 0 1px 0 rgba(255, 240, 200, 0.5);
+  }
+  .main_frame_content input[type=text]:disabled,
+  .main_frame_content input[type=email]:disabled,
+  .main_frame_content input[type=number]:disabled,
+  .main_frame_content input[type=tel]:disabled,
+  .main_frame_content input[type=password]:disabled,
+  .main_frame_content input[type=search]:disabled,
+  .main_frame_content input[type=url]:disabled, .main_frame_content select:disabled,
+  .main_frame_content textarea:disabled,
+  .main_frame_content .select2-container-multi .select2-choices:disabled,
+  .main_frame_content .ui-dropdownchecklist-selector-wrapper:disabled {
+    background-color: transparent;
+    border-style: dashed;
+    box-shadow: none;
+    color: rgba(60, 35, 10, 0.5);
+  }
+  .main_frame_content select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: transparent url("img/icons/select_arrow_ink.svg") no-repeat right 10px center;
+    padding-right: 28px;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }
+  .main_frame_content select[multiple] {
+    background-image: none;
+    padding-right: 7px;
+  }
+  .main_frame_content select option {
+    background-color: #f6e9c4;
+    color: #2b1a08;
+  }
+  .main_frame_content .select2-container-multi .select2-choices .select2-search-field input {
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+  }
+  .main_frame_content input::placeholder, .main_frame_content textarea::placeholder {
+    color: rgba(60, 35, 10, 0.45);
+    font-style: italic;
+  }
+  .main_frame_content input[type=checkbox], .main_frame_content input[type=radio] {
+    accent-color: #8E0D0D;
+  }
+  .main_frame_content input[type=submit]:not(.digit),
+  .main_frame_content input[type=button]:not(.digit) {
+    width: auto;
+    margin: 20px auto 0;
+    padding: 5px 22px;
+    background: transparent;
+    border: 1px solid #5a3a14;
+    border-radius: 2px;
+    font: bold 13px Georgia, serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #5a3a14;
+    cursor: pointer;
+  }
+  .main_frame_content input[type=submit]:not(.digit):hover,
+  .main_frame_content input[type=button]:not(.digit):hover {
+    background: rgba(90, 58, 20, 0.12);
+  }
+  .main_frame_content input[type=submit]:not(.digit):disabled,
+  .main_frame_content input[type=button]:not(.digit):disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+table.realtable td input[type=submit]:not(.digit),
+table.realtable td input[type=button]:not(.digit) {
+  margin: 0 auto;
 }
 fieldset {
   border: 2px groove #9D8126;

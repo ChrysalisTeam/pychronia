@@ -53,20 +53,24 @@
     @include form_scroll_common;
 }
 
+/* "Rounded parchment card" tables: soft corners and shadow, horizontal hairlines only, serif small-caps header */
 table.realtable {
 
-    border-collapse: collapse;
+    border-collapse: separate; // required for rounded corners
+    border-spacing: 0;
+    overflow: hidden; // clips row backgrounds to the rounded corners
     margin: 15px 0;
     padding: 0px;
     width: 100%;
-    box-shadow: 5px 5px 3px #888888;
-    border: 1px solid #000000;
+    border: 1px solid $ink_line_color;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(40, 20, 0, 0.35);
 
     tr:nth-child(odd) {
-        background-color: #eed892;
+        background-color: $parchment_row_odd;
     }
     tr:nth-child(even) {
-        background-color: #F5DF8B;
+        background-color: $parchment_row_even;
     }
 
     @include dark-texts;
@@ -78,6 +82,8 @@ table.realtable {
 
         box-shadow: none;
         border: none;
+        border-radius: 0;
+        overflow: visible;
 
         thead, tfoot {
             display: none;
@@ -99,7 +105,7 @@ table.realtable {
             text-align: center;
             padding: 4px 12px;
             font-size: 1.1em;
-            font-family: Arial;
+            font-family: Georgia, serif;
             font-weight: normal;
         }
     }
@@ -111,31 +117,29 @@ table.realtable {
             background-color: white;
         }
 
-        thead th {
-            background-color: #E1B151;
-            border: 0px solid #000000; // special border
-            border-width: 0px 0px 1px 1px;
-            font-size: 1.3em;
-            font-weight: bold;
-        }
-
-        thead th:first-child {
-            border-width: 0px 0px 1px 0px;
-        }
-
-        thead th:last-child {
-            border-width: 0px 0px 1px 1px;
-        }
-
         th, td {
             vertical-align: middle;
-            border: 1px solid #000000;
-            border-width: 1px 1px 1px 1px;
+            border: none;
+            border-top: 1px solid $ink_hairline_color;
             text-align: center;
             padding: 7px;
             font-size: 1.1em;
-            font-family: Arial;
+            font-family: Georgia, serif;
             font-weight: normal;
+        }
+
+        thead th, tr:first-child > th, tr:first-child > td {
+            border-top: none; // the table border is already there
+        }
+
+        thead th {
+            background-image: linear-gradient($parchment_header_top, $parchment_header_bottom);
+            border-bottom: 1px solid $ink_line_color;
+            color: $parchment_header_text;
+            font-size: 1.2em;
+            font-weight: bold;
+            font-variant: small-caps;
+            letter-spacing: 0.5px;
         }
 
     }

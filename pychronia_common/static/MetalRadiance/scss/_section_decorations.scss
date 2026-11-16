@@ -69,10 +69,13 @@
 .scroll_yellow_rolled {
     @include dark-texts;
     margin: 10px 0;
-    padding: 45px 20px;
-    background-image: url('#{$IMGS}backgrounds/scroll_yellow_rolled.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
+    // the rolls (~31px high in the 277x312 image) are drawn by border-image, so that they keep a FIXED height:
+    // with a stretched background, they grew with the content and covered the bottom of tall forms (eg. submit buttons)
+    padding: 8px 10px 24px;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 40px 12px 40px 12px;
+    border-image: url('#{$IMGS}backgrounds/scroll_yellow_rolled.png') 32 12 31 12 fill stretch stretch;
     image-rendering: optimizequality;
 }
 

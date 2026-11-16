@@ -265,6 +265,15 @@ input[readonly=True] {
     background-color: lightgrey !important;
 }
 
+// default frame of fields; ":where()" cancels the ID specificity of "#full_content", so that
+// parchment_form_controls (below) can override this frame on light backgrounds
+:where(#full_content form) {
+    select, input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password] {
+        border: 1px solid $form_input_border_color;
+        padding: 1px 3px;
+    }
+}
+
 #full_content form {
 
     p:not(.required) label {
@@ -273,21 +282,138 @@ input[readonly=True] {
 
     select, input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password] {
         min-height: 29px;
-        border: 1px solid $form_input_border_color;
-        padding: 1px 3px;
     }
     .select2-choices input {
         min-height: 0; // inner input of "fake" select2 <div> control
     }
 
     input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password], input[type=submit], input[type=button], textarea, select, .select2-container, .markItUp {
-        width: 100%;
         display: block;
     }
 
     label {
     }
 
+}
+
+:where(#full_content form) {
+    // overridden for buttons by parchment_form_controls, hence the ":where()" cancelling the ID specificity
+    input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password], input[type=submit], input[type=button], textarea, select, .select2-container, .markItUp {
+        width: 100%;
+    }
+}
+
+
+/* "Pressed into leather" form controls: transparent debossed fields with ink text, and ink buttons.
+   ONLY for LIGHT backgrounds (parchments, light leather): on dark ones (mobile content, sidebars, header,
+   menus...) they would be unreadable, so the cream look of form_controls_variant remains there. */
+@mixin parchment_form_controls {
+
+    input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password],
+    input[type=search], input[type=url], select, textarea,
+    .select2-container-multi .select2-choices, .ui-dropdownchecklist-selector-wrapper {
+        background-color: transparent;
+        border: 1px solid rgba(40, 20, 0, 0.22);
+        border-radius: 4px;
+        padding: 4px 7px;
+        box-shadow: inset 0 2px 4px $deboss_shadow_color, inset 0 -1px 0 rgba(255, 240, 200, 0.30), 0 1px 0 $deboss_light_color;
+        font-family: Georgia, serif;
+        font-size: 15px;
+        color: $ink_color;
+
+        &:focus {
+            outline: none;
+            border-color: rgba(142, 13, 13, 0.6);
+            box-shadow: inset 0 2px 5px rgba(40, 20, 0, 0.65), 0 1px 0 $deboss_light_color;
+        }
+
+        &:disabled {
+            background-color: transparent;
+            border-style: dashed;
+            box-shadow: none;
+            color: rgba(60, 35, 10, 0.5);
+        }
+    }
+
+    select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: transparent url("#{$IMGS}icons/select_arrow_ink.svg") no-repeat right 10px center;
+        padding-right: 28px; // room for the arrow, so that it never overlaps the selected text
+        text-overflow: ellipsis;
+        cursor: pointer;
+
+        &[multiple] {
+            background-image: none;
+            padding-right: 7px;
+        }
+
+        option {
+            background-color: $parchment_option_color;
+            color: $ink_color;
+        }
+    }
+
+    // the text input embedded in the select2 "fake" multi-select must stay frameless
+    .select2-container-multi .select2-choices .select2-search-field input {
+        border: none;
+        box-shadow: none;
+        background-color: transparent;
+    }
+
+    input, textarea {
+        &::placeholder {
+            color: $ink_placeholder_color;
+            font-style: italic;
+        }
+    }
+
+    input[type=checkbox], input[type=radio] {
+        accent-color: $dark_red;
+    }
+
+    // ".digit" buttons are the keypad of the house locking ability, which has its own look
+    input[type=submit]:not(.digit), input[type=button]:not(.digit) {
+        width: auto;
+        margin: 20px auto 0;
+        padding: 5px 22px;
+        background: transparent;
+        border: 1px solid $ink_brown;
+        border-radius: 2px;
+        font: bold 13px Georgia, serif;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: $ink_brown;
+        cursor: pointer;
+
+        &:hover {
+            background: rgba(90, 58, 20, 0.12);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+    }
+}
+
+.scroll_yellow_rolled, .scroll_yellow_flat, .scroll_realistic, .scroll_realistic_thin_ends,
+.post-it, .rice_paper_beige, .rice_paper_rose, table.realtable {
+    @include parchment_form_controls;
+}
+
+@include desktop-only {
+    .main_frame_content {  // light leather on desktop only, dark brown on mobile
+        @include parchment_form_controls;
+    }
+}
+
+// inline buttons in table cells must not get the vertical spacing of form buttons, else rows grow uneven
+table.realtable td {
+    input[type=submit]:not(.digit), input[type=button]:not(.digit) {
+        margin: 0 auto;
+    }
 }
 
 fieldset {

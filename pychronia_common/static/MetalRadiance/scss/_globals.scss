@@ -63,6 +63,21 @@ $error_color: red;
 
 $form_input_border_color: #aaa;
 
+// "Ink on parchment" palette, for form controls and tables lying on light (parchment/leather) backgrounds
+$ink_color: #2b1a08;
+$ink_brown: #5a3a14;
+$ink_line_color: rgba(60, 35, 10, 0.45);
+$ink_hairline_color: rgba(60, 35, 10, 0.18);
+$ink_placeholder_color: rgba(60, 35, 10, 0.45);
+$deboss_shadow_color: rgba(40, 20, 0, 0.55);
+$deboss_light_color: rgba(255, 240, 200, 0.50);
+$parchment_option_color: #f6e9c4;
+$parchment_row_odd: #f3e3ad;
+$parchment_row_even: #f8ecc2;
+$parchment_header_top: #f0d58a;
+$parchment_header_bottom: #dcb560;
+$parchment_header_text: #3d2a0a;
+
 $scroll_text_color: black;
 
 /* COMMON FONT DEFINITIONS */
