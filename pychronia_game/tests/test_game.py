@@ -4232,6 +4232,45 @@ class TestDatamanager(BaseGameTestCase):
         with pytest.raises(NormalUsageError):
             self.dm.authenticate_with_credentials("guy1", "elixir")
 
+        # secret question change by the player himself (password of guy1 is now "newpwd")
+
+        assert not self.dm.get_character_properties("guy1")["secret_question"]
+
+        with pytest.raises(NormalUsageError):  # wrong current password
+            self.dm.process_secret_question_change_attempt("guy1", "elixir", "My question ?", "My answer")
+        with pytest.raises(NormalUsageError):  # empty current password
+            self.dm.process_secret_question_change_attempt("guy1", "", "My question ?", "My answer")
+        with pytest.raises(NormalUsageError):  # all or nothing!
+            self.dm.process_secret_question_change_attempt("guy1", "newpwd", "My question ?", "  ")
+        with pytest.raises(NormalUsageError):  # all or nothing!
+            self.dm.process_secret_question_change_attempt("guy1", "newpwd", "", "My answer")
+        with pytest.raises(AbnormalUsageError):
+            self.dm.process_secret_question_change_attempt("guy1", "newpwd", None, "My answer")
+        with pytest.raises(AbnormalUsageError):
+            self.dm.process_secret_question_change_attempt("guy1", "newpwd", "My\nquestion ?", "My answer")
+        with pytest.raises(AbnormalUsageError):
+            self.dm.process_secret_question_change_attempt("guy1", "newpwd", "My question ?", "A" * 51)
+        with pytest.raises(AbnormalUsageError):
+            self.dm.process_secret_question_change_attempt("guy1", "newpwd", "Q" * 201, "My answer")
+        assert not self.dm.get_character_properties("guy1")["secret_question"]  # untouched
+        with pytest.raises(UsageError):
+            self.dm.get_secret_question("guy1")
+
+        self.dm.process_secret_question_change_attempt("guy1", "newpwd", "  My question ? ", " My Answer ")
+        data = self.dm.get_character_properties("guy1")
+        assert data["secret_question"] == "My question ?"
+        assert data["secret_answer"] == "My Answer"
+        assert self.dm.get_secret_question("guy1") == "My question ?"
+        res = self.dm.process_secret_answer_attempt("guy1", "my answer", "guy2@pangea.com")
+        assert res == "newpwd"  # the new secret question does allow password recovery
+
+        self.dm.process_secret_question_change_attempt("guy1", "newpwd", "", "")  # removal
+        data = self.dm.get_character_properties("guy1")
+        assert not data["secret_question"]
+        assert not data["secret_answer"]
+        with pytest.raises(UsageError):
+            self.dm.get_secret_question("guy1")
+
         self._set_user("guy3")
         assert self.dm.username == "guy3"
 
@@ -5187,6 +5226,66 @@ class TestHttpRequests(BaseGameTestCase):
 
         finally:
             AbstractGameView._process_standard_request = oldie
+
+    def test_secret_question_change_by_player(self):
+
+        self._player_auth("guy1")
+
+        url = neutral_url_reverse(views.character_profile)
+        form_id = "pychronia_game.forms.SecretQuestionChangeForm"
+
+        def _get_secret_data():
+            data = self.dm.get_character_properties("guy1")
+            return (data["secret_question"] or "", data["secret_answer"] or "")  # initially None
+
+        assert _get_secret_data() == ("", "")
+
+        response = self.client.get(url)
+        assert response.status_code == 200
+        html = response.content.decode("utf8")
+        assert form_id in html
+        assert "You have no secret question for now" in html
+
+        # wrong current password
+        response = self.client.post(url, data=dict(_ability_form=form_id,
+                                                   current_password="badpassword",
+                                                   secret_question="My first teacher ?",
+                                                   secret_answer="Mrs Robinson"), follow=True)
+        assert response.status_code == 200
+        assert "Wrong current password submitted" in response.content.decode("utf8")
+        assert _get_secret_data() == ("", "")
+
+        # question without answer is rejected by the form itself
+        response = self.client.post(url, data=dict(_ability_form=form_id,
+                                                   current_password="elixir",
+                                                   secret_question="My first teacher ?",
+                                                   secret_answer=""), follow=True)
+        assert response.status_code == 200
+        assert "must be both set or both empty" in response.content.decode("utf8")
+        assert _get_secret_data() == ("", "")
+
+        # proper setup of the secret question
+        response = self.client.post(url, data=dict(_ability_form=form_id,
+                                                   current_password="elixir",
+                                                   secret_question="My first teacher ?",
+                                                   secret_answer="Mrs Robinson"), follow=True)
+        assert response.status_code == 200
+        html = response.content.decode("utf8")
+        assert "Secret question change successfully performed." in html
+        assert "My first teacher ?" in html  # form is prefilled with current question
+        assert "Mrs Robinson" not in html  # but the answer is never displayed
+        assert _get_secret_data() == ("My first teacher ?", "Mrs Robinson")
+
+        # removal of the secret question
+        response = self.client.post(url, data=dict(_ability_form=form_id,
+                                                   current_password="elixir",
+                                                   secret_question="",
+                                                   secret_answer=""), follow=True)
+        assert response.status_code == 200
+        html = response.content.decode("utf8")
+        assert "Secret question successfully removed." in html
+        assert "My first teacher ?" not in html
+        assert _get_secret_data() == ("", "")
 
     def test_message_composition(self):
 

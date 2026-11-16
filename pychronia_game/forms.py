@@ -222,6 +222,29 @@ class PasswordChangeForm(AbstractGameForm):
         return cleaned_data
 
 
+class SecretQuestionChangeForm(AbstractGameForm):
+    """
+    Lets a character set or remove (with both fields empty) its own secret question.
+    """
+    current_password = forms.CharField(label=ugettext_lazy("Current password"), required=True,
+                                       widget=forms.PasswordInput)
+    secret_question = forms.CharField(label=ugettext_lazy("New secret question"), required=False, max_length=200,
+                                      widget=forms.TextInput(attrs={'autocomplete': 'off'}))
+    secret_answer = forms.CharField(label=ugettext_lazy("New secret answer"), required=False, max_length=50,
+                                    widget=forms.TextInput(attrs={'autocomplete': 'off'}))
+
+    def clean(self):
+        cleaned_data = super(SecretQuestionChangeForm, self).clean()
+
+        secret_question = cleaned_data.get("secret_question")  # might be None
+        secret_answer = cleaned_data.get("secret_answer")  # might be None
+
+        if bool(secret_question) != bool(secret_answer):
+            raise forms.ValidationError(_("Secret question and secret answer must be both set or both empty"))
+
+        return cleaned_data
+
+
 class SecretQuestionForm(SimpleForm):
     secret_username = forms.CharField(widget=forms.HiddenInput())
     secret_answer = forms.CharField(label=ugettext_lazy("Answer"), max_length=50,

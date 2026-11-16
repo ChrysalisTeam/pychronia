@@ -1166,6 +1166,37 @@ class PlayerAuthentication(BaseDataManager):
         user_properties["secret_question"] = secret_question
         user_properties["secret_answer"] = secret_answer
 
+    SECRET_QUESTION_MAX_LENGTH = 200
+    SECRET_ANSWER_MAX_LENGTH = 50  # same limit as the answer field of the password recovery form
+
+    @transaction_watcher  # requires game started mode
+    def process_secret_question_change_attempt(self, username, current_password, secret_question, secret_answer):
+        """
+        Lets a character change (or remove, with empty values) its own secret question and answer.
+
+        The current password is required, since the secret question is a way to recover that
+        password: a temporarily hijacked session must not be able to silently replace it.
+        """
+        user_properties = self.get_character_properties(username)
+
+        if not isinstance(secret_question, str) or not isinstance(secret_answer, str):
+            raise AbnormalUsageError(_("Invalid new secret question or secret answer submitted"))
+
+        secret_question = secret_question.strip()
+        secret_answer = secret_answer.strip()
+
+        if ("\n" in secret_question or "\n" in secret_answer or
+                len(secret_question) > self.SECRET_QUESTION_MAX_LENGTH or
+                len(secret_answer) > self.SECRET_ANSWER_MAX_LENGTH):
+            raise AbnormalUsageError(_("Invalid new secret question or secret answer submitted"))
+
+        if not current_password or current_password != user_properties["password"]:
+            raise NormalUsageError(_("Wrong current password submitted"))
+
+        self.update_secret_question_and_answer(username=username,
+                                               secret_question=secret_question,
+                                               secret_answer=secret_answer)
+
     # Utility functions for tests on other usernames than current player's one #
 
     @property

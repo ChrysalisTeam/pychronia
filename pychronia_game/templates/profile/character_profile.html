@@ -40,6 +40,29 @@
         </table>
         </form>
 
+        <br/>
+
+        <h2>{% trans "Secret question change" %}</h2>
+
+        <p style="margin:auto; max-width:500px;">
+        {% if character_properties.secret_question %}
+            {% trans "The secret question lets you recover your password if you forget it. Leave both the question and the answer empty to remove it." %}
+        {% else %}
+            {% trans "You have no secret question for now, so you can't recover your password if you forget it." %}
+        {% endif %}
+        </p>
+
+        <form action="{{ secret_question_change_form.url }}" method="post" autocomplete="off">
+        <table class="realtable">
+        {{ secret_question_change_form.as_table }}
+        <tr>
+            <td colspan="2">
+                <input type="submit" name="change_secret_question" value="{% trans "Change Secret Question" %}" />
+            </td>
+        </tr>
+        </table>
+        </form>
+
 {% endblock %}
 
 

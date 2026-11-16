@@ -136,7 +136,10 @@ class CharacterProfile(AbstractGameView):
 
     GAME_ACTIONS = dict(password_change_form=dict(title=ugettext_lazy("Change password"),
                                                   form_class=forms.PasswordChangeForm,
-                                                  callback="process_password_change_form"))
+                                                  callback="process_password_change_form"),
+                        secret_question_change_form=dict(title=ugettext_lazy("Change secret question"),
+                                                         form_class=forms.SecretQuestionChangeForm,
+                                                         callback="process_secret_question_change_form"))
 
     def get_template_vars(self, previous_form_data=None):
         character_properties = self.datamanager.get_character_properties()
@@ -144,6 +147,13 @@ class CharacterProfile(AbstractGameView):
         password_change_form = self._instantiate_game_form(new_action_name="password_change_form",
                                                            hide_on_success=False,
                                                            previous_form_data=previous_form_data)
+
+        # the current secret answer is never displayed, on purpose
+        secret_question_change_form = self._instantiate_game_form(
+            new_action_name="secret_question_change_form",
+            hide_on_success=False,
+            previous_form_data=previous_form_data,
+            initial_data=dict(secret_question=character_properties["secret_question"] or ""))
 
         user_gems = [x[0] for x in character_properties["gems"]]
         user_artefacts = [value["title"] for (key, value) in list(self.datamanager.get_user_artefacts().items())]
@@ -154,6 +164,7 @@ class CharacterProfile(AbstractGameView):
             'user_gems': user_gems,
             'user_artefacts': user_artefacts,
             'password_change_form': password_change_form,
+            'secret_question_change_form': secret_question_change_form,
         }
 
     def process_password_change_form(self, old_password, new_password1, new_password2, use_gems=()):
@@ -173,6 +184,27 @@ class CharacterProfile(AbstractGameView):
                                         visible_by=[self.datamanager.username])
 
         return _("Password change successfully performed.")
+
+    def process_secret_question_change_form(self, current_password, secret_question="", secret_answer="",
+                                            use_gems=()):
+        assert current_password
+        assert self.datamanager.user.is_character
+
+        self.datamanager.process_secret_question_change_attempt(self.datamanager.user.username,
+                                                                current_password=current_password,
+                                                                secret_question=secret_question,
+                                                                secret_answer=secret_answer)
+
+        if secret_question:
+            self.datamanager.log_game_event(ugettext_noop("User account secret question has been changed."),
+                                            url=None,
+                                            visible_by=[self.datamanager.username])
+            return _("Secret question change successfully performed.")
+        else:
+            self.datamanager.log_game_event(ugettext_noop("User account secret question has been removed."),
+                                            url=None,
+                                            visible_by=[self.datamanager.username])
+            return _("Secret question successfully removed.")
 
 
 character_profile = CharacterProfile.as_view

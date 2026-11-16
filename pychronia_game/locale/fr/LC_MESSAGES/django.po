@@ -4175,6 +4175,42 @@ msgstr "Instructions"
 #~ msgstr "Configuration Radio"
 
 #, python-format
+#: .\templates\profile\character_profile.html
+msgid "Secret question change"
+msgstr "Modification de la question secrète"
+
+#: .\templates\profile\character_profile.html
+msgid "The secret question lets you recover your password if you forget it. Leave both the question and the answer empty to remove it."
+msgstr "La question secrète vous permet de retrouver votre mot de passe en cas d'oubli. Laissez la question et la réponse vides pour la supprimer."
+
+#: .\templates\profile\character_profile.html
+msgid "You have no secret question for now, so you can't recover your password if you forget it."
+msgstr "Vous n'avez pas de question secrète pour l'instant, vous ne pourrez donc pas retrouver votre mot de passe en cas d'oubli."
+
+#: .\templates\profile\character_profile.html
+msgid "Change Secret Question"
+msgstr "Changer la question secrète"
+
+#: .\views\profile_views.py
+msgid "Change secret question"
+msgstr "Changer la question secrète"
+
+#: .\views\profile_views.py
+msgid "User account secret question has been changed."
+msgstr "la question secrète du compte utilisateur a été changée."
+
+#: .\views\profile_views.py
+msgid "Secret question change successfully performed."
+msgstr "Changement de question secrète effectué avec succès."
+
+#: .\views\profile_views.py
+msgid "User account secret question has been removed."
+msgstr "la question secrète du compte utilisateur a été supprimée."
+
+#: .\views\profile_views.py
+msgid "Secret question successfully removed."
+msgstr "Question secrète supprimée avec succès."
+
 #~ msgid "Reason: %(reason)s"
 #~ msgstr "Raison : %(reason)s"
 
