@@ -89,6 +89,8 @@ and the `generate_auction_settings()` or `generate_mindstorm_settings()` functio
 
 These functions expect the root folder of the Chrysalis repository, which has one folder per game (with its scenario sources in a "scenario_fixtures/" subfolder). GAME_FILES_ROOT must then point to the "alternate_reality_game_auction/" folder of this repository, whose media are shared by both modes; `get_chrysalis_game_files_root()` computes this path.
 
+Each of these functions returns a (GAME_INITIAL_DATA_PATH, GAME_INITIAL_FIXTURE_SCRIPT) pair. To let game creators choose the scenario of each new game instance (in /administration, alongside the game language), set GAME_SCENARIOS to a {scenario_id: (data_path, fixture_script)} dict instead, eg. `GAME_SCENARIOS = generate_chrysalis_scenarios(chrysalis_data_dir)`, which proposes "auction" and "mindstorm". GAME_DEFAULT_SCENARIO (else the first scenario) is used for instances created before scenarios existed. Without GAME_SCENARIOS, a single "default" scenario uses GAME_INITIAL_DATA_PATH and GAME_INITIAL_FIXTURE_SCRIPT, and the scenario field of the creation form is hidden. Like the language, the scenario of a game instance can't be changed afterwards.
+
 See "pychronia_game/tests/persistent_mode_settings.py" for more information.
 
 

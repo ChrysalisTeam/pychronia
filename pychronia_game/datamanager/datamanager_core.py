@@ -140,6 +140,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
     def reset_game_data(self,
                         yaml_fixture=None,  # may be a persistent mapping, or yaml files/dirs
                         game_language=None,  # language of game CONTENT, defaults to the current one if any
+                        game_scenario=None,  # key of GAME_SCENARIOS, defaults to the current one if any
                         skip_randomizations=False,  # randomize some values in dm.data
                         skip_initializations=False,  # used when an already-initialized fixture is used
                         skip_coherence_check=False,
@@ -151,16 +152,25 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         if self.data and not config.ZODB_RESET_ALLOWED:
             raise RuntimeError("Can't reset existing databases in this environment")
 
-        if not yaml_fixture:
-            yaml_fixture = config.GAME_INITIAL_DATA_PATH  # might be a list of files/dirs
+        # a reset keeps the content language and scenario of the game, which are set once for all at creation
+        _previous_global_parameters = (self.data.get("global_parameters") if self.data else None) or {}
 
         if not game_language:
-            # a reset keeps the content language of the game, which is set once for all at creation
-            _previous_global_parameters = self.data.get("global_parameters") if self.data else None
-            game_language = ((_previous_global_parameters or {}).get("game_language") or
+            game_language = (_previous_global_parameters.get("game_language") or
                              config.GAME_DEFAULT_LANGUAGE)
         if game_language not in config.GAME_LANGUAGES:
             raise AbnormalUsageError(_("Unknown game language %r") % game_language)
+
+        if not game_scenario:
+            game_scenario = (_previous_global_parameters.get("game_scenario") or
+                             utilities.get_default_game_scenario())
+        game_scenarios = utilities.get_game_scenarios()
+        if game_scenario not in game_scenarios:
+            raise AbnormalUsageError(_("Unknown game scenario %r") % game_scenario)
+        (scenario_data_path, scenario_fixture_script) = game_scenarios[game_scenario]
+
+        if not yaml_fixture:
+            yaml_fixture = scenario_data_path  # might be a list of files/dirs
 
         self.logger.info("Resetting game data for instance '%s' with fixture '%s'",
                          self.game_instance_id, yaml_fixture if isinstance(yaml_fixture, str) else "<data-tree>")
@@ -179,10 +189,12 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         self.data.update(initial_data)
 
         if "global_parameters" in self.data:
-            if skip_initializations:  # preloaded game dump, which may predate game languages
+            if skip_initializations:  # preloaded game dump, which may predate game languages and scenarios
                 self.data["global_parameters"].setdefault("game_language", game_language)
+                self.data["global_parameters"].setdefault("game_scenario", game_scenario)
             else:
                 self.data["global_parameters"]["game_language"] = game_language
+                self.data["global_parameters"]["game_scenario"] = game_scenario
 
         if not skip_initializations:
             self._load_initial_data(skip_randomizations=skip_randomizations)  # traversal of each core module
@@ -198,11 +210,11 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         self.is_initialized = True
         self._init_from_db()
 
-        if config.GAME_INITIAL_FIXTURE_SCRIPT and not skip_initializations:
-            self.logger.info("Performing setup via GAME_INITIAL_FIXTURE_SCRIPT")
-            config.GAME_INITIAL_FIXTURE_SCRIPT(self)
+        if scenario_fixture_script and not skip_initializations:
+            self.logger.info("Performing setup via fixture script of game scenario '%s'", game_scenario)
+            scenario_fixture_script(self)
         else:
-            self.logger.info("Skipping setup via GAME_INITIAL_FIXTURE_SCRIPT")
+            self.logger.info("Skipping setup via fixture script of game scenario '%s'", game_scenario)
 
         if not skip_coherence_check:
             self.check_database_coherence(strict=strict)

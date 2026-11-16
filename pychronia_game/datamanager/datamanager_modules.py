@@ -117,6 +117,11 @@ class GameGlobalParameters(BaseDataManager):
         # absent from game instances created before game languages existed
         assert game_data["global_parameters"].get("game_language", config.GAME_DEFAULT_LANGUAGE) in config.GAME_LANGUAGES
 
+        # absent from game instances created before game scenarios existed; NOT checked against
+        # current GAME_SCENARIOS, so that removing a scenario from settings doesn't break existing games
+        if "game_scenario" in game_data["global_parameters"]:
+            utilities.check_is_string(game_data["global_parameters"]["game_scenario"], multiline=False)
+
     @readonly_method
     def get_global_parameters(self):
         return self.data["global_parameters"]
@@ -141,6 +146,13 @@ class GameGlobalParameters(BaseDataManager):
         """
         return translation.override(self.get_game_language())
 
+    @readonly_method
+    def get_game_scenario(self):
+        """
+        Scenario of the game (key of GAME_SCENARIOS setting), chosen once for all at game creation.
+        """
+        return self.data["global_parameters"].get("game_scenario", utilities.get_default_game_scenario())
+
     @transaction_watcher
     def set_global_parameter(self, name, value):
         assert self.is_master() or config.DEBUG
@@ -148,6 +160,8 @@ class GameGlobalParameters(BaseDataManager):
             raise AbnormalUsageError(_("Unexisting setting %s") % name)
         if name == "game_language":
             raise AbnormalUsageError(_("The language of a game can't be changed after its creation"))
+        if name == "game_scenario":
+            raise AbnormalUsageError(_("The scenario of a game can't be changed after its creation"))
         self.data["global_parameters"][name] = value
 
     @readonly_method

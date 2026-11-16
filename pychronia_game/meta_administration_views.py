@@ -26,6 +26,9 @@ from pychronia_game.datamanager.abstract_form import SimpleForm
 
 GAME_LANGUAGE_LABELS = dict(fr=ugettext_lazy("French"), en=ugettext_lazy("English"))
 
+GAME_SCENARIO_LABELS = dict(auction=ugettext_lazy("Auction (alternate reality game)"),
+                            mindstorm=ugettext_lazy("Mindstorm (mystery party)"))
+
 
 class GameInstanceCreationForm(SimpleForm):
     game_instance_id = forms.SlugField(label=ugettext_lazy("Game instance ID (slug)"), required=True)
@@ -33,6 +36,8 @@ class GameInstanceCreationForm(SimpleForm):
     creator_email = forms.EmailField(label=ugettext_lazy("Creator email"),
                                      required=False)  # only required for non-superuser
     game_language = forms.ChoiceField(label=ugettext_lazy("Game language (can't be changed later)"),
+                                      required=True)
+    game_scenario = forms.ChoiceField(label=ugettext_lazy("Game scenario (can't be changed later)"),
                                       required=True)
 
     def __init__(self, require_email, *args, **kwargs):
@@ -42,6 +47,12 @@ class GameInstanceCreationForm(SimpleForm):
         self.fields["game_language"].choices = [(code, GAME_LANGUAGE_LABELS.get(code, code))
                                                 for code in config.GAME_LANGUAGES]
         self.fields["game_language"].initial = config.GAME_DEFAULT_LANGUAGE
+        game_scenarios = utilities.get_game_scenarios()
+        self.fields["game_scenario"].choices = [(scenario, GAME_SCENARIO_LABELS.get(scenario, scenario))
+                                                for scenario in game_scenarios]
+        self.fields["game_scenario"].initial = utilities.get_default_game_scenario()
+        if len(game_scenarios) == 1:
+            self.fields["game_scenario"].widget = forms.HiddenInput()  # nothing to choose
 
 
 GAME_INSTANCE_MAINTENANCE_LOCKING_DELAY_MN = 15
@@ -60,12 +71,13 @@ The Chrysalis Team
 """)
 
 
-def compute_game_activation_token(game_instance_id, creator_login, creator_email, game_language):
+def compute_game_activation_token(game_instance_id, creator_login, creator_email, game_language, game_scenario):
     assert game_instance_id
     assert creator_login
     assert game_language in config.GAME_LANGUAGES, game_language
+    assert game_scenario in utilities.get_game_scenarios(), game_scenario
     creator_email = creator_email or ""
-    activation_data = "%s|%s|%s|%s" % (game_instance_id, creator_login, creator_email, game_language)
+    activation_data = "%s|%s|%s|%s|%s" % (game_instance_id, creator_login, creator_email, game_language, game_scenario)
     return encryption.unicode_encrypt(activation_data)
 
 
@@ -74,10 +86,14 @@ def decode_game_activation_token(activation_token):
     parts = activation_data.split("|")
     if len(parts) == 3:  # token emitted before game languages existed
         parts.append(config.GAME_DEFAULT_LANGUAGE)
-    (game_instance_id, creator_login, creator_email, game_language) = parts
+    if len(parts) == 4:  # token emitted before game scenarios existed
+        parts.append(utilities.get_default_game_scenario())
+    (game_instance_id, creator_login, creator_email, game_language, game_scenario) = parts
     if game_language not in config.GAME_LANGUAGES:
         raise ValueError("Unknown game language %r in activation token" % game_language)
-    return (game_instance_id, creator_login, creator_email or None, game_language)
+    if game_scenario not in utilities.get_game_scenarios():
+        raise ValueError("Unknown game scenario %r in activation token" % game_scenario)
+    return (game_instance_id, creator_login, creator_email or None, game_language, game_scenario)
 
 
 def _build_activation_url(**kwargs):
@@ -108,6 +124,7 @@ def create_instance(request):
             creator_login = cleaned_data["creator_login"]
             creator_email = cleaned_data["creator_email"] or None
             game_language = cleaned_data["game_language"]
+            game_scenario = cleaned_data["game_scenario"]
 
             if datamanager_administrator.game_instance_exists(game_instance_id):
                 messages.add_message(request, messages.ERROR, _("Please choose another game identifier."))
@@ -115,7 +132,8 @@ def create_instance(request):
             else:
 
                 activation_link = _build_activation_url(game_instance_id=game_instance_id, creator_login=creator_login,
-                                                        creator_email=creator_email, game_language=game_language)
+                                                        creator_email=creator_email, game_language=game_language,
+                                                        game_scenario=game_scenario)
 
                 message = GAME_ACTIVATION_EMAIL_BODY_TPL % locals()
 
@@ -158,13 +176,15 @@ def activate_instance(request):
 
     try:
         # encrypted hex str containing the game id, the creator login and the creator email
-        (game_instance_id, creator_login, creator_email, game_language) = decode_game_activation_token(token)
+        (game_instance_id, creator_login, creator_email, game_language,
+         game_scenario) = decode_game_activation_token(token)
 
         if not datamanager_administrator.game_instance_exists(game_instance_id):
             datamanager_administrator.create_game_instance(game_instance_id=game_instance_id,
                                                            creator_login=creator_login,
                                                            creator_email=creator_email,
                                                            game_language=game_language,
+                                                           game_scenario=game_scenario,
                                                            skip_randomizations=False)
         else:
             metadata = datamanager_administrator.get_game_instance_metadata_copy(
@@ -215,10 +235,12 @@ def manage_instances(request):
                     creator_login = cleaned_data["creator_login"]
                     creator_email = cleaned_data["creator_email"] or None
                     game_language = cleaned_data["game_language"]
+                    game_scenario = cleaned_data["game_scenario"]
                     datamanager_administrator.create_game_instance(game_instance_id=game_instance_id,
                                                                    creator_login=creator_login,
                                                                    creator_email=creator_email,
                                                                    game_language=game_language,
+                                                                   game_scenario=game_scenario,
                                                                    skip_randomizations=False)
                     messages.add_message(request, messages.INFO, _(
                         "Game instance '%(game_instance_id)s' successfully created for '%(creator_login)s/%(creator_email)s'") %
@@ -287,10 +309,16 @@ def manage_instances(request):
         # instances created before game languages existed have French content
         _meta.setdefault("game_language", config.GAME_DEFAULT_LANGUAGE)
         _meta["game_language_label"] = GAME_LANGUAGE_LABELS.get(_meta["game_language"], _meta["game_language"])
-        _activation_link = _build_activation_url(game_instance_id=_meta["instance_id"],
-                                                 creator_login=_meta["creator_login"],
-                                                 creator_email=_meta["creator_email"],
-                                                 game_language=_meta["game_language"])
+        # instances created before game scenarios existed
+        _meta.setdefault("game_scenario", utilities.get_default_game_scenario())
+        _meta["game_scenario_label"] = GAME_SCENARIO_LABELS.get(_meta["game_scenario"], _meta["game_scenario"])
+        _activation_link = None
+        if _meta["game_scenario"] in utilities.get_game_scenarios():  # else scenario was removed from settings
+            _activation_link = _build_activation_url(game_instance_id=_meta["instance_id"],
+                                                     creator_login=_meta["creator_login"],
+                                                     creator_email=_meta["creator_email"],
+                                                     game_language=_meta["game_language"],
+                                                     game_scenario=_meta["game_scenario"])
         _meta["activation_link"] = _activation_link
 
     return render(request,

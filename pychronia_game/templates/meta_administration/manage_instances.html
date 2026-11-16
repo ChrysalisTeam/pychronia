@@ -22,10 +22,13 @@
     			{% trans "Creator Email:" %} {{ meta.creator_email|default:_("None") }}<br/>
     			{% trans "Creation Date:" %} {{ meta.creation_time|utctolocal|date:"SHORT_DATE_FORMAT" }}<br/>
     			{% trans "Game Language:" %} {{ meta.game_language_label }}<br/>
+    			{% trans "Game Scenario:" %} {{ meta.game_scenario_label }}<br/>
                 <br/>
+    			{% if meta.activation_link %}
     			<center>
     			<a href="{{ meta.activation_link }}">{% trans "Activation Link" %}</a>
     			</center>
+    			{% endif %}
 			</td>
 			<td>
 

@@ -15,6 +15,7 @@ from ._dummy_abilities import *
 import fileservers
 from django.utils.functional import Promise  # used eg. for lazy-translated strings
 from django.utils import timezone
+from django.test import override_settings
 
 from pychronia_game.datamanager.abstract_ability import AbstractAbility
 from pychronia_game.datamanager.action_middlewares import CostlyActionMiddleware, \
@@ -806,23 +807,40 @@ class TestMetaAdministration(unittest.TestCase):  # no django setup required ATM
 
     def test_meta_admin_utilities(self):
 
-        data = compute_game_activation_token("myinstànce", "mylogïn", "my@email.fr", "fr")
-        assert decode_game_activation_token(data) == ("myinstànce", "mylogïn", "my@email.fr", "fr")
+        data = compute_game_activation_token("myinstànce", "mylogïn", "my@email.fr", "fr", "default")
+        assert decode_game_activation_token(data) == ("myinstànce", "mylogïn", "my@email.fr", "fr", "default")
 
-        data = compute_game_activation_token("2myinstànce", "amylogïn", None, "en")
-        assert decode_game_activation_token(data) == ("2myinstànce", "amylogïn", None, "en")
+        data = compute_game_activation_token("2myinstànce", "amylogïn", None, "en", "default")
+        assert decode_game_activation_token(data) == ("2myinstànce", "amylogïn", None, "en", "default")
 
         with pytest.raises(AssertionError):
-            compute_game_activation_token("myinstance", "mylogin", None, "xx")
+            compute_game_activation_token("myinstance", "mylogin", None, "xx", "default")
+        with pytest.raises(AssertionError):
+            compute_game_activation_token("myinstance", "mylogin", None, "fr", "unknownscenario")
 
-        # tokens emitted before game languages existed are still valid, for French games
+        # tokens emitted before game languages existed are still valid, for French games of default scenario
         from pychronia_game.utilities import encryption
         data = encryption.unicode_encrypt("oldinstance|oldlogin|")
-        assert decode_game_activation_token(data) == ("oldinstance", "oldlogin", None, "fr")
+        assert decode_game_activation_token(data) == ("oldinstance", "oldlogin", None, "fr", "default")
+
+        # tokens emitted before game scenarios existed are still valid, for games of default scenario
+        data = encryption.unicode_encrypt("oldinstance|oldlogin||en")
+        assert decode_game_activation_token(data) == ("oldinstance", "oldlogin", None, "en", "default")
 
         data = encryption.unicode_encrypt("badinstance|badlogin||xx")
         with pytest.raises(ValueError):
             decode_game_activation_token(data)
+
+        data = encryption.unicode_encrypt("badinstance|badlogin||fr|unknownscenario")
+        with pytest.raises(ValueError):
+            decode_game_activation_token(data)
+
+        with override_settings(GAME_SCENARIOS=dict(auction=(None, None), mindstorm=(None, None)),
+                           GAME_DEFAULT_SCENARIO="mindstorm"):
+            data = compute_game_activation_token("myinstance", "mylogin", None, "en", "auction")
+            assert decode_game_activation_token(data) == ("myinstance", "mylogin", None, "en", "auction")
+            data = encryption.unicode_encrypt("oldinstance|oldlogin||en")
+            assert decode_game_activation_token(data) == ("oldinstance", "oldlogin", None, "en", "mindstorm")
 
     def test_game_language_of_instances(self):
 
@@ -858,6 +876,93 @@ class TestMetaAdministration(unittest.TestCase):  # no django setup required ATM
         del dm.data["global_parameters"]["game_language"]
         assert dm.get_game_language() == "fr"
         dm.rollback()
+
+    def test_game_scenario_of_instances(self):
+
+        from pychronia_game.meta_administration_views import GameInstanceCreationForm
+
+        reset_zodb_structure()
+
+        # without GAME_SCENARIOS setting, a single "default" scenario exists, and isn't proposed in forms
+        assert utilities.get_game_scenarios() == {"default": (config.GAME_INITIAL_DATA_PATH,
+                                                              config.GAME_INITIAL_FIXTURE_SCRIPT)}
+        assert utilities.get_default_game_scenario() == "default"
+        form = GameInstanceCreationForm(require_email=False)
+        assert form.fields["game_scenario"].widget.is_hidden
+        assert form.fields["game_scenario"].initial == "default"
+
+        executed_scripts = []
+
+        def _alpha_script(dm):
+            executed_scripts.append("alpha")
+            if config.GAME_INITIAL_FIXTURE_SCRIPT:
+                config.GAME_INITIAL_FIXTURE_SCRIPT(dm)
+
+        def _beta_script(dm):
+            executed_scripts.append("beta")
+            if config.GAME_INITIAL_FIXTURE_SCRIPT:
+                config.GAME_INITIAL_FIXTURE_SCRIPT(dm)
+
+        game_scenarios = dict(alpha=(config.GAME_INITIAL_DATA_PATH, _alpha_script),
+                              beta=(config.GAME_INITIAL_DATA_PATH, _beta_script))
+
+        with override_settings(GAME_SCENARIOS=game_scenarios):
+
+            assert utilities.get_default_game_scenario() == "alpha"  # first one
+
+            form = GameInstanceCreationForm(require_email=False)
+            assert not form.fields["game_scenario"].widget.is_hidden
+            assert [choice[0] for choice in form.fields["game_scenario"].choices] == ["alpha", "beta"]
+            assert form.fields["game_scenario"].initial == "alpha"
+
+            form = GameInstanceCreationForm(require_email=False,
+                                            data=dict(game_instance_id="myinstance", creator_login="mylogin",
+                                                      game_language="en", game_scenario="beta"))
+            assert form.is_valid(), form.errors
+            assert form.cleaned_data["game_scenario"] == "beta"
+            form = GameInstanceCreationForm(require_email=False,
+                                            data=dict(game_instance_id="myinstance", creator_login="mylogin",
+                                                      game_language="en", game_scenario="gamma"))
+            assert not form.is_valid()
+
+            with pytest.raises(UsageError):
+                create_game_instance("badscenario", creator_login="ze_creator_test", game_scenario="gamma")
+            assert not game_instance_exists("badscenario")
+            assert not executed_scripts
+
+            create_game_instance("defaultscenario", creator_login="ze_creator_test")
+            assert executed_scripts == ["alpha"]
+            create_game_instance("betagame", creator_login="ze_creator_test", game_scenario="beta")
+            assert executed_scripts == ["alpha", "beta"]
+
+            metadata = dict((meta["instance_id"], meta) for meta in get_all_instances_metadata())
+            assert metadata["defaultscenario"]["game_scenario"] == "alpha"
+            assert metadata["betagame"]["game_scenario"] == "beta"
+
+            dm = retrieve_game_instance("betagame")
+            assert dm.get_game_scenario() == "beta"
+            assert dm.get_global_parameter("game_scenario") == "beta"
+            assert retrieve_game_instance("defaultscenario").get_game_scenario() == "alpha"
+
+            # the scenario is set forever
+            dm._set_user(dm.get_global_parameter("master_login"))
+            with pytest.raises(UsageError):
+                dm.set_global_parameter("game_scenario", "alpha")
+            assert dm.get_game_scenario() == "beta"
+
+            del executed_scripts[:]
+            dm.reset_game_data(skip_randomizations=True)  # keeps the game scenario
+            assert executed_scripts == ["beta"]
+            assert dm.get_game_scenario() == "beta"
+            dm.check_database_coherence()
+
+            with pytest.raises(UsageError):
+                dm.reset_game_data(skip_randomizations=True, game_scenario="gamma")
+
+            # game instances created before game scenarios existed belong to the default scenario
+            del dm.data["global_parameters"]["game_scenario"]
+            assert dm.get_game_scenario() == "alpha"
+            dm.rollback()
 
     def test_admin_scripts(self):
 

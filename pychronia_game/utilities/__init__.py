@@ -50,6 +50,27 @@ config = Conf()
 del Conf
 
 
+DEFAULT_SCENARIO_ID = "default"
+
+
+def get_game_scenarios():
+    """
+    Returns the scenarios selectable at game creation, as an ordered {scenario_id: (initial_data_path, initial_fixture_script)}.
+
+    Without a GAME_SCENARIOS setting, a single "default" scenario uses GAME_INITIAL_DATA_PATH and GAME_INITIAL_FIXTURE_SCRIPT.
+    """
+    if config.GAME_SCENARIOS:
+        return config.GAME_SCENARIOS
+    return {DEFAULT_SCENARIO_ID: (config.GAME_INITIAL_DATA_PATH, config.GAME_INITIAL_FIXTURE_SCRIPT)}
+
+
+def get_default_game_scenario():
+    """
+    Returns the scenario of game instances created without explicit scenario (or before scenarios existed).
+    """
+    return config.GAME_DEFAULT_SCENARIO or next(iter(get_game_scenarios()))
+
+
 def safe_copy(value):
     """
     dict.copy() and copy.copy() are not safe regarding ZODB persistent objects, 

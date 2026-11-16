@@ -406,6 +406,17 @@ def generate_auction_settings(chrysalis_data_dir):
     return (GAME_INITIAL_DATA_PATH, GAME_INITIAL_FIXTURE_SCRIPT)
 
 
+def generate_chrysalis_scenarios(chrysalis_data_dir):
+    """
+    Return a GAME_SCENARIOS setting, letting game creators choose between the Chrysalis scenarios
+    (the first one being the default).
+
+    The chrysalis_data_dir is the root of the Chrysalis game data repository.
+    """
+    return dict(auction=generate_auction_settings(chrysalis_data_dir),
+                mindstorm=generate_mindstorm_settings(chrysalis_data_dir))
+
+
 INTERNAL_IPS = ("127.0.0.1",)
 
 

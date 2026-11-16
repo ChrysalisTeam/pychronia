@@ -32,8 +32,9 @@ if os.path.exists(_chrysalis_data_dir):
 
     GAME_FILES_ROOT = get_chrysalis_game_files_root(_chrysalis_data_dir)
 
-    GAME_INITIAL_DATA_PATH, GAME_INITIAL_FIXTURE_SCRIPT = \
-        generate_auction_settings(_chrysalis_data_dir)  # or generate_mindstorm_settings()
+    # the scenario (auction or mindstorm) is chosen when creating each game instance
+    GAME_SCENARIOS = generate_chrysalis_scenarios(_chrysalis_data_dir)
+    GAME_DEFAULT_SCENARIO = "auction"
 
 
 # machine-specific overrides (eg. a local MariaDB sandbox) go in an UNTRACKED "persistent_mode_settings_local.py"

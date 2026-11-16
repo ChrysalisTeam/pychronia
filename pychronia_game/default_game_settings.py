@@ -13,6 +13,12 @@ GAME_INITIAL_FIXTURE_SCRIPT = None  # must be a callable taking a datamanager as
 GAME_LANGUAGES = ("fr", "en")
 GAME_DEFAULT_LANGUAGE = "fr"
 
+# Scenarios selectable at game creation, as {scenario_id: (initial_data_path, initial_fixture_script)}, eg. built
+# by generate_chrysalis_scenarios() of common_settings.py. If unset, a single "default" scenario uses
+# GAME_INITIAL_DATA_PATH and GAME_INITIAL_FIXTURE_SCRIPT.
+GAME_SCENARIOS = None
+GAME_DEFAULT_SCENARIO = None  # scenario of instances created before scenarios existed; None means the first one
+
 GAME_ALLOW_ENFORCED_LOGIN = False
 ACTIVATE_AIML_BOTS = False
 ZODB_RESET_ALLOWED = False

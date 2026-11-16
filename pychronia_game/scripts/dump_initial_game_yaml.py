@@ -8,12 +8,13 @@ from pychronia_game import utilities
 from pychronia_game.datamanager import GameDataManager, PersistentMapping
 
 
-def execute(output_file, game_language=None):
+def execute(output_file, game_language=None, game_scenario=None):
     """
     Dumping initial game data is especially useful for murder-party sheet generators
     which rely on some data from it (encyclopedia articles, text messages, objects...)
 
     The game_language (eg. "en") selects the translated fixtures, it defaults to GAME_DEFAULT_LANGUAGE.
+    The game_scenario (eg. "mindstorm") is a key of GAME_SCENARIOS setting, it defaults to the default scenario.
     """
 
     print(">> Generating transient game data manager instance")
@@ -25,6 +26,7 @@ def execute(output_file, game_language=None):
     assert not dm.is_initialized
     dm.reset_game_data(strict=False,
                        game_language=game_language,
+                       game_scenario=game_scenario,
                        skip_randomizations=True,
                        skip_initializations=False,
                        skip_coherence_check=False,
@@ -42,8 +44,11 @@ def execute(output_file, game_language=None):
 if __name__ == "__main__":
     output_file = "initial_data_dump.yaml"
     game_language = None
+    game_scenario = None
     if len(sys.argv) > 1:
         output_file = sys.argv[1]
     if len(sys.argv) > 2:
         game_language = sys.argv[2]
-    execute(output_file, game_language=game_language)
+    if len(sys.argv) > 3:
+        game_scenario = sys.argv[3]
+    execute(output_file, game_language=game_language, game_scenario=game_scenario)
