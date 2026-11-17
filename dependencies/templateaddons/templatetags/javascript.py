@@ -14,7 +14,7 @@ class JavascriptContainer(object):
         self.separator = u'\n'
         self.unique = True
     
-    def __unicode__(self):
+    def __str__(self):
         """
         Joins self.nodes with self.separator.
         If self.unique is True, then duplicate code fragments are ignored.

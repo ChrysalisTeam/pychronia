@@ -12,7 +12,7 @@
 
     <div class="form_title">{{ title }}</div>
 
-    <form action="" method="post" class="admin_widget_form" autocomplete="on">
+    <form action="" method="post" class="admin_widget_form" autocomplete="on">{% csrf_token %}
 
         <input type="hidden" name="target_form_id" value="{{ target_form_id }}">
 

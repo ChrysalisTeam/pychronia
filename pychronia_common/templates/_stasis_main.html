@@ -45,7 +45,7 @@
               Theme
             </h2>
             <div class="content">
-              <form action="/?theme=Stasis" accept-charset="UTF-8" method="post" id="switchtheme-switch-form">
+              <form action="/?theme=Stasis" accept-charset="UTF-8" method="post" id="switchtheme-switch-form">{% csrf_token %}
                 <div>
                   <div class="form-item" id="edit-theme-wrapper">
                     <select name="theme" title="Change the way this site looks." class="form-select" id="edit-theme">

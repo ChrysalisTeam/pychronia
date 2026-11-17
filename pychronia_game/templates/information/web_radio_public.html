@@ -36,7 +36,7 @@
                 {% endblocktrans %}
                 </p>
 
-                <form action="{% game_view_url "pychronia_game.views.public_webradio" %}" method="post">
+                <form action="{% game_view_url "pychronia_game.views.public_webradio" %}" method="post">{% csrf_token %}
                 {{ form.as_p }}
                 <p><input type="submit" name="listen_radio" value="{% trans "Listen to Radio" %}" /></p>
                 </form>

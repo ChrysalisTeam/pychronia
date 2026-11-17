@@ -21,7 +21,7 @@
 
         <a name="entry-{{ identifier|slugify }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
         {% if identifier %}<div class="float-right"><a href="{% game_view_url "pychronia_game.views.view_static_page" page_id=identifier %}">{% trans "Direct Access Link For Article" %}</a></div>{% endif %}
-        <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">
+        <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">{% csrf_token %}
             {{ form.as_p }}
             <input type="submit" name="submit" value="{% trans "Submit" %}"/>
         </form>

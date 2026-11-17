@@ -12,7 +12,7 @@
 
     {% if scan_form %}
     <div class="form_scroll_medium center">
-    <form action="{{ scan_form.url }}" method="post">
+    <form action="{{ scan_form.url }}" method="post">{% csrf_token %}
     {{ scan_form.as_p }}
     <input type="submit" name="scan" value="{% trans "Submit Scan Request" %}" />
     </form>

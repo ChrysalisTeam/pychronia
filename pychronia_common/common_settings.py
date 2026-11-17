@@ -49,6 +49,13 @@ SITE_DOMAIN = None  # NO trailing slash, used to build absolute urls
 
 FORCE_SCRIPT_NAME = None  # if not mounted at /
 
+# HTTPS-only cookies, since production is served over HTTPS (dev/test settings turn them off)
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+# If behind a TLS-terminating reverse proxy, also set eg. SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+# (only if the proxy always sets this header), or CSRF_TRUSTED_ORIGINS = ["https://mydomain.net"], else Django's
+# CSRF Origin checks reject POST requests. HSTS (SECURE_HSTS_SECONDS...) can be enabled here too.
+
 ######################################################################################################
 
 
@@ -124,19 +131,23 @@ TEMPLATES = [
     },
 ]
 
-# no need for CSRF by default
 MIDDLEWARE = (
+    'django.middleware.security.SecurityMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'pychronia_common.middlewares.ReverseProxyFixer',
-    # TODO Later 'django.middleware.http.ConditionalGetMiddleware', # checks E-tag and last-modification-time to avoid sending data
-    #'django.middleware.common.BrokenLinkEmailsMiddleware', FIXME - ONLY SOON IN 1.5
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+
+# both sites frame some of their own pages: game item 3D views, django CMS toolbar's admin forms
+# (Django's default "DENY" makes browsers block those, eg. NS_ERROR_XFO_VIOLATION in Firefox)
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 # to be extended in specific settings #
 INSTALLED_APPS = [

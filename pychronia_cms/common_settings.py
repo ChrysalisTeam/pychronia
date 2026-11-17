@@ -72,11 +72,7 @@ _TEMPLATE_OPTIONS["loaders"].insert(0,
 MIDDLEWARE = \
     ('django.middleware.cache.UpdateCacheMiddleware',) + \
     MIDDLEWARE + (
-        # 'debug_toolbar.middleware.DebugToolbarMiddleware' no longer added here: the
-        # inherited pychronia_common MIDDLEWARE now already includes it (post origin/dev
-        # merge), and a second copy trips debug_toolbar.W002.
-        'django.middleware.clickjacking.XFrameOptionsMiddleware',
-        'django.middleware.csrf.CsrfViewMiddleware',
+        # debug toolbar, CSRF and X-Frame-Options middlewares are inherited from pychronia_common
         'cms.middleware.page.CurrentPageMiddleware',
         'cms.middleware.user.CurrentUserMiddleware',
         'request.middleware.RequestMiddleware',
@@ -84,10 +80,6 @@ MIDDLEWARE = \
         'cms.middleware.language.LanguageCookieMiddleware',
         'django.middleware.cache.FetchFromCacheMiddleware',
     )
-
-# required by django CMS: its toolbar opens admin forms (page settings, plugins...) in same-origin
-# iframes, which Django's default "DENY" makes browsers block (NS_ERROR_XFO_VIOLATION in Firefox)
-X_FRAME_OPTIONS = "SAMEORIGIN"
 
 # global django overrides, easier than overridding models get_absolute_url() methods
 ABSOLUTE_URL_OVERRIDES = {

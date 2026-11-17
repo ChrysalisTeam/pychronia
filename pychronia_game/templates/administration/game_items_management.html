@@ -26,7 +26,7 @@
             {% usekwacro deletion_button identifier undeletable_identifiers %}
 
             <a name="entry-{{ identifier|slugify }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
-            <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">
+            <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">{% csrf_token %}
                 {{ form.as_p }}
                 <input type="submit" name="submit" value="{% trans "Submit" %}"/>
             </form>

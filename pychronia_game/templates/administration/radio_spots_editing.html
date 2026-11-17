@@ -58,7 +58,7 @@
             {% usekwacro deletion_button identifier undeletable_identifiers %}
 
             <a name="entry-{{ identifier|slugify }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
-            <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">
+            <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">{% csrf_token %}
                 {{ form.as_p }}
 
                 <a id="id_{{ identifier|slugify }}_download_link" href="{{form.file.value|default:'#'}}" style="padding-left: 20px; float: left; line-height: 50px; {% if not form.url_or_file.value %}display:none;{% endif %}">[{% trans "LINK" %}]</a>

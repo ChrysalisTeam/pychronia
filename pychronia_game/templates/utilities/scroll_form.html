@@ -2,7 +2,7 @@
 
 {% if form %}
 <div class="scroll_yellow_rolled {{ class }}" style="width:280px; display: inline-block; vertical-align: top; text-align: left;">
-    <form id="{% random_id %}" action="{{ form.target_url }}" method="post" autocomplete="on">
+    <form id="{% random_id %}" action="{{ form.target_url }}" method="post" autocomplete="on">{% csrf_token %}
     <div class="form_title">{{ title }}</div>
     {% if form_description %}
         <i>{{ form_description }}</i>

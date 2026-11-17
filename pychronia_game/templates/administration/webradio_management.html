@@ -49,7 +49,7 @@
 <br/>
 
 <div align="center">
-<form action="" method="POST">
+<form action="" method="POST">{% csrf_token %}
 {% if radio_is_on %}
     <input type="submit" name="turn_radio_off" value="{% trans "Turn Radio Off" %}"/>
 {%else %}
@@ -71,7 +71,7 @@
 
     {% if pending_audio_messages %}
 
-    <form action="" method="POST">
+    <form action="" method="POST">{% csrf_token %}
         <input type="submit" name="reset_playlist" value="Reset Playlist"/>
     </form>
 
@@ -98,7 +98,7 @@ TODO PUT THAT BACK, LATER ON !!!!!!
     {{ players_with_new_messages.keys|join:", "|default:_("None") }}.</span>
     <br/><br/>
     {% if players_with_new_messages.keys %}
-    <form action="" method="POST">
+    <form action="" method="POST">{% csrf_token %}
         <input type="submit" name="notify_new_messages" value="{% trans "Notify Users About New Messages" %}"/>
     </form>
     {% endif %}

@@ -30,7 +30,7 @@
 	{% trans "Hire new agents" %}
 </h2>
 <div class="form_scroll_medium center" >
-    <form action="{{ hiring_form.url }}" method="post">
+    <form action="{{ hiring_form.url }}" method="post">{% csrf_token %}
     {{ hiring_form.as_p }}
     <p><input type="submit" name="hire_agents" value="{% trans "Hire agents" %}" /></p>
     </form>

@@ -44,7 +44,7 @@
 
         <br/>
 
-        <form action="{% game_view_url "pychronia_game.views.manage_characters" %}" method="post" autocomplete="off">
+        <form action="{% game_view_url "pychronia_game.views.manage_characters" %}" method="post" autocomplete="off">{% csrf_token %}
 
         <input type="submit" name="update_character" value="{% trans "Update characters" %}" />
 

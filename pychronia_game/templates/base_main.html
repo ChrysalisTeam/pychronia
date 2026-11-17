@@ -64,6 +64,15 @@
 
 {% addtoblock "definition_js" %}
 
+    // send the CSRF token with all same-origin unsafe AJAX requests (eg. $.post), as Django's CsrfViewMiddleware requires
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !settings.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token|escapejs }}");
+            }
+        }
+    });
+
     function return_to_home(){
     	window.location.replace("{% game_view_url "pychronia_game.views.homepage" %}");
     }
@@ -324,14 +333,14 @@
             <div style="float:left;">
                 <div style="color: #FFF; font-size: 10px;">Write: {{ user.ssss }} <br/> Impersonation: {{ user.is_impersonation}}</div>
                 {% for impersonation in possible_impersonations %}
-                <form action="" method="POST">
+                <form action="" method="POST">{% csrf_token %}
                     <input type="hidden" name="{{ impersonation_target_post_variable }}" value="{{ impersonation }}"/>
                     <input type="submit" name="" value="{{ impersonation|capfirst }}">
                 </form>
                 {% endfor %}
 
                 {% if user.is_impersonation %}
-                <form action="" method="POST">
+                <form action="" method="POST">{% csrf_token %}
                     <input type="hidden" name="{{ impersonation_target_post_variable }}" value=""/>
                     <input type="submit" name="" value="STOP">
                 </form>
@@ -352,7 +361,7 @@
 {% block top_left_motto %}
 {% if impersonation_capabilities.display_impersonation_target_shortcut %}
 	<div class="motto">
-		<form action="" method="POST" title="{% trans "Take the identity of another user." %}">
+		<form action="" method="POST" title="{% trans "Take the identity of another user." %}">{% csrf_token %}
         {% trans "Impersonation:" %}
 		<select name="{{ impersonation_capabilities.impersonation_target_post_variable }}" onchange="this.form.submit()">
 			<option value="">{% trans "None" %}</option>
@@ -373,7 +382,7 @@
 {% block top_right_motto %}
 {% if impersonation_capabilities.display_impersonation_writability_shortcut %}
 	<div class="motto">
-		<form action="" method="POST" title="{% trans "Whether or not you can modify the game during impersonations." %}">
+		<form action="" method="POST" title="{% trans "Whether or not you can modify the game during impersonations." %}">{% csrf_token %}
 	    {% trans "Writability:" %}
 	    <select name="{{ impersonation_capabilities.impersonation_writability_post_variable }}" onchange="this.form.submit()" {% if not user.is_impersonation %}disabled{% endif %}>
 	      <option value="false">{% trans "Read-only" %}</option>
@@ -544,7 +553,7 @@
             <span class="lang-flags-label">{% trans "Interface:" %}</span>
             {% for code, name in AVAILABLE_LANGUAGES %}
             {% get_language_info for code as language_info %}
-            <form method="POST" action="{% url 'pychronia_game-set_interface_language' %}">
+            <form method="POST" action="{% url 'pychronia_game-set_interface_language' %}">{% csrf_token %}
                 <input type="hidden" name="language" value="{{ code }}"/>
                 <input type="hidden" name="next" value="{{ request.get_full_path }}"/>
                 <button type="submit" class="lang-flag-link{% if code == CURRENT_LANGUAGE %} active{% endif %}"

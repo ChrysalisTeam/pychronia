@@ -7,7 +7,7 @@
     <div class="scroll_yellow_flat center medium_width">
 
         {# labels ABOVE full-width fields (like scroll_form.html), so that the form never overflows its parchment #}
-        <form class="login_form" action="{% game_view_url "pychronia_game.views.login" %}?next={{ next_url|urlencode }}" method="post" autocomplete="off">
+        <form class="login_form" action="{% game_view_url "pychronia_game.views.login" %}?next={{ next_url|urlencode }}" method="post" autocomplete="off">{% csrf_token %}
 
         <!-- fake fields are a workaround for chrome autofill getting the wrong fields -->
         <input style="display:none" type="text" name="fakeusernameremembered"/>

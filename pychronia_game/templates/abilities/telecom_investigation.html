@@ -7,7 +7,7 @@
 
 {% if investigation_form %}
     <div align="center" class="form_scroll_thin center">
-        <form action="{{ investigation_form.url }}" method="post">
+        <form action="{{ investigation_form.url }}" method="post">{% csrf_token %}
         {{ investigation_form.as_p }}
         <input type="submit" name="investigation" value="{% trans "Launch Investigation" %}" />
         </form>

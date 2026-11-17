@@ -26,7 +26,7 @@
     <b>{{ other_username|capfirst }}: {{ action_params.2 }} </b>
 
     {% if action_params.0 %}
-    <form action="#" method="post">
+    <form action="#" method="post">{% csrf_token %}
         <input type="hidden" name="_action_" value="{{ action_params.0 }}" />
         <input type="hidden" name="other_username" value="{{ other_username }}" />
         <input type="submit" name="submit" value="{{ action_params.1 }}" />

@@ -14,7 +14,7 @@
     </h2>
 
     <div class="form_scroll_medium center" >
-    <form action="{{ periods_form.url }}" method="post">
+    <form action="{{ periods_form.url }}" method="post">{% csrf_token %}
     {{ periods_form.as_p }}
     <input type="submit" name="submit_request" value="{% trans "Send request" %}" />
     </form>
