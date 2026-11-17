@@ -6,7 +6,7 @@ DEAD
 
 
 # TODO - redo this as special ability
-@register_view(title=ugettext_lazy("Chat with Djinn"))  # (access=UserAccess.character)#(permission="contact_djinns")
+@register_view(title=gettext_lazy("Chat with Djinn"))  # (access=UserAccess.character)#(permission="contact_djinns")
 def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.html'):
     bot_name = request.POST.get("djinn", None)
 
@@ -37,10 +37,10 @@ def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.
 
 
 @register_view(attach_to=chat_with_djinn,
-               title=ugettext_lazy("Consult Djinn"))  # access=UserAccess.character)(permission="contact_djinns")
+               title=gettext_lazy("Consult Djinn"))  # access=UserAccess.character)(permission="contact_djinns")
 def ajax_consult_djinns(request):
-    message = request.REQUEST.get("message", "")
-    bot_name = request.REQUEST.get("djinn", None)
+    message = utilities.get_request_param(request, "message", "")
+    bot_name = utilities.get_request_param(request, "djinn", None)
 
     if bot_name not in request.datamanager.get_bot_names():
         raise Http404

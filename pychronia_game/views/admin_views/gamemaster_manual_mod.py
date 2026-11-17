@@ -6,7 +6,7 @@ from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_game_view import register_view
 
 
-@register_view(access=UserAccess.master, title=ugettext_lazy("View Master Manual"))
+@register_view(access=UserAccess.master, title=gettext_lazy("View Master Manual"))
 def gamemaster_manual(request, template_name="administration/master_manual.html"):
     dm = request.datamanager
 
@@ -24,7 +24,7 @@ def gamemaster_manual(request, template_name="administration/master_manual.html"
 MAYBE ONE DAY, generate pdf directly from webserver 
 (but security issues with RAW docutils directives must be handled first)
 
-@register_view(access=UserAccess.master, title=ugettext_lazy("Master Manual PDF Export"))
+@register_view(access=UserAccess.master, title=gettext_lazy("Master Manual PDF Export"))
 def gamemaster_manual_pdf(request, template_name="administration/master_manual.html"):
 
     dm = request.datamanager

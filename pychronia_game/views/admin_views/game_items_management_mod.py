@@ -9,35 +9,35 @@ from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 
 
 class GameItemForm(DataTableForm):
-    auction = forms.CharField(label=ugettext_lazy("Auction"), required=False)  # can be empty string
+    auction = forms.CharField(label=gettext_lazy("Auction"), required=False)  # can be empty string
 
-    title = forms.CharField(label=ugettext_lazy("Title"), required=True)
+    title = forms.CharField(label=gettext_lazy("Title"), required=True)
 
-    comments = forms.CharField(label=ugettext_lazy("Description"),
+    comments = forms.CharField(label=gettext_lazy("Description"),
                                widget=forms.Textarea(attrs={'rows': '2', 'cols': '40'}), required=True)
 
-    image = forms.CharField(label=ugettext_lazy("Image (url or local file)"), required=True)
+    image = forms.CharField(label=gettext_lazy("Image (url or local file)"), required=True)
 
     is_gem = forms.BooleanField(label=_("Made of gems"), initial=False, required=False)
 
-    total_price = forms.IntegerField(label=ugettext_lazy("Total cost"), min_value=0, required=True)
+    total_price = forms.IntegerField(label=gettext_lazy("Total cost"), min_value=0, required=True)
 
-    num_items = forms.IntegerField(label=ugettext_lazy("Count of items"), min_value=1, required=True)
+    num_items = forms.IntegerField(label=gettext_lazy("Count of items"), min_value=1, required=True)
 
-    unit_cost = forms.IntegerField(label=ugettext_lazy("Unit cost"), min_value=0, required=True)
+    unit_cost = forms.IntegerField(label=gettext_lazy("Unit cost"), min_value=0, required=True)
 
     gamemaster_hints = GAMEMASTER_HINTS_FIELD()
 
 
 @register_view
 class GameItemsManagement(AbstractDataTableManagement):
-    TITLE = ugettext_lazy("Edit Game Items")
+    TITLE = gettext_lazy("Edit Game Items")
     NAME = "game_items_management"
 
-    GAME_ACTIONS = dict(submit_item=dict(title=ugettext_lazy("Submit an item"),
+    GAME_ACTIONS = dict(submit_item=dict(title=gettext_lazy("Submit an item"),
                                          form_class=GameItemForm,
                                          callback="submit_item"),
-                        delete_item=dict(title=ugettext_lazy("Delete an item"),
+                        delete_item=dict(title=gettext_lazy("Delete an item"),
                                          form_class=None,
                                          callback="delete_item"))
 

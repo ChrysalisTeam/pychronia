@@ -8,10 +8,10 @@ from pychronia_game.datamanager import register_view, AbstractGameView
 
 @register_view
 class WebradioManagement(AbstractGameView):
-    TITLE = ugettext_lazy("Manage Webradio Playlist")
+    TITLE = gettext_lazy("Manage Webradio Playlist")
     NAME = "webradio_management"
 
-    GAME_ACTIONS = dict(save_radio_playlist=dict(title=ugettext_lazy("Save radio playlist"),
+    GAME_ACTIONS = dict(save_radio_playlist=dict(title=gettext_lazy("Save radio playlist"),
                                                  form_class=None,
                                                  callback="save_radio_playlist"))
 
@@ -25,7 +25,7 @@ class WebradioManagement(AbstractGameView):
         previous_playlist = self.datamanager.get_all_next_audio_messages()
         if previous_playlist:
             playlist_str = ", ".join(previous_playlist)
-            self.datamanager.log_game_event(ugettext_noop("Radio playlist was emptied, it contained: %(playlist)s"),
+            self.datamanager.log_game_event(gettext_noop("Radio playlist was emptied, it contained: %(playlist)s"),
                                             substitutions=PersistentMapping(playlist=playlist_str),
                                             url=None,
                                             visible_by=None)  # only for game master
@@ -91,7 +91,7 @@ class WebradioManagement(AbstractGameView):
             assert result is None
             return super(WebradioManagement, self)._process_html_request()  # displays error if POST data is useless
         """ # seems unused ATM
-        elif POST.has_key("reset_playlist"):  
+        elif "reset_playlist" in POST:  
             result = False
             with action_failure_handler(request, _("Audio Playlist has been emptied.")):
                 self._log_current_playlist_before_deletion()

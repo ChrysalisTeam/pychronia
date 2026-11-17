@@ -23,7 +23,7 @@ class EmptyAbilityMixin(object):
 
 
 class AbilityIntroduction(EmptyAbilityMixin, AbstractAbility):
-    TITLE = ugettext_lazy("Extra Plugins")
+    TITLE = gettext_lazy("Extra Plugins")
     NAME = "ability_introduction"
 
     ACCESS = UserAccess.authenticated
@@ -32,7 +32,7 @@ class AbilityIntroduction(EmptyAbilityMixin, AbstractAbility):
 
 
 class GeoipLocationAbility(EmptyAbilityMixin, AbstractAbility):
-    TITLE = ugettext_lazy("Web Geolocation")
+    TITLE = gettext_lazy("Web Geolocation")
     NAME = "geoip_location"
 
     ACCESS = UserAccess.authenticated
@@ -43,7 +43,7 @@ class GeoipLocationAbility(EmptyAbilityMixin, AbstractAbility):
 class BusinessEscrowAbility(EmptyAbilityMixin,
                             AbstractGameView):  # actually a simple GAMEVIEW at the moment, without captcha
 
-    TITLE = ugettext_lazy("Business Escrow")
+    TITLE = gettext_lazy("Business Escrow")
     NAME = "business_escrow"
 
     ACCESS = UserAccess.authenticated
@@ -54,7 +54,7 @@ class BusinessEscrowAbility(EmptyAbilityMixin,
 class BlackMarketAbility(EmptyAbilityMixin,
                          AbstractCaptchaProtectedView):  # actually a simple GAMEVIEW at the moment, but captcha-protected
 
-    TITLE = ugettext_lazy("Black Market")
+    TITLE = gettext_lazy("Black Market")
     NAME = "black_market"
 
     ACCESS = UserAccess.authenticated

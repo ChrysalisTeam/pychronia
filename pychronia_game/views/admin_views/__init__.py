@@ -39,11 +39,11 @@ admin_information = AdminInformation.as_view
 from .gamemaster_manual_mod import gamemaster_manual
 
 
-@register_view(access=UserAccess.master, title=ugettext_lazy("View Database"))
+@register_view(access=UserAccess.master, title=gettext_lazy("View Database"))
 def manage_databases(request, template_name='administration/database_management.html'):
     ''' OBSOLETE
     if request.method == "POST":
-        if request.POST.has_key("pack_database"):
+        if "pack_database" in request.POST:
             with action_failure_handler(request, _("ZODB file packed.")):
                 request.datamanager.pack_database(days=1)  # safety measure - take at least one day of gap !
     '''
@@ -57,7 +57,7 @@ def manage_databases(request, template_name='administration/database_management.
                   })
 
 
-@register_view(access=UserAccess.master, title=ugettext_lazy("Manage Characters"))
+@register_view(access=UserAccess.master, title=gettext_lazy("Manage Characters"))
 def manage_characters(request, template_name='administration/character_management.html'):
     dm = request.datamanager
 
@@ -144,7 +144,7 @@ def manage_characters(request, template_name='administration/character_managemen
 
                         if all_changes:
 
-                            message = ugettext_noop("""Attributes of user "%(username)s" have been modified:""")
+                            message = gettext_noop("""Attributes of user "%(username)s" have been modified:""")
 
                             additional_details = ""
                             for change_triplet in all_changes:
@@ -215,7 +215,7 @@ def manage_characters(request, template_name='administration/character_managemen
                   ))
 
 
-@register_view(access=UserAccess.master, title=ugettext_lazy("Character Identities"))
+@register_view(access=UserAccess.master, title=gettext_lazy("Character Identities"))
 def CHARACTERS_IDENTITIES(request):
     user = request.datamanager.user
 
@@ -240,7 +240,7 @@ def CHARACTERS_IDENTITIES(request):
     return response
 
 
-@register_view(access=UserAccess.master, title=ugettext_lazy("Database Operations"))
+@register_view(access=UserAccess.master, title=gettext_lazy("Database Operations"))
 def DATABASE_OPERATIONS(request):
     if not config.DEBUG:
         raise Http404
@@ -257,12 +257,12 @@ def DATABASE_OPERATIONS(request):
         return Http404(_("Error : %r") % e)
 
 
-@register_view(access=UserAccess.master, title=ugettext_lazy("Fail Test"))
+@register_view(access=UserAccess.master, title=gettext_lazy("Fail Test"))
 def FAIL_TEST(request):
     raise IOError("Dummy error to test email sending")
 
 
-@register_view(access=UserAccess.master, title=ugettext_lazy("Media Display Test"))
+@register_view(access=UserAccess.master, title=gettext_lazy("Media Display Test"))
 def MEDIA_TEST(request):
     return render(request,
                   "administration/media_test.html",

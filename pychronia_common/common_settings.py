@@ -52,12 +52,7 @@ FORCE_SCRIPT_NAME = None  # if not mounted at /
 ######################################################################################################
 
 
-# Django-compat-patcher settings
-DCP_LOGGING_LEVEL = None
-DCP_ENABLE_WARNINGS = False  # to get DCP deprecation warnings
-
-
-ugettext = lambda s: s  # dummy placeholder for makemessages
+gettext = lambda s: s  # dummy placeholder for makemessages
 
 ROOT_PATH = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))  # base folder where pychronia packages are stored
@@ -81,12 +76,11 @@ USE_ETAGS = False  # demandes heavy processing to compute response hashes
 # in templates, use DATE_FORMAT, DATETIME_FORMAT, SHORT_DATE_FORMAT or SHORT_DATETIME_FORMAT as date formats!
 USE_TZ = False  # we use naive datetimes ATM...
 TIME_ZONE = 'UTC'
-USE_L10N = True
 USE_I18N = True
 LANGUAGE_CODE = 'en'
 LANGUAGES = (
-    ('fr', ugettext('French')),
-    ('en', ugettext('English')),
+    ('fr', gettext('French')),
+    ('en', gettext('English')),
 )
 LOCALE_PATHS = ()  # in addition to application-local "locale/" dirs
 
@@ -137,7 +131,6 @@ MIDDLEWARE = (
     'pychronia_common.middlewares.ReverseProxyFixer',
     # TODO Later 'django.middleware.http.ConditionalGetMiddleware', # checks E-tag and last-modification-time to avoid sending data
     #'django.middleware.common.BrokenLinkEmailsMiddleware', FIXME - ONLY SOON IN 1.5
-    ##'sessionprofile.middleware.SessionProfileMiddleware',  # to bridge auth with PHPBB (ABORTED)
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -157,7 +150,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.messages',  # for both game and cms now
 
-    #'sessionprofile',  # keeps track of sessions/users in DB table, for PHPBB integration
     'templateaddons',  # assign and headers tags
     'django_select2',  # advanced select box
     'easy_thumbnails',
@@ -192,7 +184,7 @@ except ImportError:
 LOGIN_REDIRECT_URL = '/'  # changed from /accounts/profile/
 LOGIN_URL = '/admin/login/'
 LOGOUT_URL = '/admin/logout/'
-PASSWORD_RESET_TIMEOUT_DAYS = 3
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 3
 
 ## DJANGO-SELECT2 CONF ##
 AUTO_RENDER_SELECT2_STATICS = False

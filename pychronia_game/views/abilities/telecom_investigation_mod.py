@@ -14,10 +14,10 @@ from django.template.loader import render_to_string
 
 @register_view
 class TelecomInvestigationAbility(AbstractPartnershipAbility):
-    TITLE = ugettext_lazy("Telecom Investigation")
+    TITLE = gettext_lazy("Telecom Investigation")
     NAME = "telecom_investigation"
 
-    GAME_ACTIONS = dict(investigation_form=dict(title=ugettext_lazy("Process Telecom Investigation"),
+    GAME_ACTIONS = dict(investigation_form=dict(title=gettext_lazy("Process Telecom Investigation"),
                                                 form_class=OtherKnownCharactersForm,
                                                 callback="process_telecom_investigation"))
 
@@ -109,7 +109,7 @@ class TelecomInvestigationAbility(AbstractPartnershipAbility):
         best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
                                                                    response_msg_data=response_msg_data)
 
-        self.log_game_event(ugettext_noop("Telecom investigation launched on target '%(target_name)s'."),
+        self.log_game_event(gettext_noop("Telecom investigation launched on target '%(target_name)s'."),
                             PersistentMapping(target_name=target_official_name),
                             url=self.get_message_viewer_url_or_none(best_msg_id),
                             visible_by=[self.username])

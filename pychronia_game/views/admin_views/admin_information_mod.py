@@ -9,7 +9,7 @@ from pychronia_game.datamanager.abstract_game_view import AbstractGameView
 
 @register_view
 class AdminInformation(AbstractGameView):
-    TITLE = ugettext_lazy("Admin Information")
+    TITLE = gettext_lazy("Admin Information")
     NAME = "admin_information"
 
     TEMPLATE = "administration/admin_information.html"

@@ -9,18 +9,18 @@ from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 
 
 class GlobalContactForm(DataTableForm):
-    avatar = forms.CharField(label=ugettext_lazy("Avatar (url or local file)"), required=False)
+    avatar = forms.CharField(label=gettext_lazy("Avatar (url or local file)"), required=False)
 
-    description = forms.CharField(label=ugettext_lazy("Description"),
+    description = forms.CharField(label=gettext_lazy("Description"),
                                   widget=forms.Textarea(attrs={'rows': '2', 'cols': '40'}), required=False)
 
-    # NOT YET SETUP is_public = forms.BooleanField(label=ugettext_lazy("Public contact"), required=False, initial=True) # public by default
+    # NOT YET SETUP is_public = forms.BooleanField(label=gettext_lazy("Public contact"), required=False, initial=True) # public by default
 
-    # NOT YET SETUP access_tokens = Select2MultipleChoiceField(label=ugettext_lazy("Or restricted to (then ensure the field above is unchecked)"), required=False)
+    # NOT YET SETUP access_tokens = Select2MultipleChoiceField(label=gettext_lazy("Or restricted to (then ensure the field above is unchecked)"), required=False)
 
     gamemaster_hints = GAMEMASTER_HINTS_FIELD()
 
-    ###test = Select2TagsField(label=ugettext_lazy("TESTING"), choice_tags=["kkk", "lll"])
+    ###test = Select2TagsField(label=gettext_lazy("TESTING"), choice_tags=["kkk", "lll"])
 
     def __init__(self, datamanager, **kwargs):
         initial = kwargs.get("initial")
@@ -45,13 +45,13 @@ class GlobalContactForm(DataTableForm):
 
 @register_view
 class GlobalContactsManagement(AbstractDataTableManagement):
-    TITLE = ugettext_lazy("Edit Email Contacts")
+    TITLE = gettext_lazy("Edit Email Contacts")
     NAME = "global_contacts_management"
 
-    GAME_ACTIONS = dict(submit_item=dict(title=ugettext_lazy("Submit a contact"),
+    GAME_ACTIONS = dict(submit_item=dict(title=gettext_lazy("Submit a contact"),
                                          form_class=GlobalContactForm,
                                          callback="submit_item"),
-                        delete_item=dict(title=ugettext_lazy("Delete a contact"),
+                        delete_item=dict(title=gettext_lazy("Delete a contact"),
                                          form_class=None,
                                          callback="delete_item"))
 

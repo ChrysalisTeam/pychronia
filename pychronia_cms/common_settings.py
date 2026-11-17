@@ -21,9 +21,6 @@ INSTALLED_APPS += [
 
     'request',  # stats on HTTP requests
 
-    #'userprofiles',
-    #'userprofiles.contrib.profiles',
-
     'django.contrib.sitemaps',
     'djangocms_page_sitemap',
 
@@ -138,13 +135,13 @@ CMS_LANGUAGES = {
     1: [
         {
             'code': 'fr',
-            'name': ugettext('French'),
+            'name': gettext('French'),
             'fallbacks': ["en"],
             'public': True,
         },
         {
             'code': 'en',
-            'name': ugettext('English'),
+            'name': gettext('English'),
             'fallbacks': ["fr"],
             'public': True,
         },
@@ -159,8 +156,8 @@ CMS_LANGUAGES = {
 
 ## DJANGO CMS CONF ##
 CMS_TEMPLATES = (
-    ('cms_one_column.html', ugettext('One column')),
-    ('cms_two_columns.html', ugettext('Two columns')),
+    ('cms_one_column.html', gettext('One column')),
+    ('cms_two_columns.html', gettext('Two columns')),
 )
 
 CMS_TEMPLATE_INHERITANCE = True
@@ -241,15 +238,6 @@ JPLAYER_BASE_PATH = STATIC_URL + "libs/jquery-jplayer-2.3.0/"  # for Jplayer SWF
 
 ## DJANGO REGISTRATION CONF ##
 ACCOUNT_ACTIVATION_DAYS = 7
-
-# OUTDATED STUFF - no django1.7 support
-## DJANGO AUTH & USERPROFILES CONF ##
-AUTH_PROFILE_MODULE = "pychronia_cms.Profile"
-USERPROFILES_REGISTRATION_FORM = 'pychronia_cms.forms.RegistrationForm'
-USERPROFILES_USE_ACCOUNT_VERIFICATION = False  # default
-USERPROFILES_AUTO_LOGIN = True  # Automatically log in the user upon registration
-USERPROFILES_USE_PROFILE = True
-USERPROFILES_PROFILE_ALLOW_EMAIL_CHANGE = True
 
 ## WYMEDITOR CONF ##
 ''' USELESS now that we have ckeditor

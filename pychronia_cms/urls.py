@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from django.conf.urls import *
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
+from django.urls import include, re_path
 from django.conf import settings
 from django.views.generic import RedirectView
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.conf.urls.i18n import i18n_patterns
 from django.http.response import HttpResponse
 
@@ -47,17 +48,16 @@ sitemaps = {'cmspages': ExtendedSitemap,
             #'authors': AuthorSitemap,
             }
 
-urlpatterns = patterns('',
+urlpatterns = [
 
-                       url(r'^robots.txt$', lambda r: HttpResponse(ROBOTS_TEXT, content_type="text/plain")),
+    re_path(r'^robots.txt$', lambda r: HttpResponse(ROBOTS_TEXT, content_type="text/plain")),
 
-                       url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap',
-                           {'sitemaps': sitemaps}),
+    re_path(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}),
 
-                       url(r'^admin/', include(admin.site.urls)),
+    re_path(r'^admin/', admin.site.urls),
 
-                       url(r'^i18n/', include('django.conf.urls.i18n')),  # to set language
-                       )
+    re_path(r'^i18n/', include('django.conf.urls.i18n')),  # to set language
+]
 
 urlpatterns += i18n_patterns(
                              #(r'^accounts/', include('userprofiles.urls')), # one-step registration
@@ -66,17 +66,17 @@ urlpatterns += i18n_patterns(
 
                              #url(r'^comments/', include('django.contrib.comments.urls')), useless ATM ?
 
-                             url(r'^$', RedirectView.as_view(url=reverse_lazy('pages-root'))),
+                             re_path(r'^$', RedirectView.as_view(url=reverse_lazy('pages-root'))),
                              # REDIRECT TO CMS HOMEPAGE
-                             url(r'^cms/', include('cms.urls')),  # this MUST end with '/' or be empty
+                             re_path(r'^cms/', include('cms.urls')),  # this MUST end with '/' or be empty
                              )
 
 # Django Debug Toolbar
 import debug_toolbar
 
-urlpatterns += patterns('',
-                        url(r'^__debug__/', include(debug_toolbar.urls)),
-                        )
+urlpatterns += [
+    re_path(r'^__debug__/', include(debug_toolbar.urls)),
+]
 
 #from pprint import pprint
 #pprint(urlpatterns)

@@ -56,11 +56,11 @@ class DefaultServer(ServerBase):
         statobj = os.stat(path)
         size = statobj[stat.ST_SIZE]
         mimetype = self.get_mimetype(path)
-        if not was_modified_since(request.META.get('HTTP_IF_MODIFIED_SINCE'),
-                                  statobj[stat.ST_MTIME], size):
+        if not was_modified_since(request.headers.get('if-modified-since'),
+                                  statobj[stat.ST_MTIME]):
             return HttpResponseNotModified(content_type=mimetype)
 
-        byte_range = parse_single_byte_range(request.META.get('HTTP_RANGE'), size)
+        byte_range = parse_single_byte_range(request.headers.get('range'), size)
 
         if byte_range is False:
             response = HttpResponse(status=416, content_type=mimetype)

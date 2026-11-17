@@ -10,9 +10,7 @@ requires-python = ">=3.11"
 
 dependencies = [
     "PyMySQL>=1.0.2",
-    "Django>=4.2.4",
-    "django-compat-patcher>=0.14",
-    "compat-patcher-core>=2.4",
+    "Django>=5.2",
     "Pillow>=11",
     "easy-thumbnails[svg]>=2.8.5",
     "django-filer>=3.0.3",
@@ -80,7 +78,7 @@ cms = [
     "django-taggit>=1",
     "django-taggit-templatetags",
     "django-treebeard",
-    "django-reversion==3.0.3",
+    "django-reversion>=6.5.2",
     "django-request",  # see [tool.uv.sources]; for quick HTTP visit stats
     "django-apptemplates==1.4",
     "django-appconf==1.0.3",
@@ -107,7 +105,7 @@ dev = [
 # django-polymorphic: django-filer's own metadata caps it below what cms4+/Django 5.1 needs
 # (already proven safe to override, verified throughout the cms-upgrade-ladder).
 override-dependencies = [
-    "Django>=4.2.4",
+    "Django>=5.2",
     "django-polymorphic>=3.0.0",
 ]
 package = false  # this is an application, scripts bootstrap sys.path via setup_pychronia_env.py
@@ -115,9 +113,9 @@ package = false  # this is an application, scripts bootstrap sys.path via setup_
 [tool.uv.sources]
 django-zodb = { git = "https://github.com/pakal/django-zodb.git", rev = "556c54da5a8b32f632097449fffcb25d0f607c5f" }
 python-aiml = { git = "https://github.com/paulovn/python-aiml", rev = "21c77d5e204dfdbaef315e570fdd918b852c738b" }
-Django-Select2 = { git = "https://github.com/pakal/django-select2.git", rev = "6b1adada50ce53f4c51dd6d409371705627fa17e" }
-cmsplugin-simple-gallery = { git = "https://github.com/pakal/cmsplugin-simple-gallery.git" }
-django-cms-jplayer = { git = "https://github.com/pakal/django-cms-jplayer.git" }
+Django-Select2 = { git = "https://github.com/pakal/django-select2.git", rev = "32547b7e9a4d1c4ffe0cefe0fbf0c9262095456e" }
+cmsplugin-simple-gallery = { git = "https://github.com/pakal/cmsplugin-simple-gallery.git", rev = "c2e5c4d61f6a6cf306d350699a6ef033f8b96b06" }
+django-cms-jplayer = { git = "https://github.com/pakal/django-cms-jplayer.git", rev = "a4458ed2b271e47280cd307cdcc4a099f3b240cf" }
 django-request = { git = "https://github.com/django-request/django-request.git" }
 
 

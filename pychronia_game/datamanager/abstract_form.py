@@ -8,7 +8,7 @@ import json
 from pychronia_game.common import *
 from django.core.exceptions import ValidationError
 
-GAMEMASTER_HINTS_FIELD = lambda: forms.CharField(label=ugettext_lazy("Hints for Game Master"),
+GAMEMASTER_HINTS_FIELD = lambda: forms.CharField(label=gettext_lazy("Hints for Game Master"),
                                                  widget=forms.Textarea(attrs={'rows': '2', 'cols': '40'}),
                                                  required=False)
 
@@ -191,11 +191,11 @@ assert issubclass(AbstractGameForm, forms.Form)
 
 
 class DataTableForm(AbstractGameForm):
-    previous_identifier = forms.CharField(label=ugettext_lazy("Initial identifier"), widget=forms.HiddenInput(),
+    previous_identifier = forms.CharField(label=gettext_lazy("Initial identifier"), widget=forms.HiddenInput(),
                                           required=False)
-    identifier = forms.CharField(label=ugettext_lazy("Identifier"), required=True)
+    identifier = forms.CharField(label=gettext_lazy("Identifier"), required=True)
 
-    BAD_ID_MSG = ugettext_lazy("Identifier must contain no space")
+    BAD_ID_MSG = gettext_lazy("Identifier must contain no space")
 
     def __init__(self, datamanager, initial=None, undeletable_identifiers=None, **kwargs):
 

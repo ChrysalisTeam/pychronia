@@ -8,7 +8,7 @@ import fileservers
 from django.core.mail import mail_admins
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
-from django.utils.translation import ugettext as _, ugettext_lazy
+from django.utils.translation import gettext as _, gettext_lazy
 from pychronia_game.common import *
 from pychronia_game.datamanager import register_view
 
@@ -60,7 +60,7 @@ def set_interface_language(request):
     from django.utils.http import url_has_allowed_host_and_scheme
     from pychronia_game.middlewares import INTERFACE_LANGUAGE_SESSION_KEY
 
-    next_url = request.POST.get("next") or request.META.get("HTTP_REFERER")
+    next_url = request.POST.get("next") or request.headers.get("referer")
     if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()},
                                            require_https=request.is_secure()):
         next_url = "/"
@@ -77,7 +77,7 @@ def game_homepage_without_username(request):
     """
     Simple redirection when homepage URL lacks the "game_username" part.
     """
-    username_homepage = game_view_url("pychronia_game-homepage", datamanager=request.datamanager)
+    username_homepage = game_view_url("pychronia_game.views.homepage", datamanager=request.datamanager)
     return HttpResponseRedirect(redirect_to=username_homepage)
 
 
@@ -91,7 +91,7 @@ def serve_game_file(request, hash="", path="", **kwargs):
     return fileservers.serve_file(request, path=full_path)
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Logo Animation"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Logo Animation"))
 def ___logo_animation(request, template_name='utilities/item_3d_viewer.html'):
     """
     These settings are heavily dependant on values hard-coded on templates (dimensions, colors...),
@@ -119,7 +119,7 @@ def ___logo_animation(request, template_name='utilities/item_3d_viewer.html'):
                   })
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("View Help Page"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("View Help Page"))
 def view_help_page(request, keyword, template_name='utilities/help_page.html'):
     """
     Access for targeted pages is checked here!
@@ -152,7 +152,7 @@ def view_help_page(request, keyword, template_name='utilities/help_page.html'):
                   })
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Bug Report"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Bug Report"))
 def bug_report_treatment(request):
     if request.method != "POST":
         return HttpResponse("KO - bug not reported")
@@ -234,11 +234,11 @@ def is_nightmare_captcha_successful(request):
 @register_view(access=UserAccess.anonymous, requires_global_permission=False)
 def _______ajax_domotics_security(request):
 
-    action = request.REQUEST.get("action", None)
+    action = utilities.get_request_param(request, "action", None)
     if action == "lock":
         request.datamanager.lock_house_doors()
     elif action == "unlock":
-        password = request.REQUEST.get("password", None)
+        password = utilities.get_request_param(request, "password", None)
         if password:
             request.datamanager.try_unlocking_house_doors(password)
 
@@ -300,14 +300,13 @@ def translations_management(request,  template_name='specific_operations/transla
 
     translation_delay = request.datamanager.get_global_parameter("translation_delays")
 
-    return render_to_response(template_name,
+    return render(request, template_name,
                                 {
                                  'page_title': _("Runes translations"),
                                  "translation_form": form,
                                  'min_delay_mn': translation_delay[0],
                                  'max_delay_mn': translation_delay[1],
-                                },
-                                context_instance=RequestContext(request))
+                                })
 
 
 
@@ -333,13 +332,12 @@ def wiretapping_management(request, template_name='specific_operations/wiretappi
     displayed_form = forms.WiretapTargetsForm(request.datamanager, user, current_target_form_data)
     assert displayed_form.is_valid()
 
-    return render_to_response(template_name,
+    return render(request, template_name,
                                 {
                                  'page_title': _("Wiretap Management"),
                                  'current_targets': [request.datamanager.get_official_name(current_target) for current_target in current_targets],
                                  'wiretapping_form': displayed_form,
-                                },
-                                context_instance=RequestContext(request))
+                                })
 
 
 
@@ -368,13 +366,12 @@ def __scanning_management(request, template_name='specific_operations/scanning_m
         form = forms.ScanningForm(available_items)
 
 
-    return render_to_response(template_name,
+    return render(request, template_name,
                                 {
                                  'page_title': _("Scanning Management"),
                                  'scanning_form': form, # In ANY case we provide the form, since it's possible to provide only a description of objects to scan
                                  'available_items': available_items
-                                },
-                                context_instance=RequestContext(request))
+                                })
 
 
 
@@ -413,7 +410,7 @@ def __teldorian_teleportations(request, template_name='specific_operations/armed
 
     instructions = _("You may here trigger the teleportation of our intervention squads, according to the location and instructions you'll send.")
 
-    instructions += " " + ungettext("You have already launched %(current)s teleportation, on a maximum allowed of %(maximum)s such operations.",
+    instructions += " " + ngettext("You have already launched %(current)s teleportation, on a maximum allowed of %(maximum)s such operations.",
                                     "You have already launched %(current)s teleportations, on a maximum allowed of %(maximum)s such operations.",
                                     teldorian_teleportations_done) % dm_module.SDICT(current=teldorian_teleportations_done, maximum=max_teldorian_teleportations)
 
@@ -423,7 +420,7 @@ def __teldorian_teleportations(request, template_name='specific_operations/armed
         intervention_impossible_msg = _("You have already used all available teleportations.")
 
 
-    return render_to_response(template_name,
+    return render(request, template_name,
                                 {
                                  'page_title': _("Teleportation Operations"),
                                  'instructions': instructions,
@@ -431,8 +428,7 @@ def __teldorian_teleportations(request, template_name='specific_operations/armed
                                  'intervention_impossible_msg': intervention_impossible_msg,
                                  'target_url': reverse(teldorian_teleportations, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)),
                                  'same_width_widgets': True
-                                },
-                                context_instance=RequestContext(request))
+                                })
 
 
 
@@ -471,7 +467,7 @@ def __mercenary_commandos(request, template_name='specific_operations/armed_inte
     else:
         intervention_impossible_msg = _("At the moment, there is no place where you can launch an armed operation.")
 
-    return render_to_response(template_name,
+    return render(request, template_name,
                                 {
                                  'page_title': _("Mercenary Commandos"),
                                  'instructions': instructions,
@@ -479,8 +475,7 @@ def __mercenary_commandos(request, template_name='specific_operations/armed_inte
                                  'intervention_impossible_msg': intervention_impossible_msg,
                                  'target_url': reverse(mercenary_commandos, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)),
                                  'same_width_widgets': True
-                                },
-                                context_instance=RequestContext(request))
+                                })
 
 
 
@@ -515,7 +510,7 @@ def __akarith_attacks(request, template_name='specific_operations/armed_interven
 
     intervention_impossible_msg = None # akarith people can ALWAYS attack, at the moment
 
-    return render_to_response(template_name,
+    return render(request, template_name,
                                 {
                                  'page_title': _("Holy Attacks"),
                                  'instructions': instructions,
@@ -523,8 +518,7 @@ def __akarith_attacks(request, template_name='specific_operations/armed_interven
                                  'intervention_impossible_msg': intervention_impossible_msg,
                                  'target_url': reverse(akarith_attacks, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)),
                                  'same_width_widgets': True
-                                },
-                                context_instance=RequestContext(request))
+                                })
 
 
 
@@ -555,7 +549,7 @@ def __telecom_investigation(request, template_name='specific_operations/telecom_
 
     instructions = _("You may here test our new telecommunication interception and decryption system.")
 
-    instructions += " " + ungettext("You have already tried it %(current)d time, on a maximum allowed of %(maximum)d such operations.",
+    instructions += " " + ngettext("You have already tried it %(current)d time, on a maximum allowed of %(maximum)d such operations.",
                                 "You have already tried it %(current)d times, on a maximum allowed of %(maximum)d such operations.",
                                 telecom_investigations_done) % dm_module.SDICT(current=telecom_investigations_done, maximum=max_telecom_investigations)
 
@@ -565,14 +559,13 @@ def __telecom_investigation(request, template_name='specific_operations/telecom_
         inquiry_impossible_msg = _("You have already used all available inquiries.")
 
 
-    return render_to_response(template_name,
+    return render(request, template_name,
                                 {
                                  'page_title': _("Telecom Investigations"),
                                  'instructions': instructions,
                                  'investigation_form': form,
                                  'investigation_impossible_msg': inquiry_impossible_msg,
-                                },
-                                context_instance=RequestContext(request))
+                                })
 
 @register_view(access=UserAccess.authenticated) # obsolete...
 def __personal_radio_messages_listing(request, template_name='generic_operations/personal_radio_messages.html'):
@@ -599,7 +592,7 @@ def __personal_radio_messages_listing(request, template_name='generic_operations
         victory_text = "VICTORYYY" # request.datamanager.get_audio_message_properties(domain_properties["victory"])["text"]
         defeat_text = "DEFEAAAT" ## request.datamanager.get_audio_message_properties(domain_properties["defeat"])["text"]
 
-    return render_to_response(template_name,
+    return render(request, template_name,
                             {
                              'page_title': _("Personal radio messages"),
                              'is_master': is_master,
@@ -608,6 +601,5 @@ def __personal_radio_messages_listing(request, template_name='generic_operations
                              'victory_text': victory_text,
                              'defeat_text': defeat_text,
                              'can_wiretap': user.has_permission("manage_wiretaps")
-                            },
-                            context_instance=RequestContext(request))
+                            })
 '''

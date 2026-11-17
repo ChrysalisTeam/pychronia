@@ -39,7 +39,7 @@ def pychronia_template_context(request):
 
         # WARNING - must be BEFORE messages retrieval!
         writability_data = dm.determine_actual_game_writability()
-        if not request.is_ajax():
+        if not utilities.is_ajax_request(request):
             if writability_data["reason"]:
                 dm.user.add_warning(writability_data["reason"])  # a reason for no-writability most probably
             elif (not dm.is_game_started()) and display_admin_tips:

@@ -78,17 +78,17 @@ class WiretappingConfidentialityForm(AbstractGameForm):
 
 @register_view
 class WiretappingAbility(AbstractAbility):
-    TITLE = ugettext_lazy("Wiretapping")
+    TITLE = gettext_lazy("Wiretapping")
     NAME = "wiretapping"
 
-    GAME_ACTIONS = dict(targets_form=dict(title=ugettext_lazy("Choose wiretapping targets"),
+    GAME_ACTIONS = dict(targets_form=dict(title=gettext_lazy("Choose wiretapping targets"),
                                           form_class=WiretappingTargetsForm,
                                           callback="change_current_user_wiretapping_targets"),
-                        purchase_wiretapping_slot=dict(title=ugettext_lazy("Purchase wiretapping slot"),
+                        purchase_wiretapping_slot=dict(title=gettext_lazy("Purchase wiretapping slot"),
                                                        form_class=WiretappingSlotsPurchaseForm,
                                                        callback="purchase_wiretapping_slot"),
                         purchase_confidentiality_protection=dict(
-                            title=ugettext_lazy("Purchase confidentiality protection"),
+                            title=gettext_lazy("Purchase confidentiality protection"),
                             form_class=WiretappingConfidentialityForm,
                             callback="purchase_confidentiality_protection",
                             requires_permission="purchase_confidentiality_protection"))
@@ -183,7 +183,7 @@ class WiretappingAbility(AbstractAbility):
         self.private_data["wiretapping_targets"] = PersistentList(target_names)
         '''
 
-        self.datamanager.log_game_event(ugettext_noop("Wiretapping targets set to (%(targets)s)."),
+        self.datamanager.log_game_event(gettext_noop("Wiretapping targets set to (%(targets)s)."),
                                         PersistentMapping(targets=", ".join(target_names)),
                                         url=None,
                                         visible_by=[self.username])
@@ -195,7 +195,7 @@ class WiretappingAbility(AbstractAbility):
         if self.get_confidentiality_protection_status():
             raise AbnormalUsageError(_("You already have confidentiality system activated"))
         self.set_confidentiality_protection_status(has_confidentiality=True)
-        self.datamanager.log_game_event(ugettext_noop("Confidentiality system activated."),
+        self.datamanager.log_game_event(gettext_noop("Confidentiality system activated."),
                                         visible_by=[self.username])
         return _("Confidentiality system properly activated.")
 

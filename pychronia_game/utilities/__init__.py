@@ -882,9 +882,27 @@ def make_request_querydicts_mutable(request):
     """Screw the immutability of Django QueryDicts, we need FREEDOM"""
     request._post = request.POST.copy()
     request._get = request.GET.copy()
-    if hasattr(request, "_request"):
-        del request._request  # force regeneration of MergeDict
     assert request._post._mutable and request._get._mutable
+
+
+def get_request_param(request, key, default=None):
+    """
+    Return a request parameter from POST or GET data, POST taking precedence
+    (like the old ``request.REQUEST.get()``, removed from Django).
+    """
+    if key in request.POST:
+        return request.POST[key]
+    return request.GET.get(key, default)
+
+
+def has_request_param(request, key):
+    """Return True if the parameter is present in POST or GET data (like the old ``key in request.REQUEST``)."""
+    return key in request.POST or key in request.GET
+
+
+def is_ajax_request(request):
+    """Replacement for the ``request.is_ajax()`` method removed from Django."""
+    return request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
 
 
 class TechnicalEventsMixin(object):

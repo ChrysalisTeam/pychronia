@@ -118,7 +118,7 @@ class GameUser(object):
             return False
 
         assert self.datamanager.request
-        if self.datamanager.request.is_ajax():
+        if utilities.is_ajax_request(self.datamanager.request):
             self.datamanager.logger.critical("Ajax request may not add user message %r (url=%s)", context,
                                              self.datamanager.request.get_full_path())
             return False

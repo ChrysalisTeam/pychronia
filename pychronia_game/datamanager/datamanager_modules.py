@@ -7,7 +7,7 @@ from collections import OrderedDict
 
 from pychronia_game.common import *
 from django.utils import translation
-from pychronia_game.common import _, ugettext_lazy, ugettext_noop, _undefined  # mainly to shut up the static checker...
+from pychronia_game.common import _, gettext_lazy, gettext_noop, _undefined  # mainly to shut up the static checker...
 from pychronia_game import utilities
 
 from .datamanager_tools import *
@@ -25,9 +25,9 @@ def register_module(Klass):
     return Klass
 
 
-VISIBILITY_REASONS = Enum([ugettext_noop("sender"),
-                           ugettext_noop("recipient"),
-                           ugettext_noop("interceptor")])  # tokens identifying why one can see an email
+VISIBILITY_REASONS = Enum([gettext_noop("sender"),
+                           gettext_noop("recipient"),
+                           gettext_noop("interceptor")])  # tokens identifying why one can see an email
 
 
 @register_module
@@ -352,7 +352,7 @@ class GameEvents(BaseDataManager):  # TODO REFINE
     def log_game_event(self, message, substitutions=None, url=None, visible_by=_undefined, additional_details=None):
         """
         Input message must be an UNTRANSLATED string, since we handle translation directly in this class. 
-        So use "ugettext_noop()" to mark it.
+        So use "gettext_noop()" to mark it.
         
         The optional parameter "additional_details" will be concatenated but not translate.
         
@@ -1141,7 +1141,7 @@ class PlayerAuthentication(BaseDataManager):
                                        subject=subject, body=body, attachment=attachment,
                                        date_or_delay_mn=self.get_global_parameter("password_recovery_delay_mn"))
 
-            self.log_game_event(ugettext_noop("Password of %(username)s has been recovered by %(target_email)s."),
+            self.log_game_event(gettext_noop("Password of %(username)s has been recovered by %(target_email)s."),
                                 PersistentMapping(username=username, target_email=target_email),
                                 url=self.get_message_viewer_url_or_none(msg_id),
                                 visible_by=None)  # on purpose, we hide that hacking!
@@ -1774,7 +1774,7 @@ class TextMessagingCore(BaseDataManager):
             "sender_email": str,  # only initial one
             "recipient_emails": PersistentList,  # only initial, theoretical ones
             "visible_by": PersistentMapping,
-        # mapping usernames (including master_login) to translatable (ugettext_noop'ed) string "reason of visibility" or None (if obvious)
+        # mapping usernames (including master_login) to translatable (gettext_noop'ed) string "reason of visibility" or None (if obvious)
 
             "subject": str,
             "body": str,
@@ -2178,7 +2178,7 @@ class TextMessagingExternalContacts(BaseDataManager):
 
     class GloballyRegisteredContactsManager(DataTableManager):
 
-        TRANSLATABLE_ITEM_NAME = ugettext_lazy("contact")
+        TRANSLATABLE_ITEM_NAME = gettext_lazy("contact")
 
         def _load_initial_data(self, **kwargs):
             for identifier, details in list(self._table.items()):
@@ -3186,7 +3186,7 @@ class RadioMessaging(BaseDataManager):  # TODO REFINE
 
     class RadioSpotsManager(DataTableManager):
 
-        TRANSLATABLE_ITEM_NAME = ugettext_lazy("radio spots")
+        TRANSLATABLE_ITEM_NAME = gettext_lazy("radio spots")
 
         def _load_initial_data(self, **kwargs):
 
@@ -3624,7 +3624,7 @@ class PersonalFiles(BaseDataManager):
             decrypted_files = [domain + decrypted_file for decrypted_file in decrypted_files]
 
         self.log_game_event(
-            ugettext_noop("Encrypted folder '%(folder)s/%(password)s' accessed by user '%(username)s'."),
+            gettext_noop("Encrypted folder '%(folder)s/%(password)s' accessed by user '%(username)s'."),
             PersistentMapping(folder=folder, password=password, username=username),
             url=None,
             visible_by=None)  # only game master shall see this
@@ -3784,7 +3784,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
     class GameItemsManager(DataTableManager):
 
-        TRANSLATABLE_ITEM_NAME = ugettext_lazy("objects/gems")
+        TRANSLATABLE_ITEM_NAME = gettext_lazy("objects/gems")
 
         def _load_initial_data(self, **kwargs):
 
@@ -3951,9 +3951,9 @@ class MoneyItemsOwnership(BaseDataManager):
 
         # the reason is a substitution too, so that log_game_event() can translate the whole message
         if reason:
-            msg = ugettext_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s. Reason: %(reason)s")
+            msg = gettext_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s. Reason: %(reason)s")
         else:
-            msg = ugettext_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s.")
+            msg = gettext_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s.")
 
         self.log_game_event(msg,
                             PersistentMapping(amount=amount, from_name=from_name, to_name=to_name, reason=reason),
@@ -4027,7 +4027,7 @@ class MoneyItemsOwnership(BaseDataManager):
             visible_by.append(char_name)
             self._assign_free_item_to_character(item_name=item_name, item=item, char_name=char_name)
 
-        self.log_game_event(ugettext_noop("Item %(item_name)s transferred from %(from_name)s to %(char_name)s."),
+        self.log_game_event(gettext_noop("Item %(item_name)s transferred from %(from_name)s to %(char_name)s."),
                             PersistentMapping(item_name=item_name, from_name=from_name, char_name=char_name),
                             url=None,
                             visible_by=visible_by)  # characters involved thus see the transaction in events
@@ -4114,7 +4114,7 @@ class MoneyItemsOwnership(BaseDataManager):
         gems_choices.sort()
         recipient_char["gems"] += gems_choices
 
-        self.log_game_event(ugettext_noop("Gems transferred from %(from_name)s to %(to_name)s: %(gems_choices)s."),
+        self.log_game_event(gettext_noop("Gems transferred from %(from_name)s to %(to_name)s: %(gems_choices)s."),
                             PersistentMapping(from_name=from_name, to_name=to_name, gems_choices=gems_choices),
                             url=None,
                             visible_by=[from_name, to_name])  # event visible by both characters
@@ -4135,7 +4135,7 @@ class MoneyItemsOwnership(BaseDataManager):
             character_properties["gems"] = PersistentList(remaining_gems)
             self.data["global_parameters"]["spent_gems"] += gems_choices
 
-        self.log_game_event(ugettext_noop("Gems debited from %(username)s: %(gems_choices)s."),
+        self.log_game_event(gettext_noop("Gems debited from %(username)s: %(gems_choices)s."),
                             PersistentMapping(username=username, gems_choices=gems_choices),
                             url=None,
                             visible_by=[username])
@@ -4157,7 +4157,7 @@ class MoneyItemsOwnership(BaseDataManager):
             self.data["global_parameters"]["spent_gems"] = PersistentList(remaining_gems)
             character_properties["gems"] += gems_choices
 
-        self.log_game_event(ugettext_noop("Gems credited to %(username)s: %(gems_choices)s."),
+        self.log_game_event(gettext_noop("Gems credited to %(username)s: %(gems_choices)s."),
                             PersistentMapping(username=username, gems_choices=gems_choices),
                             url=None,
                             visible_by=[username])
@@ -4503,7 +4503,7 @@ class StaticPages(BaseDataManager):
 
     class StaticPagesManager(DataTableManager):
 
-        TRANSLATABLE_ITEM_NAME = ugettext_lazy("static pages")
+        TRANSLATABLE_ITEM_NAME = gettext_lazy("static pages")
 
         def _load_initial_data(self, **kwargs):
 

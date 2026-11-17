@@ -11,7 +11,7 @@ from django.core.mail import send_mail
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render
 from django.contrib import messages
-from django.utils.translation import ugettext as _, ugettext_lazy
+from django.utils.translation import gettext as _, gettext_lazy
 from django import forms
 from django.contrib.messages import get_messages
 from django.utils.http import urlencode
@@ -24,20 +24,20 @@ from pychronia_game.utilities import encryption
 from pychronia_game.datamanager.abstract_form import SimpleForm
 
 
-GAME_LANGUAGE_LABELS = dict(fr=ugettext_lazy("French"), en=ugettext_lazy("English"))
+GAME_LANGUAGE_LABELS = dict(fr=gettext_lazy("French"), en=gettext_lazy("English"))
 
-GAME_SCENARIO_LABELS = dict(auction=ugettext_lazy("Auction (alternate reality game)"),
-                            mindstorm=ugettext_lazy("Mindstorm (mystery party)"))
+GAME_SCENARIO_LABELS = dict(auction=gettext_lazy("Auction (alternate reality game)"),
+                            mindstorm=gettext_lazy("Mindstorm (mystery party)"))
 
 
 class GameInstanceCreationForm(SimpleForm):
-    game_instance_id = forms.SlugField(label=ugettext_lazy("Game instance ID (slug)"), required=True)
-    creator_login = forms.CharField(label=ugettext_lazy("Creator login"), required=True)
-    creator_email = forms.EmailField(label=ugettext_lazy("Creator email"),
+    game_instance_id = forms.SlugField(label=gettext_lazy("Game instance ID (slug)"), required=True)
+    creator_login = forms.CharField(label=gettext_lazy("Creator login"), required=True)
+    creator_email = forms.EmailField(label=gettext_lazy("Creator email"),
                                      required=False)  # only required for non-superuser
-    game_language = forms.ChoiceField(label=ugettext_lazy("Game language (can't be changed later)"),
+    game_language = forms.ChoiceField(label=gettext_lazy("Game language (can't be changed later)"),
                                       required=True)
-    game_scenario = forms.ChoiceField(label=ugettext_lazy("Game scenario (can't be changed later)"),
+    game_scenario = forms.ChoiceField(label=gettext_lazy("Game scenario (can't be changed later)"),
                                       required=True)
 
     def __init__(self, require_email, *args, **kwargs):
@@ -57,8 +57,8 @@ class GameInstanceCreationForm(SimpleForm):
 
 GAME_INSTANCE_MAINTENANCE_LOCKING_DELAY_MN = 15
 
-GAME_ACTIVATION_EMAIL_SUBJECT = ugettext_lazy("New game instance of Chrysalis RPG")
-GAME_ACTIVATION_EMAIL_BODY_TPL = ugettext_lazy("""\
+GAME_ACTIVATION_EMAIL_SUBJECT = gettext_lazy("New game instance of Chrysalis RPG")
+GAME_ACTIVATION_EMAIL_BODY_TPL = gettext_lazy("""\
 Dear %(creator_login)s,
 
 here is the link that will allow you to complete the creation of your Chrysalis game, \

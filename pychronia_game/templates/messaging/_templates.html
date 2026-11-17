@@ -59,7 +59,7 @@ OLD STUFFS BELOW
             {% endif %}">
 
 
-                {% ifequal mode "inbox" %}
+                {% if mode == "inbox" %}
                 <span class="message_operation">
                     <a class="mark_read_tag" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_read: true}); return false;" href="#">
                         {% trans "Mark as read" %}
@@ -68,15 +68,15 @@ OLD STUFFS BELOW
                         {% trans "Mark as unread" %}
                     </a>
                 </span>
-                {% endifequal %}
+                {% endif %}
 
-                {% ifequal mode "all_queued_messages" %}
+                {% if mode == "all_queued_messages" %}
                 <span class="message_operation">
                     <a onclick="force_email_sending('{{ message.id|escapejs }}', true); return false;" href="#">
                         {% trans "Force sending" %}
                     </a>
                 </span>
-                {% endifequal %}
+                {% endif %}
 
 
                 <table style="margin:2px 24px; line-height:0.6em;">
@@ -125,17 +125,17 @@ OLD STUFFS BELOW
                 {% endif %}
 
                 <span class="message_operation">
-                    {% ifequal mode "inbox" %}
+                    {% if mode == "inbox" %}
                         <a href="{% game_view_url "pychronia_game.views.compose_message" %}?parent_id={{ message.id|urlencode }}">
                             {% trans "Reply to message" %} {% if user.username in message.has_replied %}({% trans "already done" %}){% endif %} {% FIXME still used ?? %}
                         </a>
-                    {% endifequal %}
+                    {% endif %}
 
-                    {% ifequal mode "outbox" %}
+                    {% if mode == "outbox" %}
                         <a href="{% game_view_url "pychronia_game.views.compose_message" %}?parent_id={{ message.id|urlencode }}">
                             {% trans "Recontact recipient" %}
                         </a>
-                    {% endifequal %}
+                    {% endif %}
                 </span>
             </div>
 

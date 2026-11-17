@@ -18,11 +18,11 @@ from pychronia_game.datamanager.abstract_game_view import register_view
 
 @register_view
 class WorldScanAbility(AbstractPartnershipAbility):
-    TITLE = ugettext_lazy("World Scan")
+    TITLE = gettext_lazy("World Scan")
 
     NAME = "world_scan"
 
-    GAME_ACTIONS = dict(scan_form=dict(title=ugettext_lazy("Choose world scan model"),
+    GAME_ACTIONS = dict(scan_form=dict(title=gettext_lazy("Choose world scan model"),
                                        form_class=ArtefactForm,
                                        callback="process_world_scan_submission"))
 
@@ -184,7 +184,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
         best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
                                                                    response_msg_data=response_msg_data)
 
-        self.log_game_event(ugettext_noop("Automated scanning request sent for item '%(item_title)s'."),
+        self.log_game_event(gettext_noop("Automated scanning request sent for item '%(item_title)s'."),
                             PersistentMapping(item_title=item_title),
                             url=self.get_message_viewer_url_or_none(best_msg_id),  # best_msg_id might be None
                             visible_by=[self.username])
@@ -199,7 +199,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
             msg_id = self.post_message(local_email, remote_email, subject, body, date_or_delay_mn=0, is_read=False,
                                        is_certified=True)
     
-            self.log_game_event(ugettext_noop("Manual scanning request sent by %(username)s with description."),
+            self.log_game_event(gettext_noop("Manual scanning request sent by %(username)s with description."),
                                  PersistentMapping(username=username),
                                  url=self.get_message_viewer_url_or_none(msg_id))) # msg_id might be None
     

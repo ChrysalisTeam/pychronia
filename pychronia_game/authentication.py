@@ -67,7 +67,7 @@ def _lookup_enforced_session_or_none(request):
     is_observer = False
 
     if config.GAME_ALLOW_ENFORCED_LOGIN:
-        login_data_encrypted = request.REQUEST.get(ENFORCED_SESSION_TICKET_NAME)
+        login_data_encrypted = utilities.get_request_param(request, ENFORCED_SESSION_TICKET_NAME)
         if login_data_encrypted:
             try:
                 login_data = encryption.unicode_decrypt(login_data_encrypted)  # decode using site's SECRET_KEY

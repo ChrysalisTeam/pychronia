@@ -11,15 +11,15 @@ from pychronia_game.datamanager import readonly_method, \
 
 @register_view
 class HouseLockingAbility(AbstractAbility):
-    #TITLE = ugettext_lazy("Manor Security")
+    #TITLE = gettext_lazy("Manor Security")
 
-    TITLE = ugettext_lazy("Manor Security")
+    TITLE = gettext_lazy("Manor Security")
     NAME = "house_locking"
 
-    GAME_ACTIONS = dict(lock=dict(title=ugettext_lazy("Lock house doors"),
+    GAME_ACTIONS = dict(lock=dict(title=gettext_lazy("Lock house doors"),
                                   form_class=None,
                                   callback="lock_house_doors"),
-                        unlock=dict(title=ugettext_lazy("Unlock house doors"),
+                        unlock=dict(title=gettext_lazy("Unlock house doors"),
                                     form_class=None,
                                     callback="try_unlocking_house_doors"))
 
@@ -45,7 +45,7 @@ class HouseLockingAbility(AbstractAbility):
         if self.are_house_doors_open():
             self.settings["house_doors_are_open"] = False
             self.user.add_message(_("House doors successfully locked."))
-            self.log_game_event(ugettext_noop("House doors have been locked by security client."), visible_by=None)
+            self.log_game_event(gettext_noop("House doors have been locked by security client."), visible_by=None)
             return True
         else:
             self.user.add_error(_("Doors are already locked."))
@@ -62,7 +62,7 @@ class HouseLockingAbility(AbstractAbility):
             if password.strip() == expected_password.strip():
                 self.settings["house_doors_are_open"] = True
                 self.user.add_message(_("House doors successfully unlocked."))
-                self.log_game_event(ugettext_noop("House doors have been successfully unlocked with password."),
+                self.log_game_event(gettext_noop("House doors have been successfully unlocked with password."),
                                     visible_by=None)
                 return True
             else:
@@ -100,11 +100,11 @@ class HouseLockingAbility(AbstractAbility):
 # no security authentication
 def ajax_domotics_security(request):
 
-    action = request.REQUEST.get("action", None)
+    action = utilities.get_request_param(request, "action", None)
     if action == "lock":
         request.datamanager.lock_house_doors()
     elif action == "unlock":
-        password = request.REQUEST.get("password", None)
+        password = utilities.get_request_param(request, "password", None)
         if password:
             request.datamanager.try_unlocking_house_doors(password)
 

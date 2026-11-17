@@ -18,17 +18,17 @@ class PersonalItemForm(AbstractGameForm):
         _objects = datamanager.get_available_items_for_user()
         _objects_choices = [("", _("Choose..."))] + [(item_name, _objects[item_name]["title"]) for item_name in sorted(_objects.keys())]
 
-        self.fields["item_name"] = forms.ChoiceField(label=ugettext_lazy(u"Item"), choices=_objects_choices)
+        self.fields["item_name"] = forms.ChoiceField(label=gettext_lazy(u"Item"), choices=_objects_choices)
 
         assert self.fields.keyOrder # if reordering needed OBSOLETE
 '''
 
 
 class MatterAnalysisAbility(AbstractPartnershipAbility):
-    TITLE = ugettext_lazy("Biophysical Analysis")
+    TITLE = gettext_lazy("Biophysical Analysis")
     NAME = "matter_analysis"
 
-    GAME_ACTIONS = dict(process_artefact=dict(title=ugettext_lazy("Process object analysis"),
+    GAME_ACTIONS = dict(process_artefact=dict(title=gettext_lazy("Process object analysis"),
                                               form_class=ArtefactForm,
                                               callback="process_object_analysis"))
 
@@ -95,7 +95,7 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
         best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
                                                                    response_msg_data=response_msg_data)
 
-        self.log_game_event(ugettext_noop("Item '%(item_title)s' sent for deep matter analysis."),
+        self.log_game_event(gettext_noop("Item '%(item_title)s' sent for deep matter analysis."),
                             PersistentMapping(item_title=item_title),
                             url=self.get_message_viewer_url_or_none(best_msg_id),  # best_msg_id might be None
                             visible_by=[self.username])

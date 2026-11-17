@@ -12,7 +12,7 @@ from pychronia_game.utilities.select2_extensions import Select2TagsField
 
 
 class FriendshipMinDurationForm(AbstractGameForm):
-    duration_mn = django_forms.IntegerField(label=ugettext_lazy("Set minimum friendship duration in minutes"),
+    duration_mn = django_forms.IntegerField(label=gettext_lazy("Set minimum friendship duration in minutes"),
                                             max_value=60 * 24 * 30, min_value=0, required=True)
 
     def __init__(self, datamanager, *args, **kwargs):
@@ -20,12 +20,12 @@ class FriendshipMinDurationForm(AbstractGameForm):
         self.fields['duration_mn'].initial = datamanager.get_global_parameter("friendship_minimum_duration_mn_abs")
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Login"),
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Login"),
                always_allow_post=True)
 def login(request, template_name='profile/login.html'):
     form = None
     user = request.datamanager.user
-    next_url = request.REQUEST.get("next", "")
+    next_url = utilities.get_request_param(request, "next", "")
 
     if request.method == "POST":
         if not request.session.test_cookie_worked():
@@ -50,7 +50,7 @@ def login(request, template_name='profile/login.html'):
                     if next_url:
                         _target_url = next_url
                     else:
-                        _target_url = game_view_url("pychronia_game-homepage", datamanager=request.datamanager)
+                        _target_url = game_view_url("pychronia_game.views.homepage", datamanager=request.datamanager)
                     return HttpResponseRedirect(_target_url)  # handy
 
     else:
@@ -67,7 +67,7 @@ def login(request, template_name='profile/login.html'):
                   })
 
 
-@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Log Out"),
+@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=gettext_lazy("Log Out"),
                always_allow_post=True)
 def logout(request):
     logout_session(request)
@@ -77,7 +77,7 @@ def logout(request):
     return HttpResponseRedirect(game_view_url(login, datamanager=request.datamanager))
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Password Recovery"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Password Recovery"))
 def secret_question(request, concerned_username, template_name='profile/secret_question.html'):
     secret_question = None
     form = None
@@ -86,7 +86,7 @@ def secret_question(request, concerned_username, template_name='profile/secret_q
         secret_question = request.datamanager.get_secret_question(concerned_username)
     except UsageError:
         request.datamanager.user.add_error(_("You must provide a valid username to recover your password"))
-        return HttpResponseRedirect(game_view_url("pychronia_game-homepage", datamanager=request.datamanager))
+        return HttpResponseRedirect(game_view_url("pychronia_game.views.homepage", datamanager=request.datamanager))
 
     if request.method == "POST" and request.POST.get("recover", None):
 
@@ -128,16 +128,16 @@ def secret_question(request, concerned_username, template_name='profile/secret_q
 
 @register_view
 class CharacterProfile(AbstractGameView):
-    TITLE = ugettext_lazy("Personal Profile")
+    TITLE = gettext_lazy("Personal Profile")
     NAME = "character_profile"
     TEMPLATE = "profile/character_profile.html"
     ACCESS = UserAccess.character
     REQUIRES_GLOBAL_PERMISSION = False
 
-    GAME_ACTIONS = dict(password_change_form=dict(title=ugettext_lazy("Change password"),
+    GAME_ACTIONS = dict(password_change_form=dict(title=gettext_lazy("Change password"),
                                                   form_class=forms.PasswordChangeForm,
                                                   callback="process_password_change_form"),
-                        secret_question_change_form=dict(title=ugettext_lazy("Change secret question"),
+                        secret_question_change_form=dict(title=gettext_lazy("Change secret question"),
                                                          form_class=forms.SecretQuestionChangeForm,
                                                          callback="process_secret_question_change_form"))
 
@@ -179,7 +179,7 @@ class CharacterProfile(AbstractGameView):
                                                          old_password=old_password,
                                                          new_password=new_password1)
 
-        self.datamanager.log_game_event(ugettext_noop("User account password has been changed."),
+        self.datamanager.log_game_event(gettext_noop("User account password has been changed."),
                                         url=None,
                                         visible_by=[self.datamanager.username])
 
@@ -196,12 +196,12 @@ class CharacterProfile(AbstractGameView):
                                                                 secret_answer=secret_answer)
 
         if secret_question:
-            self.datamanager.log_game_event(ugettext_noop("User account secret question has been changed."),
+            self.datamanager.log_game_event(gettext_noop("User account secret question has been changed."),
                                             url=None,
                                             visible_by=[self.datamanager.username])
             return _("Secret question change successfully performed.")
         else:
-            self.datamanager.log_game_event(ugettext_noop("User account secret question has been removed."),
+            self.datamanager.log_game_event(gettext_noop("User account secret question has been removed."),
                                             url=None,
                                             visible_by=[self.datamanager.username])
             return _("Secret question successfully removed.")
@@ -211,7 +211,7 @@ character_profile = CharacterProfile.as_view
 
 
 class FriendshipRequestForm(AbstractGameForm):
-    other_username = None  # django_forms.CharField(label=ugettext_lazy("User Identifier"), required=True)
+    other_username = None  # django_forms.CharField(label=gettext_lazy("User Identifier"), required=True)
 
     def __init__(self, datamanager, *args, **kwargs):
         super(FriendshipRequestForm, self).__init__(datamanager, *args, **kwargs)
@@ -229,23 +229,23 @@ class FriendshipRequestForm(AbstractGameForm):
 
 @register_view
 class FriendshipManagementView(AbstractGameView):
-    TITLE = ugettext_lazy("Friendship Management")
+    TITLE = gettext_lazy("Friendship Management")
     NAME = "friendship_management"
 
-    GAME_ACTIONS = dict(do_propose_friendship=dict(title=ugettext_lazy("Propose friendship"),
+    GAME_ACTIONS = dict(do_propose_friendship=dict(title=gettext_lazy("Propose friendship"),
                                                    form_class=FriendshipRequestForm,
                                                    callback="do_propose_friendship"),
-                        do_accept_friendship=dict(title=ugettext_lazy("Accept friendship"),
+                        do_accept_friendship=dict(title=gettext_lazy("Accept friendship"),
                                                   form_class=None,
                                                   callback="do_accept_friendship"),
-                        do_cancel_proposal=dict(title=ugettext_lazy("Cancel friendship proposal"),
+                        do_cancel_proposal=dict(title=gettext_lazy("Cancel friendship proposal"),
                                                 form_class=None,
                                                 callback="do_cancel_proposal"),
-                        do_cancel_friendship=dict(title=ugettext_lazy("Cancel friendship"),
+                        do_cancel_friendship=dict(title=gettext_lazy("Cancel friendship"),
                                                   form_class=None,
                                                   callback="do_cancel_friendship"))
 
-    ADMIN_ACTIONS = dict(set_friendship_minimum_duration=dict(title=ugettext_lazy("Set minimum friendship duration"),
+    ADMIN_ACTIONS = dict(set_friendship_minimum_duration=dict(title=gettext_lazy("Set minimum friendship duration"),
                                                               form_class=FriendshipMinDurationForm,
                                                               callback="set_friendship_minimum_duration"), )
 
@@ -338,8 +338,8 @@ friendship_management = FriendshipManagementView.as_view
 
 
 @register_view(access=UserAccess.authenticated,
-               title=ugettext_lazy("System Events"),
-               title_for_master=ugettext_lazy("All Game Events"))
+               title=gettext_lazy("System Events"),
+               title_for_master=gettext_lazy("All Game Events"))
 def game_events(request, template_name='administration/game_events.html'):
     events = request.datamanager.get_game_events()  # FILTERS by current user
 
@@ -366,7 +366,7 @@ def game_events(request, template_name='administration/game_events.html'):
                   })
 
 
-@register_view(access=UserAccess.character, requires_global_permission=False, title=ugettext_lazy("Instructions"))
+@register_view(access=UserAccess.character, requires_global_permission=False, title=gettext_lazy("Instructions"))
 def ___instructions(request, template_name='profile/instructions.html'):  # TODO - remove that ?????
 
     intro_data = request.datamanager.get_game_instructions()

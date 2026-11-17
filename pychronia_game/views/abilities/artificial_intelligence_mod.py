@@ -25,15 +25,15 @@ djinn_singleton_lock = threading.Lock()  # cfor oncurrent access to singleton
 
 @autostrip_form_charfields
 class DjinnContactForm(AbstractGameForm):
-    djinn_name = forms.CharField(label=ugettext_lazy("Djinn"), required=True)
+    djinn_name = forms.CharField(label=gettext_lazy("Djinn"), required=True)
 
 
 @register_view
 class ArtificialIntelligenceAbility(AbstractAbility):
-    TITLE = ugettext_lazy("Chat with Djinns")
+    TITLE = gettext_lazy("Chat with Djinns")
     NAME = "artificial_intelligence"
 
-    GAME_ACTIONS = dict(process_user_sentence=dict(title=ugettext_lazy("Respond to user input"),
+    GAME_ACTIONS = dict(process_user_sentence=dict(title=gettext_lazy("Respond to user input"),
                                                    form_class=None,
                                                    callback="process_user_sentence"))
 
@@ -83,7 +83,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
     def _process_html_post_data(self):
         """We prevent default form handling and error reporting."""
-        assert not self.request.is_ajax()
+        assert not utilities.is_ajax_request(self.request)
         assert self.request.method == "POST"
         return dict(result=None, form_data=None)
 
@@ -227,8 +227,8 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
         def ajax_consult_djinns(request):
             user = request.datamanager.user
-            message = request.REQUEST.get("message", "")
-            bot_name = request.REQUEST.get("djinn", None)
+            message = utilities.get_request_param(request, "message", "")
+            bot_name = utilities.get_request_param(request, "djinn", None)
 
             if bot_name not in request.datamanager.get_bot_names():
                 raise Http404

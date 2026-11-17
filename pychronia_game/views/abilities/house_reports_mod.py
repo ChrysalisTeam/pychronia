@@ -14,10 +14,10 @@ from pychronia_game.utilities import render_template_string
 @register_view
 class HouseReportsAbility(AbstractPartnershipAbility):
 
-    TITLE = ugettext_lazy("Manor Surveillance Reports")
+    TITLE = gettext_lazy("Manor Surveillance Reports")
     NAME = "house_reports"
 
-    GAME_ACTIONS = dict(get_surveillance_report=dict(title=ugettext_lazy("Fetch report"),
+    GAME_ACTIONS = dict(get_surveillance_report=dict(title=gettext_lazy("Fetch report"),
                                           form_class=HouseReportForm,
                                           callback="fetch_house_report"),)
 
@@ -86,7 +86,7 @@ class HouseReportsAbility(AbstractPartnershipAbility):
         best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
                                                                    response_msg_data=response_msg_data)
 
-        self.log_game_event(ugettext_noop("Period '%(period)s' requested near manor surveillance center."),
+        self.log_game_event(gettext_noop("Period '%(period)s' requested near manor surveillance center."),
                             PersistentMapping(period=period),
                             url=self.get_message_viewer_url_or_none(best_msg_id),  # best_msg_id might be None
                             visible_by=[self.username])

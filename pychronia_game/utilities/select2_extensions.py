@@ -3,7 +3,7 @@
 import re, copy
 from django_select2 import HeavySelect2MultipleChoiceField
 from django_select2.widgets import MultipleSelect2HiddenInput, Select2Mixin
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import gettext_lazy
 from django.core.exceptions import ValidationError
 
 
@@ -46,7 +46,7 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
     widget = Select2TagsWidget
 
     default_error_messages = {
-        'too_many': ugettext_lazy('Too many values sent.'),
+        'too_many': gettext_lazy('Too many values sent.'),
     }
 
     def __init__(self, **kwargs):

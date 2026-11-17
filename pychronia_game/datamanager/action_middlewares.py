@@ -325,7 +325,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                 if use_gems or not middleware_settings["money_price"]:
                     gems_price = middleware_settings["gems_price"]
                     self._pay_with_gems(gems_price, use_gems)
-                    self.log_game_event(ugettext_noop(
+                    self.log_game_event(gettext_noop(
                         "A payment of %(cost)s¤ was issued with gems %(gems_list)s for service '%(service)s'"),
                                         PersistentMapping(cost=gems_price, service=action_name,
                                                           gems_list=str(use_gems)),
@@ -337,7 +337,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                     character_properties = self.get_character_properties()
                     self._pay_with_money(character_properties, money_price)
                     self.log_game_event(
-                        ugettext_noop("A payment of %(cost)s¤ was issued with money, for service '%(service)s'"),
+                        gettext_noop("A payment of %(cost)s¤ was issued with money, for service '%(service)s'"),
                         PersistentMapping(cost=money_price, service=action_name),
                         url=None,
                         visible_by=[self.user.username])

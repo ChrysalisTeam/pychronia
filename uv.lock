@@ -9,7 +9,7 @@ resolution-markers = [
 
 [manifest]
 overrides = [
-    { name = "django", specifier = ">=4.2.4" },
+    { name = "django", specifier = ">=5.2" },
     { name = "django-polymorphic", specifier = ">=3.0.0" },
 ]
 
@@ -348,7 +348,7 @@ wheels = [
 [[package]]
 name = "cmsplugin-simple-gallery"
 version = "0.0.2"
-source = { git = "https://github.com/pakal/cmsplugin-simple-gallery.git#69e675789bc9e8b1537a3655dd3274258b11064b" }
+source = { git = "https://github.com/pakal/cmsplugin-simple-gallery.git?rev=c2e5c4d61f6a6cf306d350699a6ef033f8b96b06#c2e5c4d61f6a6cf306d350699a6ef033f8b96b06" }
 dependencies = [
     { name = "django-inline-ordering" },
     { name = "easy-thumbnails" },
@@ -361,15 +361,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d8/53/6f443c9a4a8358a93a6792e2acffb9d9d5cb0a5cfd8802644b7b1c9a02e4/colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44", size = 27697, upload-time = "2022-10-25T02:36:22.414Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6", size = 25335, upload-time = "2022-10-25T02:36:20.889Z" },
-]
-
-[[package]]
-name = "compat-patcher-core"
-version = "2.4"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/91/07/67271cec4870e23f439be6dd67de434842ab23831153b8b8f58e9d9dec01/compat_patcher_core-2.4.tar.gz", hash = "sha256:706d548b5db71d3a7c1a7fb89df6fbbf5fc56db71ba1103546f2b54ce0d587ef", size = 26859, upload-time = "2026-10-13T16:05:51.264Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/30/fb/3b1f23ef923d996effccb5b77790b18b168d0f957bf9caa334ba464ec6de/compat_patcher_core-2.4-py3-none-any.whl", hash = "sha256:4e98fe5a7ee6ef07a32b4fcef81d4ef1e3401de5c00308791796a5172579aaf7", size = 20675, upload-time = "2026-10-13T16:05:50.274Z" },
 ]
 
 [[package]]
@@ -488,19 +479,7 @@ wheels = [
 [[package]]
 name = "django-cms-jplayer"
 version = "0.2"
-source = { git = "https://github.com/pakal/django-cms-jplayer.git#7a00560e596b98385a26a483b7fd81189595f100" }
-
-[[package]]
-name = "django-compat-patcher"
-version = "0.14"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "compat-patcher-core" },
-    { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
-    { name = "django", version = "6.1.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-    { name = "six" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/ad/c9/317fd7b59d64b1ca1bc1eb0253eb54fc6146960cb8295ff40d96e3bbbc65/django_compat_patcher-0.14.tar.gz", hash = "sha256:8f078e84ce229a389958f134949df0c2ca341dc9b92cbfeab16bff89a1302bce", size = 109242, upload-time = "2026-10-14T08:51:27.737Z" }
+source = { git = "https://github.com/pakal/django-cms-jplayer.git?rev=a4458ed2b271e47280cd307cdcc4a099f3b240cf#a4458ed2b271e47280cd307cdcc4a099f3b240cf" }
 
 [[package]]
 name = "django-cprofile-middleware"
@@ -623,15 +602,15 @@ dependencies = [
 
 [[package]]
 name = "django-reversion"
-version = "3.0.3"
+version = "6.5.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.1.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f0/87/223900ce146f885abc356acaf1c7c21f3f94ce2e06eae7cd0d1f2d5755e3/django-reversion-3.0.3.tar.gz", hash = "sha256:830cd9127ff3cda98254526e1b30519da98ce4094bdf25e7c5aabb9207405a76", size = 65768, upload-time = "2019-01-24T10:21:14.485Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/bf/a6/b24a987fb1ff3004205dd9adcc90e94370242c3284aaad29f5736bdbf90a/django_reversion-6.5.2.tar.gz", hash = "sha256:100fa722e9bf9cb68865b678f90e5415166c3798d839e10f8fced636bf63c09d", size = 83199, upload-time = "2026-11-12T14:30:31.448Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c2/90/8ef58524fa4e059498abd7f59010ecbc299253c3d6702dd893506344d0b7/django_reversion-3.0.3-py2.py3-none-any.whl", hash = "sha256:fd910774f2dabb65ac9d4fec2b032f1c0560f870c4923ce0b1e2f4d4430fc04a", size = 81510, upload-time = "2019-01-24T10:21:12.706Z" },
+    { url = "https://files.pythonhosted.org/packages/01/a4/a121b28a45ba3ff85f1b4d1b7858fa41329e460637fbe942f358ca79e30f/django_reversion-6.5.2-py3-none-any.whl", hash = "sha256:34a18f45f9a735bb9f33bb5494773e69df11ff797e6b13c379dfdf529437cc8e", size = 93063, upload-time = "2026-11-12T14:30:30.339Z" },
 ]
 
 [[package]]
@@ -651,7 +630,7 @@ wheels = [
 [[package]]
 name = "django-select2"
 version = "4.3.1"
-source = { git = "https://github.com/pakal/django-select2.git?rev=6b1adada50ce53f4c51dd6d409371705627fa17e#6b1adada50ce53f4c51dd6d409371705627fa17e" }
+source = { git = "https://github.com/pakal/django-select2.git?rev=32547b7e9a4d1c4ffe0cefe0fbf0c9262095456e#32547b7e9a4d1c4ffe0cefe0fbf0c9262095456e" }
 
 [[package]]
 name = "django-sortedm2m"
@@ -1540,11 +1519,9 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "beautifulsoup4" },
-    { name = "compat-patcher-core" },
     { name = "decorator" },
     { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.1.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-    { name = "django-compat-patcher" },
     { name = "django-filer" },
     { name = "django-sekizai" },
     { name = "django-select2" },
@@ -1615,25 +1592,23 @@ dev = [
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.11.1" },
     { name = "cmsplugin-rst", marker = "extra == 'cms'", specifier = ">=0.3" },
-    { name = "cmsplugin-simple-gallery", marker = "extra == 'cms'", git = "https://github.com/pakal/cmsplugin-simple-gallery.git" },
-    { name = "compat-patcher-core", specifier = ">=2.4" },
+    { name = "cmsplugin-simple-gallery", marker = "extra == 'cms'", git = "https://github.com/pakal/cmsplugin-simple-gallery.git?rev=c2e5c4d61f6a6cf306d350699a6ef033f8b96b06" },
     { name = "decorator", specifier = ">=5" },
-    { name = "django", specifier = ">=4.2.4" },
+    { name = "django", specifier = ">=5.2" },
     { name = "django-admin-jqueryui", marker = "extra == 'cms'", specifier = "==1.8.22" },
     { name = "django-appconf", marker = "extra == 'cms'", specifier = "==1.0.3" },
     { name = "django-apptemplates", marker = "extra == 'cms'", specifier = "==1.4" },
     { name = "django-cms", marker = "extra == 'cms'", specifier = "==5.1.3" },
-    { name = "django-cms-jplayer", marker = "extra == 'cms'", git = "https://github.com/pakal/django-cms-jplayer.git" },
-    { name = "django-compat-patcher", specifier = ">=0.14" },
+    { name = "django-cms-jplayer", marker = "extra == 'cms'", git = "https://github.com/pakal/django-cms-jplayer.git?rev=a4458ed2b271e47280cd307cdcc4a099f3b240cf" },
     { name = "django-filer", specifier = ">=3.0.3" },
     { name = "django-filer", marker = "extra == 'cms'", specifier = ">=3.6.0" },
     { name = "django-inline-ordering", marker = "extra == 'cms'", specifier = ">=1.0.2" },
     { name = "django-meta", marker = "extra == 'cms'", specifier = ">=2" },
     { name = "django-parler", marker = "extra == 'cms'", specifier = ">=2" },
     { name = "django-request", marker = "extra == 'cms'", git = "https://github.com/django-request/django-request.git" },
-    { name = "django-reversion", marker = "extra == 'cms'", specifier = "==3.0.3" },
+    { name = "django-reversion", marker = "extra == 'cms'", specifier = ">=6.5.2" },
     { name = "django-sekizai", specifier = ">=4" },
-    { name = "django-select2", git = "https://github.com/pakal/django-select2.git?rev=6b1adada50ce53f4c51dd6d409371705627fa17e" },
+    { name = "django-select2", git = "https://github.com/pakal/django-select2.git?rev=32547b7e9a4d1c4ffe0cefe0fbf0c9262095456e" },
     { name = "django-sortedm2m", marker = "extra == 'cms'" },
     { name = "django-taggit", marker = "extra == 'cms'", specifier = ">=1" },
     { name = "django-taggit-templatetags", marker = "extra == 'cms'" },

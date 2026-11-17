@@ -22,28 +22,28 @@ GAME_RADIOSPOTS_BACKUPS_ABSPATH = (os.path.join(config.GAME_FILES_ROOT, config.G
 
 
 class RadioSpotForm(DataTableForm):
-    title = forms.CharField(label=ugettext_lazy("Title"), required=True)
+    title = forms.CharField(label=gettext_lazy("Title"), required=True)
 
-    text = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '5', 'cols': '40'}),
+    text = forms.CharField(label=gettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '5', 'cols': '40'}),
                            required=True)
 
-    file = forms.CharField(label=ugettext_lazy("File (url or local file)"), required=False)  # NOT required
+    file = forms.CharField(label=gettext_lazy("File (url or local file)"), required=False)  # NOT required
 
     gamemaster_hints = GAMEMASTER_HINTS_FIELD()
 
 
 @register_view
 class RadioSpotsEditing(AbstractDataTableManagement):
-    TITLE = ugettext_lazy("Edit Radio Spots")
+    TITLE = gettext_lazy("Edit Radio Spots")
     NAME = "radio_spots_editing"
 
-    GAME_ACTIONS = dict(submit_item=dict(title=ugettext_lazy("Submit radio spot"),
+    GAME_ACTIONS = dict(submit_item=dict(title=gettext_lazy("Submit radio spot"),
                                          form_class=RadioSpotForm,
                                          callback="submit_item"),
-                        delete_item=dict(title=ugettext_lazy("Delete radio spot"),
+                        delete_item=dict(title=gettext_lazy("Delete radio spot"),
                                          form_class=None,
                                          callback="delete_item"),
-                        generate_tts_sample=dict(title=ugettext_lazy("Generate text-to-speech sample"),
+                        generate_tts_sample=dict(title=gettext_lazy("Generate text-to-speech sample"),
                                                  form_class=None,
                                                  callback="generate_tts_sample"))
     TEMPLATE = "administration/radio_spots_editing.html"

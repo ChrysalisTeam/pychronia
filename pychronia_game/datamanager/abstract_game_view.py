@@ -12,7 +12,7 @@ from pychronia_game.common import _undefined  # for static checker...
 
 from django.http import HttpResponseRedirect, HttpResponse, \
     HttpResponseForbidden, HttpResponseBadRequest
-from django.core import urlresolvers
+from django.urls import resolve
 from django.utils.functional import Promise  # used eg. for lazy-translated strings
 from django.shortcuts import redirect
 
@@ -29,25 +29,25 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
     """
     dm = request.datamanager
 
-    return_to_home_url = game_view_url("pychronia_game-homepage", datamanager=dm)
+    return_to_home_url = game_view_url("pychronia_game.views.homepage", datamanager=dm)
     return_to_home = HttpResponseRedirect(return_to_home_url)
 
     from ..authentication import TEMP_URL_USERNAME
-    return_to_login_url = game_view_url("pychronia_game-login", datamanager=dm)
+    return_to_login_url = game_view_url("pychronia_game.views.login", datamanager=dm)
     return_to_login_next_url = request.build_absolute_uri()
     # we do a HACK to deal with in-url usernames (except UNIVERSAL_URL_USERNAME username, which stays as is)
     return_to_login_next_url = return_to_login_next_url.replace("/%s/" % dm.user.username, "/%s/" % TEMP_URL_USERNAME)
     return_to_login_qs = urllib.parse.urlencode(dict(next=return_to_login_next_url))
     return_to_login = HttpResponseRedirect("%s?%s" % (return_to_login_url, return_to_login_qs))
 
-    assert urlresolvers.resolve(return_to_home_url)
+    assert resolve(return_to_home_url)
     try:
 
         return caller(self, request, *args, **kwargs)
 
     except AccessDeniedError as e:
 
-        if request.is_ajax():
+        if utilities.is_ajax_request(request):
             return HttpResponseForbidden(repr(e))
 
         if request.datamanager.user.is_impersonation:
@@ -63,7 +63,7 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
 
     except (GameError, POSError) as e:
 
-        if request.is_ajax():
+        if utilities.is_ajax_request(request):
             return HttpResponseBadRequest(repr(e))
 
         dm.logger.critical("Unexpected game error in %s" % self.NAME, exc_info=True)
@@ -235,8 +235,8 @@ class AbstractGameView(object, metaclass=GameViewMetaclass):
     But special subclasses might break that genericity by binding the instance to a particular request/datamanager.
     """
 
-    TITLE = None  # must be a ugettext_lazy() string
-    TITLE_FOR_MASTER = None  # must be a ugettext_lazy() string or None
+    TITLE = None  # must be a gettext_lazy() string
+    TITLE_FOR_MASTER = None  # must be a gettext_lazy() string or None
 
     NAME = None  # slug to be overridden, used as primary identifier
 
@@ -345,7 +345,7 @@ class AbstractGameView(object, metaclass=GameViewMetaclass):
             self.request.POST.clear()  # thanks to our middleware that made it mutable...
             self.request.method = "GET"  # whooo ugly
             user.add_error(_("You are not allowed to submit changes to that page"))
-            if self.request.is_ajax():
+            if utilities.is_ajax_request(self.request):
                 self.logger.critical("Forbidden ajax POST request on non-writable game at url %s",
                                      self.request.get_full_path)
         assert (user.has_write_access and (
@@ -586,7 +586,7 @@ class AbstractGameView(object, metaclass=GameViewMetaclass):
             - result (ternary, None means "no action done")
             - form_data (instance of SubmittedGameForm, or None)
         """
-        assert not self.request.is_ajax()
+        assert not utilities.is_ajax_request(self.request)
         assert self.request.method == "POST"
 
         res = dict(result=None,
@@ -651,7 +651,7 @@ class AbstractGameView(object, metaclass=GameViewMetaclass):
     def _auto_process_request(self):
         #if not self.datamanager.player.has_permission(self.NAME): #TODO
         #    raise RuntimeError("Player has no permission to use ability")
-        if self.request.is_ajax() or self.request.GET.get("is_ajax"):
+        if utilities.is_ajax_request(self.request) or self.request.GET.get("is_ajax"):
             return self._process_ajax_request()
         else:
             return self._process_html_request()

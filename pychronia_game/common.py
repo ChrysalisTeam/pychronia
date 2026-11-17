@@ -26,11 +26,11 @@ from persistent.list import PersistentList
 
 from django.conf import settings
 from django.utils.html import escape
-from django.utils.translation import ugettext as _, ugettext_lazy, ugettext_noop
+from django.utils.translation import gettext as _, gettext_lazy, gettext_noop
 from django.template.response import TemplateResponse
 from django.template.loader import render_to_string
 from django.shortcuts import render
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
 ## from django.utils.text import slugify - FIXME - for 1.5 only
 from django.template.defaultfilters import slugify
@@ -128,7 +128,7 @@ class AbnormalUsageError(UsageError):
 
 
 @contextmanager
-def action_failure_handler(request, success_message=ugettext_lazy("Operation successful.")):
+def action_failure_handler(request, success_message=gettext_lazy("Operation successful.")):
     user = request.datamanager.user
     logger = request.datamanager.logger
 
@@ -297,5 +297,5 @@ def is_past_datetime(dt):
 
 
 __all__ = [key for key in globals().copy() if not key.startswith("_")]
-__all__ += ["_", "ugettext_lazy", "ugettext_noop",
+__all__ += ["_", "gettext_lazy", "gettext_noop",
             "_undefined"]  # we add translation shortcuts and _undefined placeholder for default function args

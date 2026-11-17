@@ -16,7 +16,7 @@ from pychronia_game.datamanager.abstract_form import AbstractGameForm
 from django import forms as django_forms
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Static World Map"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Static World Map"))
 def view_world_map_static(request, template_name='information/world_map_static.html'):
     return render(request,
                   template_name,
@@ -28,7 +28,7 @@ def view_world_map_static(request, template_name='information/world_map_static.h
 
 @register_view
 class DynamicWorldMapView(AbstractGameView):
-    TITLE = ugettext_lazy("Dynamic World Map")
+    TITLE = gettext_lazy("Dynamic World Map")
     NAME = "view_world_map_dynamic"
 
     TEMPLATE = "information/world_map_dynamic.html"
@@ -56,7 +56,7 @@ class StaticPageView(AbstractGameView):
     (jsut a "private link" notion).
     """
 
-    TITLE = ugettext_lazy("Article")
+    TITLE = gettext_lazy("Article")
     NAME = "view_static_page"
 
     TEMPLATE = "information/view_static_page.html"
@@ -87,7 +87,7 @@ class HiddenClueView(AbstractGameView):
     its category and a short "clue code" exactly matching one of its keywords.
     """
 
-    TITLE = ugettext_lazy("Clue")
+    TITLE = gettext_lazy("Clue")
     NAME = "view_hidden_clue"
 
     TEMPLATE = "information/view_hidden_clue.html"
@@ -119,7 +119,7 @@ view_hidden_clue = HiddenClueView.as_view
 
 
 class EnyclopediaIndexVisibilityForm(AbstractGameForm):
-    is_index_visible = django_forms.BooleanField(label=ugettext_lazy("Full Index Visibility"), required=False)
+    is_index_visible = django_forms.BooleanField(label=gettext_lazy("Full Index Visibility"), required=False)
 
     def __init__(self, datamanager, *args, **kwargs):
         super(EnyclopediaIndexVisibilityForm, self).__init__(datamanager, *args, **kwargs)
@@ -128,12 +128,12 @@ class EnyclopediaIndexVisibilityForm(AbstractGameForm):
 
 @register_view
 class EncyclopediaView(AbstractGameView):
-    TITLE = ugettext_lazy("Encyclopedia")
+    TITLE = gettext_lazy("Encyclopedia")
     NAME = "view_encyclopedia"
 
     # Place here dashboard forms that don't have their own containing view! #
     ADMIN_ACTIONS = dict(
-        set_encyclopedia_index_visibility=dict(title=ugettext_lazy("Set encyclopedia index visibility"),
+        set_encyclopedia_index_visibility=dict(title=gettext_lazy("Set encyclopedia index visibility"),
                                                form_class=EnyclopediaIndexVisibilityForm,
                                                callback="set_encyclopedia_index_visibility"))
 
@@ -182,7 +182,7 @@ class EncyclopediaView(AbstractGameView):
             else:
                 _conditionally_update_known_article_ids([current_article_id])
         else:
-            search_string = request.REQUEST.get(
+            search_string = utilities.get_request_param(request,
                 "search")  # needn't appear in browser history, but GET needed for encyclopedia links
             if search_string:
                 search_results_ids = dm.get_encyclopedia_matches(search_string)
@@ -246,7 +246,7 @@ def _decode_audio_id(encoded_audio_id):
 # we don't put any security there, at worst a pirate might play with this and prevent playing
 # some audio notifications, but it's neither critical nor discreet
 @register_view(access=UserAccess.anonymous, requires_global_permission=False,
-               title=ugettext_lazy("Ajax Audio Message Finished"))
+               title=gettext_lazy("Ajax Audio Message Finished"))
 def ajax_notify_audio_message_finished(request, requires_global_permission=False):
     try:
         audio_id = _decode_audio_id(request.GET.get("audio_id", None))
@@ -261,7 +261,7 @@ def ajax_notify_audio_message_finished(request, requires_global_permission=False
 
 # we don't put any security there either
 @register_view(access=UserAccess.anonymous, requires_global_permission=False,
-               title=ugettext_lazy("Ajax Next Audio Message"))
+               title=gettext_lazy("Ajax Next Audio Message"))
 def ajax_get_next_audio_message(request):
     radio_is_on = request.datamanager.get_global_parameter("radio_is_on")
 
@@ -278,7 +278,7 @@ def ajax_get_next_audio_message(request):
     return HttpResponse(response, content_type="application/json")
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Pangea Webradio"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Pangea Webradio"))
 def personal_webradio_page(request, template_name='information/web_radio_page.html'):
     dm = request.datamanager
     current_playlist = dm.get_all_next_audio_messages()
@@ -292,14 +292,14 @@ def personal_webradio_page(request, template_name='information/web_radio_page.ht
                   })
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Webradio Popup"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Webradio Popup"))
 def personal_webradio_popup(request, template_name='information/web_radio_popup.html'):
     return render(request,
                   template_name)
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False,
-               title=ugettext_lazy("Ajax Radio Playlist"))
+               title=gettext_lazy("Ajax Radio Playlist"))
 def ajax_get_radio_playlist(request):
     """
     Current playlist of the personal webradio (popup and page), periodically polled by the player.
@@ -324,7 +324,7 @@ def ajax_get_radio_playlist(request):
     return HttpResponse(response, content_type="application/json")
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Radio Station"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Radio Station"))
 def public_webradio(request, template_name='information/web_radio_public.html'):
     access_authorized = False
 
@@ -352,7 +352,7 @@ def public_webradio(request, template_name='information/web_radio_public.html'):
                   })
 
 
-@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Personal Files"))
+@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=gettext_lazy("Personal Files"))
 def personal_folder(request, template_name='information/personal_folder.html'):
     user = request.datamanager.user
 
@@ -380,10 +380,10 @@ def personal_folder(request, template_name='information/personal_folder.html'):
 
 
 # This page is meant for inclusion in pages offering all the required css/js files !
-@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("View Media"))
+@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=gettext_lazy("View Media"))
 def view_media(request, template_name='utilities/view_media.html'):
-    fileurl = request.REQUEST.get("url", None)
-    autostart = (request.REQUEST.get("autostart", "false") == "true")
+    fileurl = utilities.get_request_param(request, "url", None)
+    autostart = (utilities.get_request_param(request, "autostart", "false") == "true")
 
     if fileurl:
         media_player = mediaplayers.build_proper_viewer(fileurl, autostart=autostart)
@@ -398,7 +398,7 @@ def view_media(request, template_name='utilities/view_media.html'):
 
 
 @register_view(access=UserAccess.authenticated, requires_global_permission=False,
-               title=ugettext_lazy("Encrypted Folder"))
+               title=gettext_lazy("Encrypted Folder"))
 def encrypted_folder(request, folder, entry_template_name="information/encrypted_folder.html",
                      display_template_name='information/personal_folder.html'):
     if not request.datamanager.encrypted_folder_exists(folder):
@@ -447,7 +447,7 @@ def encrypted_folder(request, folder, entry_template_name="information/encrypted
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False,
-               title=ugettext_lazy("Forbidden Area Entrance"))
+               title=gettext_lazy("Forbidden Area Entrance"))
 def enigma_runes_puzzle(request, template_name="information/enigma_runes_puzzle.html"):
     return render(request,
                   template_name,
@@ -455,7 +455,7 @@ def enigma_runes_puzzle(request, template_name="information/enigma_runes_puzzle.
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False,
-               title=ugettext_lazy("Song of Treasure Mill"))
+               title=gettext_lazy("Song of Treasure Mill"))
 def enigma_runes_cards(request, template_name="information/enigma_runes_cards.html"):
     return render(request,
                   template_name,

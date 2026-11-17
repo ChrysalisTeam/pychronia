@@ -10,17 +10,17 @@ from django import forms
 
 
 class StaticPageForm(DataTableForm):
-    title = forms.CharField(label=ugettext_lazy("Title"), required=False)
+    title = forms.CharField(label=gettext_lazy("Title"), required=False)
 
-    categories = Select2TagsField(label=ugettext_lazy("Categories"), required=False,
+    categories = Select2TagsField(label=gettext_lazy("Categories"), required=False,
                                   choice_tags=sorted(set([StaticPages.CONTENT_CATEGORY, StaticPages.HELP_CATEGORY,
                                                           Encyclopedia.ENCYCLOPEDIA_CATEGORY])))
 
-    keywords = Select2TagsField(label=ugettext_lazy("Keywords"), required=False)
+    keywords = Select2TagsField(label=gettext_lazy("Keywords"), required=False)
 
-    clue_code = forms.CharField(label=ugettext_lazy("Clue code (lowercase slug)"), required=False)
+    clue_code = forms.CharField(label=gettext_lazy("Clue code (lowercase slug)"), required=False)
 
-    content = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols': '40'}),
+    content = forms.CharField(label=gettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols': '40'}),
                               required=True)
 
     gamemaster_hints = GAMEMASTER_HINTS_FIELD()
@@ -37,13 +37,13 @@ class StaticPageForm(DataTableForm):
 
 @register_view
 class StaticPagesManagement(AbstractDataTableManagement):
-    TITLE = ugettext_lazy("Edit Static Pages")
+    TITLE = gettext_lazy("Edit Static Pages")
     NAME = "static_pages_management"
 
-    GAME_ACTIONS = dict(submit_item=dict(title=ugettext_lazy("Submit a static page"),
+    GAME_ACTIONS = dict(submit_item=dict(title=gettext_lazy("Submit a static page"),
                                          form_class=StaticPageForm,
                                          callback="submit_item"),
-                        delete_item=dict(title=ugettext_lazy("Delete a static page"),
+                        delete_item=dict(title=gettext_lazy("Delete a static page"),
                                          form_class=None,
                                          callback="delete_item"))
 
@@ -56,7 +56,7 @@ class StaticPagesManagement(AbstractDataTableManagement):
 ''' USELESS
 
     def _________process_html_post_data(self):
-        assert not self.request.is_ajax()
+        assert not utilities.is_ajax_request(self.request)
         assert self.request.method == "POST"
         res = dict(result=False, # default
                    form_data=None)

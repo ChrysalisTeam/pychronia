@@ -11,7 +11,7 @@ from pychronia_game.datamanager import UninstantiableFormError
 
 
 class GamePauseForm(AbstractGameForm):
-    is_paused = forms.BooleanField(label=ugettext_lazy("Game is paused?"), required=False)
+    is_paused = forms.BooleanField(label=gettext_lazy("Game is paused?"), required=False)
 
     def __init__(self, datamanager, *args, **kwargs):
         super(GamePauseForm, self).__init__(datamanager, *args, **kwargs)
@@ -19,7 +19,7 @@ class GamePauseForm(AbstractGameForm):
 
 
 class AbilityAutoresponseForm(AbstractGameForm):
-    disable_ability_autoresponse = forms.BooleanField(label=ugettext_lazy("Disable ability auto-responses?"),
+    disable_ability_autoresponse = forms.BooleanField(label=gettext_lazy("Disable ability auto-responses?"),
                                                       required=False)
 
     def __init__(self, datamanager, *args, **kwargs):
@@ -29,7 +29,7 @@ class AbilityAutoresponseForm(AbstractGameForm):
 
 
 class ExternalNotificationForm(AbstractGameForm):
-    disable_real_email_notifications = forms.BooleanField(label=ugettext_lazy("Disable real email notifications?"),
+    disable_real_email_notifications = forms.BooleanField(label=gettext_lazy("Disable real email notifications?"),
                                                           required=False)
 
     def __init__(self, datamanager, *args, **kwargs):
@@ -39,7 +39,7 @@ class ExternalNotificationForm(AbstractGameForm):
 
 
 class GameViewActivationForm(AbstractGameForm):
-    activated_views = forms.MultipleChoiceField(label=ugettext_lazy("Game views"), required=False,
+    activated_views = forms.MultipleChoiceField(label=gettext_lazy("Game views"), required=False,
                                                 widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, datamanager, *args, **kwargs):
@@ -59,7 +59,7 @@ class GameViewActivationForm(AbstractGameForm):
 
 
 class GameDurationForm(AbstractGameForm):
-    num_days = forms.FloatField(label=ugettext_lazy("Set theoretical game duration in days"), max_value=365,
+    num_days = forms.FloatField(label=gettext_lazy("Set theoretical game duration in days"), max_value=365,
                                 min_value=1, required=True)
 
     def __init__(self, datamanager, *args, **kwargs):
@@ -68,11 +68,11 @@ class GameDurationForm(AbstractGameForm):
 
 
 class MasterCredentialsForm(AbstractGameForm):
-    master_login = forms.CharField(label=ugettext_lazy("Master Login (immutable)"), required=False,
+    master_login = forms.CharField(label=gettext_lazy("Master Login (immutable)"), required=False,
                                    widget=forms.TextInput(attrs={'disabled': 'disabled'}))
-    master_password = forms.CharField(label=ugettext_lazy("Master Password (NOT your usual one)"),
+    master_password = forms.CharField(label=gettext_lazy("Master Password (NOT your usual one)"),
                                       required=False)  # NOT a PasswordInput
-    master_real_email = forms.EmailField(label=ugettext_lazy("Master Real Email (optional)"), required=False)
+    master_real_email = forms.EmailField(label=gettext_lazy("Master Real Email (optional)"), required=False)
 
     def __init__(self, datamanager, *args, **kwargs):
         super(MasterCredentialsForm, self).__init__(datamanager, *args, **kwargs)
@@ -84,30 +84,30 @@ class MasterCredentialsForm(AbstractGameForm):
 
 @register_view
 class AdminDashboardAbility(AbstractAbility):
-    TITLE = ugettext_lazy("Admin Dashboard")
+    TITLE = gettext_lazy("Admin Dashboard")
     NAME = "admin_dashboard"
 
-    GAME_ACTIONS = dict(save_admin_widgets_order=dict(title=ugettext_lazy("Save admin widgets' order"),
+    GAME_ACTIONS = dict(save_admin_widgets_order=dict(title=gettext_lazy("Save admin widgets' order"),
                                                       form_class=None,
                                                       callback="save_admin_widgets_order"))
 
     # Place here dashboard forms that don't have their own containing view! #
-    ADMIN_ACTIONS = dict(choose_activated_views=dict(title=ugettext_lazy("Activate views"),
+    ADMIN_ACTIONS = dict(choose_activated_views=dict(title=gettext_lazy("Activate views"),
                                                      form_class=GameViewActivationForm,
                                                      callback="choose_activated_views"),
-                         set_theoretical_game_duration=dict(title=ugettext_lazy("Set game duration"),
+                         set_theoretical_game_duration=dict(title=gettext_lazy("Set game duration"),
                                                             form_class=GameDurationForm,
                                                             callback="set_theoretical_game_duration"),
-                         set_game_pause_state=dict(title=ugettext_lazy("Set game pause state"),
+                         set_game_pause_state=dict(title=gettext_lazy("Set game pause state"),
                                                    form_class=GamePauseForm,
                                                    callback="set_game_pause_state"),
-                         change_master_credentials=dict(title=ugettext_lazy("Change game master credentials"),
+                         change_master_credentials=dict(title=gettext_lazy("Change game master credentials"),
                                                         form_class=MasterCredentialsForm,
                                                         callback="change_master_credentials"),
-                         ability_autoresponse_mode=dict(title=ugettext_lazy("Set ability autoresponses"),
+                         ability_autoresponse_mode=dict(title=gettext_lazy("Set ability autoresponses"),
                                                         form_class=AbilityAutoresponseForm,
                                                         callback="disable_ability_autoresponse"),
-                         external_email_mode=dict(title=ugettext_lazy("Set external notifications"),
+                         external_email_mode=dict(title=gettext_lazy("Set external notifications"),
                                                   form_class=ExternalNotificationForm,
                                                   callback="disable_external_notifications"),
                          )

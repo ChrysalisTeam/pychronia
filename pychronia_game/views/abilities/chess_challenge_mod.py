@@ -8,10 +8,10 @@ from pychronia_game.datamanager import transaction_watcher, register_view, Abstr
 
 @register_view
 class ChessChallengeAbility(AbstractAbility):
-    TITLE = ugettext_lazy("Chess Challenge")
+    TITLE = gettext_lazy("Chess Challenge")
     NAME = "chess_challenge"
 
-    GAME_ACTIONS = dict(notify_chess_player_victory=dict(title=ugettext_lazy("Notify victory of a chess player"),
+    GAME_ACTIONS = dict(notify_chess_player_victory=dict(title=gettext_lazy("Notify victory of a chess player"),
                                                          form_class=None,
                                                          callback="notify_chess_player_victory"))
 
@@ -41,6 +41,6 @@ class ChessChallengeAbility(AbstractAbility):
         if self.is_master():
             self.user.add_message(_("Master, your chess victory has well been detected and ignored by the server."))
         else:
-            self.log_game_event(ugettext_noop("Chess AI has been defeated by user '%(winner)s'."),
+            self.log_game_event(gettext_noop("Chess AI has been defeated by user '%(winner)s'."),
                                 PersistentMapping(winner=self.user.username),
                                 visible_by=None)  #only for gamemaster

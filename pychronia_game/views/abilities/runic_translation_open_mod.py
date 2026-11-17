@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import gettext_lazy
 
 from pychronia_game.common import *
 from .runic_translation_mod import RunicTranslationAbility
@@ -8,7 +8,7 @@ from ...datamanager import register_view, transaction_watcher
 
 @register_view
 class OpenRunicTranslationAbility(RunicTranslationAbility):
-    TITLE = ugettext_lazy("Open Runic Translation")
+    TITLE = gettext_lazy("Open Runic Translation")
     NAME = "runic_translation_open"
 
     ACCESS = UserAccess.anonymous

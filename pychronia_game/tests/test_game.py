@@ -27,6 +27,7 @@ from pychronia_game.templatetags.helpers import _generate_encyclopedia_links, \
     advanced_restructuredtext, _generate_messaging_links, _generate_site_links, \
     format_enriched_text, _generate_game_file_links, _generate_game_image_thumbnails, \
     rich_text, make_color_readable_on_parchment, _contrast_ratio, _PARCHMENT_RGB
+from django.http import QueryDict
 from pychronia_game import views, utilities, authentication
 from pychronia_game.utilities import autolinker, to_snake_case, load_yaml_fixture
 from django.test.client import RequestFactory
@@ -452,7 +453,7 @@ class TestUtilities(BaseGameTestCase):
                 assert response["Content-Range"] == "bytes */%d" % file_size
 
         response = fileservers.serve_file(request, path, backend_name="nginx", **kwargs)
-        print(response._headers)
+        print(response.headers)
         assert response['X-Accel-Redirect'] == path
         assert not response.content
         _check_standard_headers(response)
@@ -1147,13 +1148,13 @@ class TestDatamanager(BaseGameTestCase):
     def test_requestless_datamanager(self):
 
         assert self.dm.request
-        assert not self.dm.request.is_ajax()
+        assert not utilities.is_ajax_request(self.dm.request)
 
         user = self.dm.user
         assert user._is_user_messaging_possible()
 
-        self.dm.request.is_ajax = lambda: True
-        assert self.dm.request.is_ajax()
+        self.dm.request.META["HTTP_X_REQUESTED_WITH"] = "XMLHttpRequest"
+        assert utilities.is_ajax_request(self.dm.request)
 
         # user notifications get swallowed because AJAX MODE
 
@@ -1164,8 +1165,8 @@ class TestDatamanager(BaseGameTestCase):
         assert not user.has_notifications()
         user.discard_notifications()
 
-        del self.dm.request.is_ajax
-        assert not self.dm.request.is_ajax()
+        del self.dm.request.META["HTTP_X_REQUESTED_WITH"]
+        assert not utilities.is_ajax_request(self.dm.request)
 
         self.dm._request = None
         assert self.dm.request is None  # property
@@ -3532,34 +3533,38 @@ class TestDatamanager(BaseGameTestCase):
         assert request.datamanager.user.username == username  # well auto-signed-in
         assert not request.datamanager.user.is_observer
 
-        request._request = {"sdsds": "sdsd"}  # PATCH
-        assert request.REQUEST["sdsds"]
+        request.POST = QueryDict("sdsds=sdsd")  # PATCH
+        assert utilities.get_request_param(request, "sdsds")
 
         try_authenticating_with_session(request)
         assert request.datamanager.user.username == username  # remains
 
         token = random.choice(("", "ahduiAy@", "a è"))
-        request._request = {request_var: token}  # PATCH
+        request.POST = QueryDict(mutable=True)  # PATCH
+        request.POST[request_var] = token
 
         try_authenticating_with_session(request)
         assert request.datamanager.user.username == username  # wrong session ticket given by REQUEST, so we remain as usual
         assert not request.datamanager.user.is_observer
 
         token = authentication.compute_enforced_login_token("badinstanceid", "guy1", is_observer=False)
-        request._request = {request_var: token}  # PATCH
+        request.POST = QueryDict(mutable=True)  # PATCH
+        request.POST[request_var] = token
 
         try_authenticating_with_session(request)
         assert request.datamanager.user.username == username  # wrong game id given by REQUEST, so we remain as usual
 
         token = authentication.compute_enforced_login_token(self.dm.game_instance_id, "guy2323")
-        request._request = {request_var: token}  # PATCH
-        assert request.REQUEST[request_var] == token
+        request.POST = QueryDict(mutable=True)  # PATCH
+        request.POST[request_var] = token
+        assert utilities.get_request_param(request, request_var) == token
 
         try_authenticating_with_session(request)
         assert request.datamanager.user.username == username  # wrong user name id given by REQUEST, so we remain as usual
 
         token = authentication.compute_enforced_login_token(self.dm.game_instance_id, "my_npc")
-        request._request = {request_var: token}  # PATCH
+        request.POST = QueryDict(mutable=True)  # PATCH
+        request.POST[request_var] = token
 
         try_authenticating_with_session(request)
         assert request.datamanager.user.username == "my_npc"
@@ -4362,7 +4367,7 @@ class TestDatamanager(BaseGameTestCase):
 
         @register_view
         class PrivateTestAbility(AbstractAbility):
-            TITLE = ugettext_lazy("Private dummy ability")
+            TITLE = gettext_lazy("Private dummy ability")
             NAME = "_private_dummy_ability"
             GAME_ACTIONS = {}
             TEMPLATE = "base_main.html"  # must exist
@@ -4978,16 +4983,16 @@ class TestHttpRequests(BaseGameTestCase):
         self._player_auth(username)
 
         # VIEWS SELECTION
-        from django.core.urlresolvers import RegexURLResolver
+        from django.urls import URLResolver
         from pychronia_game.urls import inner_game_urlpatterns
         # we test some views for which there is a distinction between master and player
         selected_patterns = """ compose_message view_sales personal_items_slideshow character_profile friendship_management""".split()
 
         views = []
         for url in inner_game_urlpatterns:
-            url_repr = getattr(url, "_callback_str", to_snake_case(url.callback.__name__))
+            url_repr = url.name or to_snake_case(url.callback.__name__)
             #print("-------> Trying with url_repr", url_repr)
-            if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url_repr]:
+            if not isinstance(url, URLResolver) and [match for match in selected_patterns if match in url_repr]:
                 views.append(url.callback)
         assert len(views) == len(selected_patterns)
 
@@ -5138,7 +5143,7 @@ class TestHttpRequests(BaseGameTestCase):
         self.dm.set_permission("guy1", views.wiretapping_management.get_access_permission_name(),
                                is_present=False)  # else, would override is_game_view_activated()!
 
-        url_home = neutral_url_reverse("pychronia_game-homepage")  # for ANY game-username
+        url_home = neutral_url_reverse("pychronia_game.views.homepage")  # for ANY game-username
 
         url = neutral_url_reverse(views.wiretapping_management)
 
@@ -5151,7 +5156,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         # HTML ACCESS DENIED #
         response = self.client.get(url)
-        self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game-homepage",
+        self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game.views.homepage",
                                                                         game_username="guy1"))  # HOME of guy1!
 
         # ACCESS OK, in ajax or not #
@@ -5181,7 +5186,7 @@ class TestHttpRequests(BaseGameTestCase):
         # HTML ACCESS DENIED #
         response = self.client.get(url)
         self.assertRedirects(response,
-                             expected_url=neutral_url_reverse("pychronia_game-homepage", game_username="guy1"))
+                             expected_url=neutral_url_reverse("pychronia_game.views.homepage", game_username="guy1"))
 
         # impersonate anonymous while being logged as master #
         response = self.client.post(url_home, data={IMPERSONATION_TARGET_POST_VARIABLE: "guest",
@@ -5193,7 +5198,7 @@ class TestHttpRequests(BaseGameTestCase):
         response = self.client.get(neutral_url_reverse(views.view_sales))
         # NOT redirected to login page, since it's an impersonation
         self.assertRedirects(response,
-                             expected_url=neutral_url_reverse("pychronia_game-homepage", game_username="guest"))
+                             expected_url=neutral_url_reverse("pychronia_game.views.homepage", game_username="guest"))
 
         self._player_auth("guy1")
         self.dm.set_permission("guy1", views.wiretapping_management.get_access_permission_name(),
@@ -5213,7 +5218,7 @@ class TestHttpRequests(BaseGameTestCase):
             assert response.status_code == 400  # HttpResponseBadRequest
 
             response = self.client.get(url)
-            self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game-homepage",
+            self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game.views.homepage",
                                                                             game_username="guy1"))  # redirect with user error message
 
             EXCEPTION = random.choice((ValueError, RuntimeError))
@@ -5759,7 +5764,7 @@ class TestGameViewSystem(BaseGameTestCase):
         def my_little_view(request, *args, **kwargs):
             pass
 
-        title = ugettext_lazy("test-title")
+        title = gettext_lazy("test-title")
 
         # stupid cases get rejected in debug mode
         with pytest.raises(AssertionError):
@@ -5782,27 +5787,27 @@ class TestGameViewSystem(BaseGameTestCase):
 
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.master,
-                          title=ugettext_lazy("ssss"))  # double registration impossible!
+                          title=gettext_lazy("ssss"))  # double registration impossible!
 
         # case of class registration #
         class DummyViewNonGameView(object):
             ACCESS = "sqdqsjkdqskj"
 
         with pytest.raises(AssertionError):
-            register_view(DummyViewNonGameView, title=ugettext_lazy("SSS"))  # must be a subclass of AbstractGameView
+            register_view(DummyViewNonGameView, title=gettext_lazy("SSS"))  # must be a subclass of AbstractGameView
 
         class DummyView(AbstractGameView):
-            TITLE = ugettext_lazy("DSDSF")
+            TITLE = gettext_lazy("DSDSF")
             NAME = "sdfsdf"
             ACCESS = UserAccess.anonymous
 
         klass = register_view(DummyView)
         assert isinstance(klass, type)
-        register_view(DummyView, title=ugettext_lazy(
+        register_view(DummyView, title=gettext_lazy(
             "DDD"))  # double registration possible, since it's class creation which actually registers it, not that decorator
 
         class OtherDummyView(AbstractGameView):
-            TITLE = ugettext_lazy("LJKSG")
+            TITLE = gettext_lazy("LJKSG")
             NAME = "sdfsdzadsfsdff"
             ACCESS = UserAccess.anonymous
 
@@ -5811,7 +5816,7 @@ class TestGameViewSystem(BaseGameTestCase):
                 a, b, c, d = [random.choice([_undefined, False]) for i in range(4)]
                 if not all((a, b, c)):
                     break  # at least one of them must NOT be _undefined
-            register_view(OtherDummyView, a, b, c, d, title=ugettext_lazy("SSS"))
+            register_view(OtherDummyView, a, b, c, d, title=gettext_lazy("SSS"))
 
     def test_access_token_computation(self):
 
@@ -5821,39 +5826,39 @@ class TestGameViewSystem(BaseGameTestCase):
             pass
 
         view_anonymous = register_view(dummy_view_callable, access=UserAccess.anonymous,
-                                       requires_global_permission=False, title=ugettext_lazy("Hi"),
+                                       requires_global_permission=False, title=gettext_lazy("Hi"),
                                        view_name="view_anonymous")
         view_anonymous_gp = register_view(dummy_view_callable, access=UserAccess.anonymous,
-                                          requires_global_permission=True, title=ugettext_lazy("Hi2"),
+                                          requires_global_permission=True, title=gettext_lazy("Hi2"),
                                           view_name="view_anonymous_gp")
         assert view_anonymous_gp.klass.REQUIRES_GLOBAL_PERMISSION
         view_character = register_view(dummy_view_callable, access=UserAccess.character,
-                                       requires_global_permission=False, title=ugettext_lazy("Yowh1"),
+                                       requires_global_permission=False, title=gettext_lazy("Yowh1"),
                                        view_name="view_character")
         view_character_gp = register_view(dummy_view_callable, access=UserAccess.character,
                                           requires_character_permission=False, requires_global_permission=True,
-                                          title=ugettext_lazy("Yowh2"), view_name="view_character_gp")
+                                          title=gettext_lazy("Yowh2"), view_name="view_character_gp")
         view_character_cp = register_view(dummy_view_callable, access=UserAccess.character,
                                           requires_character_permission=True, requires_global_permission=False,
-                                          title=ugettext_lazy("Yowh3"), view_name="view_character_cp")
+                                          title=gettext_lazy("Yowh3"), view_name="view_character_cp")
         view_character_gp_cp = register_view(dummy_view_callable, access=UserAccess.character,
                                              requires_character_permission=True, requires_global_permission=True,
-                                             title=ugettext_lazy("Yowh4"), view_name="view_character_gp_cp")
+                                             title=gettext_lazy("Yowh4"), view_name="view_character_gp_cp")
 
         view_authenticated = register_view(dummy_view_callable, access=UserAccess.authenticated,
-                                           requires_global_permission=False, title=ugettext_lazy("Yayh1"),
+                                           requires_global_permission=False, title=gettext_lazy("Yayh1"),
                                            view_name="view_authenticated")
         view_authenticated_gp = register_view(dummy_view_callable, access=UserAccess.authenticated,
                                               requires_character_permission=False, requires_global_permission=True,
-                                              title=ugettext_lazy("Yayh2"), view_name="view_authenticated_gp")
+                                              title=gettext_lazy("Yayh2"), view_name="view_authenticated_gp")
         view_authenticated_cp = register_view(dummy_view_callable, access=UserAccess.authenticated,
                                               requires_character_permission=True, requires_global_permission=False,
-                                              title=ugettext_lazy("Yayh3"), view_name="view_authenticated_cp")
+                                              title=gettext_lazy("Yayh3"), view_name="view_authenticated_cp")
         view_authenticated_gp_cp = register_view(dummy_view_callable, access=UserAccess.authenticated,
                                                  requires_character_permission=True, requires_global_permission=True,
-                                                 title=ugettext_lazy("Yayh4"), view_name="view_authenticated_gp_cp")
+                                                 title=gettext_lazy("Yayh4"), view_name="view_authenticated_gp_cp")
 
-        view_master = register_view(dummy_view_callable, access=UserAccess.master, title=ugettext_lazy("Maaaster"),
+        view_master = register_view(dummy_view_callable, access=UserAccess.master, title=gettext_lazy("Maaaster"),
                                     view_name="view_master")  # requires_global_permission is enforced to False for master views, actually
 
         for perm in self.dm.PERMISSIONS_REGISTRY:
