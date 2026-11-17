@@ -615,6 +615,38 @@ body {
 .form_scroll_big {
   text-align: left;
 }
+.scroll_form_row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  column-gap: 8px;
+}
+.scroll_form_row > .scroll_yellow_rolled, .scroll_form_row > .form_scroll_thin,
+.scroll_form_row > .form_scroll_medium, .scroll_form_row > .form_scroll_big {
+  display: flex !important;
+  flex-direction: column;
+}
+.scroll_form_row > .scroll_yellow_rolled > form,
+.scroll_form_row > .form_scroll_thin > form,
+.scroll_form_row > .form_scroll_medium > form,
+.scroll_form_row > .form_scroll_big > form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.scroll_form_row > .scroll_yellow_rolled > form > input[type=submit],
+.scroll_form_row > .form_scroll_thin > form > input[type=submit],
+.scroll_form_row > .form_scroll_medium > form > input[type=submit],
+.scroll_form_row > .form_scroll_big > form > input[type=submit] {
+  margin-top: auto;
+}
+.scroll_form_row > .scroll_yellow_rolled > form > p:last-of-type,
+.scroll_form_row > .form_scroll_thin > form > p:last-of-type,
+.scroll_form_row > .form_scroll_medium > form > p:last-of-type,
+.scroll_form_row > .form_scroll_big > form > p:last-of-type {
+  margin-bottom: 20px;
+}
 table.realtable {
   border-collapse: separate;
   border-spacing: 0;
