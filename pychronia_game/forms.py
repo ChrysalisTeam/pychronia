@@ -380,7 +380,7 @@ class ArtefactForm(AbstractGameForm):
 
 class OtherKnownCharactersForm(AbstractGameForm):
     def __init__(self, datamanager, *args, **kwargs):
-        super().__init__(datamanager=datamanager, *args, **kwargs)
+        super().__init__(*args, datamanager=datamanager, **kwargs)
 
         usernames = datamanager.get_other_known_characters()
         usernames_choices = [

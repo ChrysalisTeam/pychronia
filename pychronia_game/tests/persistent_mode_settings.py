@@ -16,7 +16,8 @@ ZODB_URL = None
 
 
 ## OVERRIDES FOR INTEGRATION OF REAL CHRYSALIS FIXTURES, if they're in ../Chrysalis relatively to this depot's root ##
-import pychronia_game, os
+import pychronia_game
+import os
 
 _external_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(pychronia_game.__file__))))
 _chrysalis_data_dir = os.path.join(_external_dir, "Chrysalis")

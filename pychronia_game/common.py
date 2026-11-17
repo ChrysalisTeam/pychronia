@@ -1,5 +1,18 @@
-import sys, os, math, random, hashlib, logging, types, re
-import contextlib, collections, time, glob, copy, atexit, inspect
+import sys
+import os
+import math
+import random
+import hashlib
+import logging
+import types
+import re
+import contextlib
+import collections
+import time
+import glob
+import copy
+import atexit
+import inspect
 from urllib.parse import urlparse
 
 from datetime import datetime, timedelta, UTC
@@ -73,8 +86,6 @@ class AvailablePermissions:
     Centralized enum of permissions, to ensure no typo is made...
     """
 
-    pass
-
 
 class GameError(Exception):
     def __init__(self, *args, **kwargs):
@@ -89,15 +100,11 @@ class AccessDeniedError(GameError):
     it's probably a global deactivation of the concerned view by the game master).
     """
 
-    pass
-
 
 class GameMaintenanceError(AccessDeniedError):
     """
     Raised when the game instance has been locked for maintenance, eg. to manually edit the data tree.
     """
-
-    pass
 
 
 class AuthenticationRequiredError(AccessDeniedError):
@@ -105,15 +112,11 @@ class AuthenticationRequiredError(AccessDeniedError):
     Raised if access if denied, but could be granted provided the user logs in.
     """
 
-    pass
-
 
 class PermissionRequiredError(AccessDeniedError):
     """
     Raised if additional character privileges are required.
     """
-
-    pass
 
 
 class UsageError(GameError):
@@ -121,7 +124,7 @@ class UsageError(GameError):
     Base class for command workflow errors.
     """
 
-    pass  # FIXME - make this class pure abstract !!!
+    # FIXME - make this class pure abstract !!!
 
 
 class NormalUsageError(UsageError):
@@ -133,7 +136,7 @@ class AbnormalUsageError(UsageError):
 
 
 @contextmanager
-def action_failure_handler(request, success_message=gettext_lazy("Operation successful.")):
+def action_failure_handler(request, success_message=gettext_lazy("Operation successful.")):  # noqa: B008 - lazy string
     user = request.datamanager.user
     logger = request.datamanager.logger
 

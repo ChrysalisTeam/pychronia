@@ -66,10 +66,7 @@ def _setup_macros_dict(parser):
     ## Metadata of each macro are stored in a new attribute
     ## of 'parser' class. That way we can access it later
     ## in the template when processing 'usemacro' tags.
-    try:
-        ## Only try to access it to eventually trigger an exception
-        parser._macros
-    except AttributeError:
+    if not hasattr(parser, "_macros"):
         parser._macros = {}
 
 

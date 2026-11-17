@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-import sys, os, logging
+import sys
+import os
+import logging
 
 root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))  # CHRYSALIS/ root dir
 sys.path.insert(0, root)
@@ -11,7 +13,7 @@ os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = (
     "pychronia_game.tests.persistent_mode_settings"  # with DB not in temp dir
 )
 
-import setup_pychronia_env
+import setup_pychronia_env  # noqa: F401
 
 from django.core.management import execute_from_command_line
 from django.conf import settings
@@ -43,7 +45,7 @@ if __name__ == "__main__":
     elif "reset_zodb" in arguments:
         if settings.ZODB_FILE and os.path.exists(settings.ZODB_FILE):
             os.remove(settings.ZODB_FILE)
-        import pychronia_game.models  # initializes everything
+        import pychronia_game.models  # noqa: F401 - initializes everything
         from pychronia_game.datamanager.datamanager_administrator import reset_zodb_structure, create_game_instance
 
         reset_zodb_structure()

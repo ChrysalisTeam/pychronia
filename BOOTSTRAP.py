@@ -2,7 +2,9 @@
 Install dependencies and initialize zodb/django databases.
 """
 
-import sys, os, subprocess
+import sys
+import os
+import subprocess
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 RUNNER = os.path.join(REPO_ROOT, "pychronia_game", "tests", "runner.py")

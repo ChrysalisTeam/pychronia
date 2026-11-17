@@ -70,7 +70,7 @@ def decode_tag_argument(argument):
         return {"name": str(match.group("name")), "value": match.group("value")}
 
 
-def decode_tag_arguments(token, default_arguments={}):
+def decode_tag_arguments(token, default_arguments=None):
     """Returns a dictionnary of arguments that can be found in the given token.
 
     This can be useful to code template tags like this:
@@ -82,7 +82,7 @@ def decode_tag_arguments(token, default_arguments={}):
     arguments = {}
     args = split_arguments(token.contents)
 
-    for arg_name, arg_value in default_arguments.items():
+    for arg_name, arg_value in (default_arguments or {}).items():
         arguments[arg_name] = arg_value
 
     for arg in args:

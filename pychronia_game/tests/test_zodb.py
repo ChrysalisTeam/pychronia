@@ -1,4 +1,7 @@
-import unittest, copy, time, random
+import unittest
+import copy
+import time
+import random
 from unittest import TestCase
 import multiprocessing.pool
 

@@ -89,8 +89,7 @@ Known per-page caveats for downstream test authors (not modeled by compute_acces
 """
 
 import re
-from dataclasses import dataclass, field
-from typing import Optional, Tuple
+from dataclasses import dataclass
 from collections.abc import Callable
 
 from pychronia_game.common import AccessResult

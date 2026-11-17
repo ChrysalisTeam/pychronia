@@ -1,4 +1,9 @@
-import sys, os, tempfile, random, logging, re
+import sys
+import os
+import tempfile
+import random
+import logging
+import re
 
 try:
     import PIL.Image  # that monolithic package has been exploded in several packages now

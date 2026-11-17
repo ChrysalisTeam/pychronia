@@ -1,13 +1,20 @@
 ### NO import from pychronia_game.common, else circular import !! ###
 
 import io
-import os, collections.abc, logging, inspect, traceback, re, glob, copy
+import os
+import collections.abc
+import logging
+import inspect
+import traceback
+import re
+import glob
+import copy
 import yaml
 from collections.abc import Callable
 from collections import Counter, OrderedDict
 from datetime import datetime
 
-import ZODB  # must be first !
+import ZODB  # noqa: F401 - must be first !
 from persistent.mapping import PersistentMapping
 from persistent.list import PersistentList
 
@@ -119,7 +126,7 @@ class Enum(set):
     Takes a string of values, or a list, and exposes the corresponding enumeration.
     """
 
-    def __init__(self, iterable=[]):
+    def __init__(self, iterable=()):
         set.__init__(self)
         self.update(iterable)
 
@@ -232,7 +239,7 @@ def check_object_tree(tree, allowed_types, path):
         for index, item in enumerate(tree):
             check_object_tree(item, allowed_types, path + [index])
     elif isinstance(tree, collections.abc.MutableMapping):
-        for key, value in reversed(sorted(tree.items())):
+        for key, value in sorted(tree.items(), reverse=True):
             check_object_tree(value, allowed_types, path + [key])
     elif isinstance(tree, collections.abc.MutableSet):
         for value in tree:
@@ -655,7 +662,7 @@ def find_game_file(*rel_path_glob):
         for root, dirs, files in os.walk(search_tree):
             if filename in files:
                 result_folders.append(root)
-                pass  # for robustness, we keep searching
+                # for robustness, we keep searching
     if not result_folders:
         raise RuntimeError("Game file %r not found in %r", filename, search_trees)
     elif len(result_folders) > 1:

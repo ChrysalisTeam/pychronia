@@ -31,7 +31,6 @@ class CounterNode(template.Node):
         counters = context[TEMPLATEADDONS_COUNTERS_VARIABLE]
 
         name = parse_tag_argument(self.name, context)
-        silent = parse_tag_argument(self.silent, context)
         assign = parse_tag_argument(self.assign, context)
 
         if name not in counters:

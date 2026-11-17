@@ -142,7 +142,7 @@ def generate_media_player(fileurl, image="", autostart=False, width=None, height
     del height, kwargs  # unused, the player keeps the aspect ratio of the video
 
     # NOT ALWAYS ABSOLUTE URLS, eg. for personal documents these are "/my/file.mp4" URLs -
-    assert fileurl.startswith("http") or fileurl.startswith("/"), fileurl
+    assert fileurl.startswith(("http", "/")), fileurl
 
     extension = _get_extension(fileurl)
 
@@ -256,7 +256,6 @@ def generate_image_viewer(imageurl, width=500, height=400, preset=None, align=""
                     logging.critical(
                         "generate_image_viewer preset selection failed for %s/%s", imageurl, preset, exc_info=True
                     )
-                    pass
             if not thumb:  # we fallback to default options
                 options = {
                     "autocrop": False,  # remove useless whitespace

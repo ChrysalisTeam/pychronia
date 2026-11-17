@@ -20,7 +20,6 @@ class GlobalContactForm(DataTableForm):
     ###test = Select2TagsField(label=gettext_lazy("TESTING"), choice_tags=["kkk", "lll"])
 
     def __init__(self, datamanager, **kwargs):
-        initial = kwargs.get("initial")
         # NOT YET SETUP if initial and "access_tokens" in initial:
         # NOT YET SETUP     initial["is_public"] = (initial["access_tokens"] is None) # else, we let it be false
         super().__init__(datamanager=datamanager, **kwargs)

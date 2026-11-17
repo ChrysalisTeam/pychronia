@@ -1,13 +1,10 @@
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.urls import include, re_path
-from django.conf import settings
 from django.views.generic import RedirectView
 from django.urls import reverse_lazy
 from django.conf.urls.i18n import i18n_patterns
 from django.http.response import HttpResponse
-
-from cms.views import details
 
 from djangocms_page_sitemap.sitemap import ExtendedSitemap
 from djangocms_stories.sitemaps import StoriesSitemap

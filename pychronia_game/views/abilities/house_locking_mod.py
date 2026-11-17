@@ -41,7 +41,7 @@ class HouseLockingAbility(AbstractAbility):
             self.user.add_error(_("Doors are already locked."))
             return False
 
-        assert False, "lock_house_doors"
+        raise AssertionError("lock_house_doors")
 
     @transaction_watcher
     def try_unlocking_house_doors(self, password, use_gems=()):
@@ -63,7 +63,7 @@ class HouseLockingAbility(AbstractAbility):
             self.user.add_error(_("Doors are already unlocked."))
             return False
 
-        assert False, "try_unlocking_house_doors"
+        raise AssertionError("try_unlocking_house_doors")
 
     @classmethod
     def _setup_ability_settings(cls, settings):

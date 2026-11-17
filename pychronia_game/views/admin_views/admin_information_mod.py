@@ -21,7 +21,7 @@ class AdminInformation(AbstractGameView):
 
         # we sort these by view identifier, for now
         admin_summaries = self.datamanager.get_game_view_admin_summaries()
-        admin_summaries = sorted(list(admin_summaries.items()), key=lambda x: x[0])
+        admin_summaries = sorted(admin_summaries.items(), key=lambda x: x[0])
 
         return dict(
             global_parameters=global_parameters,

@@ -92,7 +92,7 @@ class CharactersView(AbstractGameView):
             user_data["email_address"] = self.datamanager.get_character_email(username=username)
             if username == self.datamanager.user.username or show_others_belongings:
                 user_data["user_items"] = sorted(
-                    list(self.datamanager.get_available_items_for_user(username=username, auction_only=False).values()),
+                    self.datamanager.get_available_items_for_user(username=username, auction_only=False).values(),
                     key=lambda x: x["title"],
                 )  # it's all or nothing, we don't discriminate by auction
             else:

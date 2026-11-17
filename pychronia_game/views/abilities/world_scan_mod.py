@@ -51,7 +51,6 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
     @classmethod
     def _setup_ability_settings(cls, settings):
-        pass
         """
         for (name, scan_set) in settings["scanning_sets"].items():
             if scan_set == "__everywhere__":

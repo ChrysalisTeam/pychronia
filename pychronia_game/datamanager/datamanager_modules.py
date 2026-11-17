@@ -1,4 +1,5 @@
-import string, random
+import string
+import random
 from collections import OrderedDict
 
 from pychronia_game.common import *
@@ -244,7 +245,7 @@ class CurrentUserHandling(BaseDataManager):
             else:
                 assert not self.is_master()
                 return dict(writable=False, reason=_("Website currently in read-only mode, for maintenance."))
-        assert False
+        raise AssertionError()
 
     @readonly_method
     def is_game_writable(self):
@@ -349,9 +350,8 @@ class GameEvents(BaseDataManager):  # TODO REFINE
 
             character_names = self.get_character_usernames()
 
-            message = event["message"]
             visible_by = event["visible_by"]
-            assert visible_by is None or all([(c in character_names) for c in visible_by])
+            assert visible_by is None or all((c in character_names) for c in visible_by)
 
             # test is a little brutal, if we reset master login it might fail...
             assert (
@@ -393,7 +393,6 @@ class GameEvents(BaseDataManager):  # TODO REFINE
                 message % substitutions  # may raise formatting errors if corrupt...
         else:
             assert "%(" not in message, "Message %s needs substitution arguments" % message
-            pass
 
         utcnow = get_utc_now()  # NAIVE UTC datetime
 
@@ -1153,7 +1152,7 @@ class PlayerAuthentication(BaseDataManager):
         else:
             raise NormalUsageError(_("Wrong password"))
 
-        assert False
+        raise AssertionError()
 
     @transaction_watcher  # requires game started mode
     def process_password_change_attempt(self, username, old_password, new_password):
@@ -1364,8 +1363,6 @@ class PermissionsHandling(BaseDataManager):  # TODO REFINE
         for permission in self.PERMISSIONS_REGISTRY:  # check all available permissions
             utilities.check_is_slug(permission)
             assert permission.lower() == permission
-
-        game_data = self.data
 
         """ BROKEN ATM because we use new views in tests # TODO FIXME LATER
 
@@ -1966,7 +1963,7 @@ class TextMessagingCore(BaseDataManager):
             if msg["sent_at"] <= utcnow:
                 try:
                     self._immediately_dispatch_message(msg)
-                except:
+                except Exception:
                     if __debug__:
                         self.notify_event("DELAYED_MESSAGE_ERROR")
                     self.logger.critical("Delayed message couldn't be sent : %s" % msg, exc_info=True)
@@ -2163,7 +2160,6 @@ class TextMessagingCore(BaseDataManager):
 
     def _message_dispatching_post_hook(self, frozen_msg):
         assert not hasattr(super(), "_message_dispatching_post_hook")
-        pass
 
     @transaction_watcher
     def force_message_sending(self, msg_id):
@@ -2650,9 +2646,6 @@ class TextMessagingForCharacters(BaseDataManager):  # TODO REFINE
         self._recompute_all_address_book_via_msgs()
         assert not self._recompute_all_address_book_via_msgs()
 
-        # initial coherence check
-        all_emails = self.get_all_existing_emails()  # ALL available
-
         """ TODO FIXME BETTER CHECK ??
         #print(">>>>>>>>###", all_emails)
         for msg in messaging["messages_dispatched"] + messaging["messages_queued"]:
@@ -2671,12 +2664,10 @@ class TextMessagingForCharacters(BaseDataManager):  # TODO REFINE
 
         utilities.check_is_slug(game_data["global_parameters"]["pangea_network_domain"])
 
-        message_reference = {field: PersistentList for field in self.EMAIL_BOOLEAN_FIELDS_FOR_USERS}
+        message_reference = dict.fromkeys(self.EMAIL_BOOLEAN_FIELDS_FOR_USERS, PersistentList)
         message_reference["is_certified"] = bool  # for messages sent via automated processes
 
         def _check_message_list(msg_list, is_queued):
-
-            master = self.get_global_parameter("master_login")
 
             for msg in msg_list:
                 utilities.check_dictionary_with_template(msg, message_reference, strict=False)
@@ -3273,7 +3264,7 @@ class TextMessagingInterception(BaseDataManager):
     def set_wiretapping_targets(self, username=CURRENT_USER, target_names=None):
         assert target_names is not None
         username = self._resolve_username(username)
-        target_names = sorted(list(set(target_names)))  # renormalization, just in case
+        target_names = sorted(set(target_names))  # renormalization, just in case
 
         character_names = self.get_character_usernames()  # here we allow wiretapping oneself, even if it makes no sense
         for name in target_names:
@@ -3706,7 +3697,7 @@ class ActionScheduling(BaseDataManager):
                     kwargs = action["kwargs"]
                     function(*args, **kwargs)
                     # print(">>>> executed ", function)
-                except:
+                except Exception:
                     if __debug__:
                         self.notify_event("DELAYED_ACTION_ERROR")
                     self.logger.critical("Delayed action raised an error when executing : %s" % action, exc_info=True)
@@ -3738,14 +3729,14 @@ class ActionScheduling(BaseDataManager):
 
         if isinstance(function, str):
             # print("SEARCHING", function, "IN", sorted(dir(self)))
-            if not hasattr(self, function) or not hasattr(getattr(self, function), "__call__"):
+            if not hasattr(self, function) or not callable(getattr(self, function)):
                 raise TypeError(
                     _(
                         "Only strings representing DataManager methods can be scheduled as delayed actions, not %(function)s"
                     )
                     % SDICT(function=function)
                 )
-        elif not hasattr(function, "__call__"):
+        elif not callable(function):
             raise TypeError(
                 _("You can only register a callable object as a delayed action, not a %(function)r")
                 % SDICT(function=function)
@@ -4711,7 +4702,7 @@ class StaticPages(BaseDataManager):
             return value
         else:
             return None  # no leaks
-        assert False
+        raise AssertionError()
 
     @readonly_method
     def get_static_page_names_for_category(self, category):

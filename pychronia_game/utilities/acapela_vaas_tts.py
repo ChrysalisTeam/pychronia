@@ -1,4 +1,5 @@
-import requests, urllib.parse
+import requests
+import urllib.parse
 
 
 class AcapelaClient:

@@ -129,7 +129,7 @@ if __name__ == "__main__":
 
     # root difference
     opcodes = generate_tree_diff(2, True)
-    assert apply_tree_diff(2, opcodes) == True
+    assert apply_tree_diff(2, opcodes) == True  # noqa: E712
 
     class TestClass:
         def __init__(self, **kwargs):

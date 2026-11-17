@@ -8,7 +8,6 @@ from pychronia_game.common import get_utc_now
 from pychronia_game.datamanager import datamanager_administrator as dma
 from pychronia_game.meta_administration_views import (
     compute_game_activation_token,
-    GAME_ACTIVATION_EMAIL_SUBJECT,
 )
 from pychronia_game.tests.e2e import _configs, _pages
 

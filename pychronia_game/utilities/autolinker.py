@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup, NavigableString
-import re, functools
+import re
+import functools
 
 clean_parser = functools.partial(BeautifulSoup, features="html.parser")
 del BeautifulSoup
@@ -53,7 +54,6 @@ def generate_links(html_snippet, regex, link_attr_generator):
         )
         if not occurences:
             assert string == new_string
-            None
         else:
             mini_soup = clean_parser(new_string)
             new_children = mini_soup.contents

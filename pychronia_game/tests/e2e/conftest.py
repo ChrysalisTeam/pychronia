@@ -11,7 +11,7 @@ os.environ["PYCHRONIA_E2E_WORK_DIR"] = E2E_WORK_DIR
 os.environ["DJANGO_SETTINGS_MODULE"] = "pychronia_game.tests.e2e.e2e_settings"
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"  # Playwright's sync API runs an event loop in the main thread
 
-import setup_pychronia_env  # noqa: E402  (import order is load-bearing, see above)
+import setup_pychronia_env  # noqa: E402, F401  (import order is load-bearing, see above)
 
 from django.conf import settings as django_settings  # noqa: E402
 from django.contrib.auth.models import User  # noqa: E402

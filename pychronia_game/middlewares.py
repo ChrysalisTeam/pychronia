@@ -84,7 +84,6 @@ class ZodbTransactionMiddleware(MiddlewareMixin):
             logger.critical("Exception occurred in view - %r" % exception, exc_info=True)
 
         # we let the exception propagate anyway
-        pass
 
     def process_response(self, request, response):
         # on exception : no response handling occurs, a simple traceback is output !
@@ -173,6 +172,6 @@ class PeriodicProcessingMiddleware(MiddlewareMixin):
                 msg = "PeriodicProcessingMiddleware error : %r" % e
                 datamanager.logger.error(msg, exc_info=True)
                 mail.mail_admins("Error", msg, config.SERVER_EMAIL)
-            except:
+            except Exception:
                 pass
         return None

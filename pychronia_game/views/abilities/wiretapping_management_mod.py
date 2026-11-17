@@ -64,7 +64,7 @@ class WiretappingTargetsForm(AbstractGameForm):
             if key.startswith("target_") and value:
                 targets.add(value)  # no need to delete the "target_%d" field
 
-        parameters["target_names"] = sorted(list(targets))
+        parameters["target_names"] = sorted(targets)
 
         return parameters
 
@@ -174,7 +174,7 @@ class WiretappingAbility(AbstractAbility):
     @transaction_watcher
     def change_current_user_wiretapping_targets(self, target_names, use_gems=()):
 
-        target_names = sorted(list(set(target_names)))  # renormalization, just in case
+        target_names = sorted(set(target_names))  # renormalization, just in case
 
         self.set_wiretapping_targets(target_names=target_names)
 

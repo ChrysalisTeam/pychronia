@@ -200,7 +200,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         if not skip_initializations:
             self._load_initial_data(skip_randomizations=skip_randomizations)  # traversal of each core module
         else:
-            assert skip_randomizations == True
+            assert skip_randomizations
 
         # NOW only we normalize and check the object tree
         # mutable python types are transformed to ZODB-persistent types

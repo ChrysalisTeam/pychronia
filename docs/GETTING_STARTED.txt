@@ -47,6 +47,17 @@ The Django-CMS app, located in "pychronia_cms" package, behaves like a quite sta
 So the remaindee of this doc focuses on the non-standard "pychronia_game" package.
 
 
+Code style
+=============
+
+Python code is linted and formatted with ruff (configured in "pyproject.toml", installed with the "dev" dependency group)::
+
+    uv run ruff check .        # add --fix to apply safe fixes
+    uv run ruff format .
+
+Pure reformatting commits are listed in ".git-blame-ignore-revs"; run "git config blame.ignoreRevsFile .git-blame-ignore-revs" once, so that "git blame" skips them.
+
+
 Regenerating CSS files
 =======================
 

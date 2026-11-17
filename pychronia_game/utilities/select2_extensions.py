@@ -1,4 +1,5 @@
-import re, copy
+import re
+import copy
 from django_select2 import HeavySelect2MultipleChoiceField
 from django_select2.widgets import MultipleSelect2HiddenInput, Select2Mixin
 from django.utils.translation import gettext_lazy

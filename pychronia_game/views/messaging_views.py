@@ -1,4 +1,6 @@
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 
 from pychronia_game.common import *
 from pychronia_game.datamanager import register_view, VISIBILITY_REASONS, AbstractGameForm

@@ -17,8 +17,6 @@ class UninstantiableFormError(Exception):
     the instance would be meaningless (eg. no data to choose from).
     """
 
-    pass
-
 
 def autostrip_form_charfields(cls):
     """
@@ -32,8 +30,8 @@ def autostrip_form_charfields(cls):
         def get_clean_func(original_clean):
             return lambda value: original_clean(value and value.strip())
 
-        clean_func = get_clean_func(getattr(field_object, "clean"))
-        setattr(field_object, "clean", clean_func)  # we set it on FIELD, not FORM
+        clean_func = get_clean_func(field_object.clean)
+        field_object.clean = clean_func  # we set it on FIELD, not FORM
     return cls
 
 

@@ -153,6 +153,8 @@ ignore = [
     "C408",  # dict(a=1) calls are fine
     "B904",  # "raise ... from err" in except blocks: only changes traceback chaining
     "B905",  # zip() without strict=
+    "B007",  # unused loop variables: harmless, and the rename fix is unsafe (variable may be used after the loop)
+    "W291", "W293",  # trailing whitespace: the formatter handles code, the rest is inside (possibly significant) string literals
 ]
 # NO "I" (isort): settings modules depend on the order of their star-imports
 
@@ -162,8 +164,10 @@ ignore = [
 "pychronia_game/views/__init__.py" = ["F401"]
 "pychronia_game/datamanager/__init__.py" = ["F401"]
 "dependencies/fileservers/__init__.py" = ["F401"]
-# test idioms: "assert x == True", "assert False", "assertRaises(Exception)"
-"**/tests/**" = ["E712", "B011", "B017"]
+"pychronia_game/tests/_test_tools.py" = ["F401"]  # star-imported by test modules
+"**/*settings*.py" = ["F401"]  # settings are star-import chains, overridden by untracked *_local.py files
+# test idioms: "assert x == True", "assert False", "assertRaises(Exception)", attribute accesses expected to raise, unused call results
+"**/tests/**" = ["E712", "E741", "B011", "B017", "B018", "F841"]
 
 [tool.ruff.format]
 # defaults (black-compatible): double quotes, magic trailing commas, line endings kept as they are

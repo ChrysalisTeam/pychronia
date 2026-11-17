@@ -1,4 +1,6 @@
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 import json
 
 from ZODB.POSException import POSError  # parent of ConflictError
@@ -68,7 +70,7 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
 
     # else, we let 500 handler take are of all other (very abnormal) exceptions
 
-    assert False
+    raise AssertionError()
 
 
 class ClassInstantiationProxy:
@@ -393,7 +395,7 @@ class AbstractGameView(metaclass=GameViewMetaclass):
             else:
                 assert access_result == AccessResult.globally_forbidden
                 raise AccessDeniedError(_("Access globally forbidden."))
-            assert False
+            raise AssertionError()
         except Exception as e:
             self.logger.error("check_standard_access failed: %r", e)
             raise
@@ -999,4 +1001,4 @@ def register_view(
         return _build_final_view_callable(view_object)
     else:
         return _build_final_view_callable  # new decorator ready to be applied to a view function/type
-    assert False
+    raise AssertionError()

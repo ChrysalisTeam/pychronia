@@ -1,4 +1,6 @@
-import os, tempfile, random
+import os
+import tempfile
+import random
 
 from pychronia_common.tests.common_test_settings import *
 

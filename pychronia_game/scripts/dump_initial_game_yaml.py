@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 
-import setup_pychronia_env  # NOW ONLY
+import setup_pychronia_env  # noqa: F401 - NOW ONLY
 
 from pychronia_game import utilities
 from pychronia_game.datamanager import GameDataManager, PersistentMapping

@@ -1,9 +1,12 @@
-import re, logging, random, json
+import re
+import logging
+import random
+import json
 
 from pychronia_game.utilities import (
     mediaplayers,
     autolinker,
-    rst_directives,
+    rst_directives,  # noqa: F401
     is_absolute_url,
 )  # important to register RST extensions
 from pychronia_game.common import (
@@ -23,7 +26,9 @@ from django.template.defaultfilters import stringfilter
 from django.template.defaultfilters import linebreaks
 from django.core.cache import cache
 
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 from pychronia_game.storage import get_game_thumbnailer
 from pychronia_game.common import config
 from django.template.loader import render_to_string
@@ -50,7 +55,7 @@ def _try_generating_thumbnail_url(rel_path, alias=None):
             return res
         except Exception as e:
             logging.warning("Error generating game_file_img %s (alias=%s): %r", rel_path, alias, e)
-            pass  # fallback to plain file
+            # fallback to plain file
 
     return real_game_file_url(rel_path)  # original image
 
@@ -555,7 +560,7 @@ def dict_get(value, arg):
     """
     try:
         return value[arg]
-    except:
+    except Exception:
         # NO ERROR, templates can just be used to test for the existence of a key, this way !
         return ""  # value evaluating to false
 
@@ -600,7 +605,7 @@ def mediaplayer(properties, autostart="false"):
     try:
         res = mediaplayers.build_proper_viewer(fileurl, title=title, autostart=(autostart == "true"))
         return mark_safe(res)
-    except:
+    except Exception:
         logging.error("mediaplayer filter failed", exc_info=True)
         return mark_safe("<a href=" + fileurl + ">" + fileurl + "</a>")
 

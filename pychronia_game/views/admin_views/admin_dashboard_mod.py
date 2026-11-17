@@ -194,7 +194,6 @@ class AdminDashboardAbility(AbstractAbility):
     @classmethod
     def _setup_ability_settings(cls, settings):
         settings.setdefault("sorted_widget_ids", PersistentList())
-        pass
 
     def _setup_private_ability_data(self, private_data):
         pass  # HERE store the preferred order of widgets

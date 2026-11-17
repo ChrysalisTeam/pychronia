@@ -101,10 +101,7 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
         private_data.setdefault("mercenaries_locations", PersistentList())
 
     def _check_data_sanity(self, strict=False):
-
-        settings = self.settings
-
-        """ OBSOLETE
+        """OBSOLETE
         _reference = dict(
                             mercenary_cost_money=utilities.check_is_positive_int,
                             mercenary_cost_gems=utilities.check_is_positive_int

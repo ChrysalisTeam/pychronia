@@ -150,7 +150,6 @@ class DataTableManager:
 
     def _callback_on_any_update(self):
         """Override this callback, if you need eg. to prune references to items that have been deleted."""
-        pass
 
     @readonly_method
     def copy(self):

@@ -32,7 +32,7 @@ from .admin_information_mod import AdminInformation
 
 admin_information = AdminInformation.as_view
 
-from .gamemaster_manual_mod import gamemaster_manual
+from .gamemaster_manual_mod import gamemaster_manual  # noqa: F401
 
 
 @register_view(access=UserAccess.master, title=gettext_lazy("View Database"))
@@ -59,7 +59,7 @@ def manage_databases(request, template_name="administration/database_management.
 def manage_characters(request, template_name="administration/character_management.html"):
     dm = request.datamanager
 
-    characters_items = sorted(list(dm.get_character_sets().items()), key=lambda x: (x[1]["is_npc"], x[0]))
+    characters_items = sorted(dm.get_character_sets().items(), key=lambda x: (x[1]["is_npc"], x[0]))
 
     character_forms = []
 
@@ -192,13 +192,12 @@ def manage_characters(request, template_name="administration/character_managemen
 
     assert len(character_forms) == len(characters_items), [character_forms, characters_items]
 
-    if form_validation_failed == True:
+    if form_validation_failed is True:
         dm.user.add_error(_("Some character updates failed (see below)."))
-    elif form_validation_failed == False:
+    elif form_validation_failed is False:
         dm.user.add_message(_("Characters were properly updated."))
     else:
         assert form_validation_failed is None
-        pass
 
     friendship_data = dm.get_full_friendship_data()
     sealed_friendships = sorted(friendship_data["sealed"].items())

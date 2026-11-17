@@ -306,7 +306,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
         else:
             return other_instructions
 
-        assert False
+        raise AssertionError()
 
     def _process_action_through_middlewares(self, action_name, method, params):
 
@@ -317,7 +317,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                 self.logger.critical(
                     "Nasty costly action middleware misconfiguration for %s/%s", action_name, method.__name__
                 )
-                pass  # too bad misconfiguration, we let full action to that ability...
+                # too bad misconfiguration, we let full action to that ability...
             else:
                 use_gems = params.get("use_gems", ())
 
@@ -489,7 +489,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
         else:
             return other_instructions
 
-        assert False
+        raise AssertionError()
 
     def _get_global_usage_count(self, action_name):
         data_dicts = self.get_all_private_middleware_data(
@@ -616,7 +616,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         else:
             return other_instructions
 
-        assert False
+        raise AssertionError()
 
     def _compute_purged_old_use_times(self, middleware_settings, last_use_times):
         """
@@ -645,7 +645,6 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
                 )
 
                 last_use_times = private_data["last_use_times"]
-                now = get_utc_now()  # to debug
                 if len(last_use_times) >= middleware_settings["max_uses_per_period"]:
                     raise NormalUsageError(_("You must respect a waiting period to use that asset."))
 

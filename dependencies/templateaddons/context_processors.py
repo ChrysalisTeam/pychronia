@@ -1,6 +1,3 @@
-import re
-
-
 def html_body_id(request):
     """
     Assign a variable name 'html_body_id' to the context.

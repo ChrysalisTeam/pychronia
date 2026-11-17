@@ -1144,7 +1144,7 @@ class TestMetaAdministration(unittest.TestCase):  # no django setup required ATM
 
         reset_zodb_structure()
 
-        assert reset_demo_account.execute() == None
+        assert reset_demo_account.execute() is None
 
         assert backup_all_games.execute() == 1
 
@@ -2778,7 +2778,7 @@ class TestDatamanager(BaseGameTestCase):
             ["guy1@pangea.com", "judicators@akaris.com", "unknown@mydomain.com"], as_dict=True
         )
         assert set(res.keys()) == {"guy1@pangea.com", "judicators@akaris.com", "unknown@mydomain.com"}
-        assert sorted(list(res.values()), key=lambda x: x["address"]) == expected_res  # values are the same as above...
+        assert sorted(res.values(), key=lambda x: x["address"]) == expected_res  # values are the same as above...
 
     def test_post_message_with_template(self):
         self._reset_messages()
@@ -3131,7 +3131,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(
             {msg["subject"] for msg in res}, {"hello everybody 1", "hello everybody 2", "hello everybody 4"}
         )
-        assert all([msg["visible_by"]["guy1"] == VISIBILITY_REASONS.interceptor for msg in res])
+        assert all(msg["visible_by"]["guy1"] == VISIBILITY_REASONS.interceptor for msg in res)
 
         msg = res[0]  # first of these messages intercepted by guy1
         assert msg["subject"] == "hello everybody 1"
@@ -3225,17 +3225,15 @@ class TestDatamanager(BaseGameTestCase):
 
         # test that we can initialize boolean fields as we wish
         self.dm.post_message(
-            **{
-                "sender_email": "guy4@pangea.com",
-                "recipient_emails": ["guy4@pangea.com"],
-                "subject": "BOOLEAN_FIELDS",
-                "body": "Here is the body of this message lalalal...",
-                "date_or_delay_mn": 0,
-                "has_read": ["guy1"],
-                "has_replied": ["guy2"],
-                "has_starred": ["guy3"],
-                "has_archived": ["guy4"],
-            }
+            sender_email="guy4@pangea.com",
+            recipient_emails=["guy4@pangea.com"],
+            subject="BOOLEAN_FIELDS",
+            body="Here is the body of this message lalalal...",
+            date_or_delay_mn=0,
+            has_read=["guy1"],
+            has_replied=["guy2"],
+            has_starred=["guy3"],
+            has_archived=["guy4"],
         )
         msg = self.dm.get_all_dispatched_messages()[-1]
         assert msg["subject"] == "BOOLEAN_FIELDS"
@@ -3770,14 +3768,14 @@ class TestDatamanager(BaseGameTestCase):
             request.session[SESSION_TICKET_KEY]["game_instance_id"] = "qsdjqsidub"
             _temp = request.session[SESSION_TICKET_KEY].copy()
             try_authenticating_with_session(request)
-            assert request.session[SESSION_TICKET_KEY] == None  # removed
+            assert request.session[SESSION_TICKET_KEY] is None  # removed
 
             self._set_user(None)
 
             request.session[SESSION_TICKET_KEY] = original_ticket.copy()
             request.session[SESSION_TICKET_KEY]["game_username"] = "qsdqsdqsd"
             try_authenticating_with_session(request)  # exception gets swallowed
-            assert request.session[SESSION_TICKET_KEY] == None  # but ticket gets reset
+            assert request.session[SESSION_TICKET_KEY] is None  # but ticket gets reset
 
             self._set_user(None)
 
@@ -7832,7 +7830,7 @@ class TestSpecialAbilities(BaseGameTestCase):
             runic_translation.settings["references"] = utilities.PersistentMapping()
             runic_translation.commit()
             assert (
-                runic_translation._get_closest_item_name_or_none("sa to | ta ka") == None
+                runic_translation._get_closest_item_name_or_none("sa to | ta ka") is None
             )  # no reference items available at all
 
         self._test_ability_standard_email_exchanges(
@@ -8690,7 +8688,7 @@ class TestSpecialAbilities(BaseGameTestCase):
             analyser.settings["reports"] = utilities.PersistentMapping()
             analyser.commit()
             assert (
-                analyser._compute_analysis_result_or_none("sacred_chest") == None
+                analyser._compute_analysis_result_or_none("sacred_chest") is None
             )  # no reference items available at all
 
         self._test_ability_standard_email_exchanges(

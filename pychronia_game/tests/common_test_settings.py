@@ -1,4 +1,5 @@
-import os, random
+import os
+import random
 
 ## PYCHRONIA SPECIFIC CONF ##
 

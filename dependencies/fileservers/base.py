@@ -20,7 +20,7 @@ class ServerBase:
         * if save_as is a filename, it will be used in the header
         * if save_as is None the filename will be determined from the file path
         """
-        if save_as == False:
+        if save_as is False:
             return
         if save_as:
             filename = save_as

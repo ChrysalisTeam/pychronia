@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import setup_pychronia_env
-import pychronia_game.models  # initializes everything
+import setup_pychronia_env  # noqa: F401
+import pychronia_game.models  # noqa: F401 - initializes everything
 from pychronia_game.datamanager.datamanager_administrator import (
     delete_game_instance,
     create_game_instance,
