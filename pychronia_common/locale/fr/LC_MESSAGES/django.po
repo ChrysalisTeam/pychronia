@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-11 23:29+0100\n"
+"POT-Creation-Date: 2026-11-16 22:27+0100\n"
 "PO-Revision-Date: 2015-12-28 19:12+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -25,22 +25,133 @@ msgstr "Français"
 msgid "English"
 msgstr "Anglais"
 
+#: .\templates\_pychronia_media_js.html:6
+msgctxt "media player"
+msgid "Play"
+msgstr "Lecture"
+
+#: .\templates\_pychronia_media_js.html:8
+msgctxt "media player"
+msgid "Pause"
+msgstr "Pause"
+
+#: .\templates\_pychronia_media_js.html:10
+msgctxt "media player"
+msgid "Seek"
+msgstr "Position"
+
+#: .\templates\_pychronia_media_js.html:12
+#, python-brace-format
+msgctxt "media player"
+msgid "{currentTime} of {duration}"
+msgstr "{currentTime} sur {duration}"
+
+#: .\templates\_pychronia_media_js.html:14
+msgctxt "media player"
+msgid "Played"
+msgstr "Écouté"
+
+#: .\templates\_pychronia_media_js.html:16
+msgctxt "media player"
+msgid "Buffered"
+msgstr "Chargé"
+
+#: .\templates\_pychronia_media_js.html:18
+msgctxt "media player"
+msgid "Current time"
+msgstr "Position actuelle"
+
+#: .\templates\_pychronia_media_js.html:20
+msgctxt "media player"
+msgid "Duration"
+msgstr "Durée"
+
+#: .\templates\_pychronia_media_js.html:22
+msgctxt "media player"
+msgid "Volume"
+msgstr "Volume"
+
+#: .\templates\_pychronia_media_js.html:24
+msgctxt "media player"
+msgid "Mute"
+msgstr "Couper le son"
+
+#: .\templates\_pychronia_media_js.html:26
+msgctxt "media player"
+msgid "Unmute"
+msgstr "Rétablir le son"
+
+#: .\templates\_pychronia_media_js.html:28
+msgctxt "media player"
+msgid "Enable subtitles"
+msgstr "Activer les sous-titres"
+
+#: .\templates\_pychronia_media_js.html:30
+msgctxt "media player"
+msgid "Disable subtitles"
+msgstr "Désactiver les sous-titres"
+
+#: .\templates\_pychronia_media_js.html:32
+msgctxt "media player"
+msgid "Enter fullscreen"
+msgstr "Plein écran"
+
+#: .\templates\_pychronia_media_js.html:34
+msgctxt "media player"
+msgid "Exit fullscreen"
+msgstr "Quitter le plein écran"
+
+#: .\templates\_pychronia_media_js.html:36
+msgctxt "media player"
+msgid "Subtitles"
+msgstr "Sous-titres"
+
+#: .\templates\_pychronia_media_js.html:38
+msgctxt "media player"
+msgid "Settings"
+msgstr "Réglages"
+
+#: .\templates\_pychronia_media_js.html:40
+msgctxt "media player"
+msgid "Go back to previous menu"
+msgstr "Revenir au menu précédent"
+
+#: .\templates\_pychronia_media_js.html:42
+msgctxt "media player"
+msgid "Speed"
+msgstr "Vitesse"
+
+#: .\templates\_pychronia_media_js.html:44
+msgctxt "media player"
+msgid "Normal"
+msgstr "Normale"
+
+#: .\templates\_pychronia_media_js.html:46
+msgctxt "media player"
+msgid "Disabled"
+msgstr "Désactivés"
+
+#: .\templates\_pychronia_media_js.html:48
+msgctxt "media player"
+msgid "Enabled"
+msgstr "Activés"
+
 #: .\templates\html_skeleton.html:6
 msgid "Welcome"
 msgstr "Bienvenue"
 
-#: .\templates\metalradiance_base.html:143
+#: .\templates\metalradiance_base.html:119
 msgid "Controls"
 msgstr "Contrôles"
 
-#: .\templates\metalradiance_base.html:259
-#: .\templates\metalradiance_base.html:270
-msgid "New"
-msgstr "Nouveau"
-
-#: .\templates\metalradiance_base.html:188
+#: .\templates\metalradiance_base.html:164
 msgid "Click on the border of this notification panel to close it."
 msgstr "Cliquez sur le bord de ce panneau de notification pour le fermer."
+
+#: .\templates\metalradiance_base.html:236
+#: .\templates\metalradiance_base.html:247
+msgid "New"
+msgstr "Nouveau"
 
 #: .\templates\metalradiance_kwacros.html:9
 #: .\templates\metalradiance_kwacros.html:16

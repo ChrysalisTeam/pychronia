@@ -72,9 +72,6 @@ Open Sans Font
 Licenses of Javascript/CSS/Flash libraries
 ===============================================
 
-audioplayer
-    Attribution, no warranties (BSD style)
-
 canvas-fireworks
     No license info
 
@@ -94,6 +91,9 @@ fasw.transitions
     GNU General Public License, version 3
 
 jquery.imageMapResizer
+    MIT
+
+plyr
     MIT
 
 jquery-jnotify

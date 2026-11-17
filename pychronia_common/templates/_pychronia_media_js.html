@@ -3,27 +3,49 @@
 <script src="{{ STATIC_URL }}MetalRadiance/pychronia_media.js" type="text/javascript"></script>
 <script type="text/javascript">
     PychroniaMedia.setI18n({
-        play: "{{ _('Play')|escapejs }}",
-        pause: "{{ _('Pause')|escapejs }}",
-        seek: "{{ _('Seek')|escapejs }}",
-        seekLabel: "{{ _('{currentTime} of {duration}')|escapejs }}",
-        played: "{{ _('Played')|escapejs }}",
-        buffered: "{{ _('Buffered')|escapejs }}",
-        currentTime: "{{ _('Current time')|escapejs }}",
-        duration: "{{ _('Duration')|escapejs }}",
-        volume: "{{ _('Volume')|escapejs }}",
-        mute: "{{ _('Mute')|escapejs }}",
-        unmute: "{{ _('Unmute')|escapejs }}",
-        enableCaptions: "{{ _('Enable subtitles')|escapejs }}",
-        disableCaptions: "{{ _('Disable subtitles')|escapejs }}",
-        enterFullscreen: "{{ _('Enter fullscreen')|escapejs }}",
-        exitFullscreen: "{{ _('Exit fullscreen')|escapejs }}",
-        captions: "{{ _('Subtitles')|escapejs }}",
-        settings: "{{ _('Settings')|escapejs }}",
-        menuBack: "{{ _('Go back to previous menu')|escapejs }}",
-        speed: "{{ _('Speed')|escapejs }}",
-        normal: "{{ _('Normal')|escapejs }}",
-        disabled: "{{ _('Disabled')|escapejs }}",
-        enabled: "{{ _('Enabled')|escapejs }}"
+        {% trans "Play" context "media player" as label_play %}
+        play: "{{ label_play|escapejs }}",
+        {% trans "Pause" context "media player" as label_pause %}
+        pause: "{{ label_pause|escapejs }}",
+        {% trans "Seek" context "media player" as label_seek %}
+        seek: "{{ label_seek|escapejs }}",
+        {% trans "{currentTime} of {duration}" context "media player" as label_seekLabel %}
+        seekLabel: "{{ label_seekLabel|escapejs }}",
+        {% trans "Played" context "media player" as label_played %}
+        played: "{{ label_played|escapejs }}",
+        {% trans "Buffered" context "media player" as label_buffered %}
+        buffered: "{{ label_buffered|escapejs }}",
+        {% trans "Current time" context "media player" as label_currentTime %}
+        currentTime: "{{ label_currentTime|escapejs }}",
+        {% trans "Duration" context "media player" as label_duration %}
+        duration: "{{ label_duration|escapejs }}",
+        {% trans "Volume" context "media player" as label_volume %}
+        volume: "{{ label_volume|escapejs }}",
+        {% trans "Mute" context "media player" as label_mute %}
+        mute: "{{ label_mute|escapejs }}",
+        {% trans "Unmute" context "media player" as label_unmute %}
+        unmute: "{{ label_unmute|escapejs }}",
+        {% trans "Enable subtitles" context "media player" as label_enableCaptions %}
+        enableCaptions: "{{ label_enableCaptions|escapejs }}",
+        {% trans "Disable subtitles" context "media player" as label_disableCaptions %}
+        disableCaptions: "{{ label_disableCaptions|escapejs }}",
+        {% trans "Enter fullscreen" context "media player" as label_enterFullscreen %}
+        enterFullscreen: "{{ label_enterFullscreen|escapejs }}",
+        {% trans "Exit fullscreen" context "media player" as label_exitFullscreen %}
+        exitFullscreen: "{{ label_exitFullscreen|escapejs }}",
+        {% trans "Subtitles" context "media player" as label_captions %}
+        captions: "{{ label_captions|escapejs }}",
+        {% trans "Settings" context "media player" as label_settings %}
+        settings: "{{ label_settings|escapejs }}",
+        {% trans "Go back to previous menu" context "media player" as label_menuBack %}
+        menuBack: "{{ label_menuBack|escapejs }}",
+        {% trans "Speed" context "media player" as label_speed %}
+        speed: "{{ label_speed|escapejs }}",
+        {% trans "Normal" context "media player" as label_normal %}
+        normal: "{{ label_normal|escapejs }}",
+        {% trans "Disabled" context "media player" as label_disabled %}
+        disabled: "{{ label_disabled|escapejs }}",
+        {% trans "Enabled" context "media player" as label_enabled %}
+        enabled: "{{ label_enabled|escapejs }}"
     });
 </script>

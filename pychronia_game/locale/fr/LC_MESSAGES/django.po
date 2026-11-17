@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 16:32+0100\n"
+"POT-Creation-Date: 2026-11-16 22:27+0100\n"
 "PO-Revision-Date: 2021-10-24 22:20+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -423,7 +423,7 @@ msgstr "Non identifié"
 #: .\templates\administration\radio_spots_editing.html:101
 #: .\templates\auction\items_slideshow.html:52
 #: .\templates\auction\view_characters.html:85
-#: .\templates\auction\view_characters.html:99 .\templates\base_main.html:352
+#: .\templates\auction\view_characters.html:99 .\templates\base_main.html:363
 #: .\templates\messaging\compose.html:153
 #: .\templates\meta_administration\manage_instances.html:22
 #: .\templates\profile\character_profile.html:18
@@ -1887,100 +1887,100 @@ msgstr "Total"
 msgid "Owner"
 msgstr "Propriétaire"
 
-#: .\templates\base_main.html:97
+#: .\templates\base_main.html:108
 msgid "Bug report properly sent."
 msgstr "Rapport d'erreur correctement envoyé."
 
-#: .\templates\base_main.html:126
+#: .\templates\base_main.html:137
 msgid "Application error (please consider reporting that bug)"
 msgstr "Erreur applicative (veuillez considérer signaler ce bogue)"
 
-#: .\templates\base_main.html:349
+#: .\templates\base_main.html:360
 msgid "Take the identity of another user."
 msgstr "Prendre l'identité d'un autre utilisateur"
 
-#: .\templates\base_main.html:350
+#: .\templates\base_main.html:361
 msgid "Impersonation:"
 msgstr "Usurpation:"
 
-#: .\templates\base_main.html:370
+#: .\templates\base_main.html:381
 msgid "Whether or not you can modify the game during impersonations."
 msgstr "Si vous pouvez ou non modifier le jeu durant l'usurpation d'identité."
 
-#: .\templates\base_main.html:371
+#: .\templates\base_main.html:382
 msgid "Writability:"
 msgstr "Modifiabilité:"
 
-#: .\templates\base_main.html:373
+#: .\templates\base_main.html:384
 msgid "Read-only"
 msgstr "Lecture-seule"
 
-#: .\templates\base_main.html:374
+#: .\templates\base_main.html:385
 msgid "Writable"
 msgstr "Modifiable"
 
-#: .\templates\base_main.html:414
+#: .\templates\base_main.html:425
 msgid "User is a superuser (authenticated as Django Admin)"
 msgstr "L'utilisateur est super-utilisateur (authentifié comme Admin Django)"
 
-#: .\templates\base_main.html:416
+#: .\templates\base_main.html:427
 msgid "User impersonation is ongoing"
 msgstr "Une usurpation d'identité est en cours"
 
-#: .\templates\base_main.html:418
+#: .\templates\base_main.html:429
 msgid "No impersonation is currently ongoing"
 msgstr "Aucune usurpation d'identité n'est en cours"
 
-#: .\templates\base_main.html:423
+#: .\templates\base_main.html:434
 msgid "User is authenticated as an observer (read-only access)"
 msgstr ""
 "L'utilisateur est authentifié comme observateur (accès en lecture seule)"
 
-#: .\templates\base_main.html:425
+#: .\templates\base_main.html:436
 msgid "Page is in read-only mode (no modification is allowed)"
 msgstr "La page est en lecture seule (aucune modification n'est autorisée)"
 
-#: .\templates\base_main.html:429
+#: .\templates\base_main.html:440
 msgid "Effective identity"
 msgstr "Identité effective"
 
-#: .\templates\base_main.html:431
+#: .\templates\base_main.html:442
 msgid "Currently active username"
 msgstr "Identifiant utilisateur actuellement actif"
 
-#: .\templates\base_main.html:439
+#: .\templates\base_main.html:450
 msgid "Novelties"
 msgstr "Nouveautés"
 
-#: .\templates\base_main.html:443
+#: .\templates\base_main.html:454
 msgid "No Notifications"
 msgstr "Pas de Notifications"
 
-#: .\templates\base_main.html:447
+#: .\templates\base_main.html:458
 msgid "New menu entries are available for you!"
 msgstr "Nouvelles entrées de menu disponibles !"
 
-#: .\templates\base_main.html:450
+#: .\templates\base_main.html:461
 msgid "New text messages are available for you!"
 msgstr "De nouveaux messages email sont disponibles !"
 
-#: .\templates\base_main.html:453
+#: .\templates\base_main.html:464
 msgid "There are people in the live chat room!"
 msgstr "Il y a des utilisateurs dans le salon de discussion !"
 
-#: .\templates\base_main.html:468
+#: .\templates\base_main.html:479
 msgid "Pangea webradio is currently ONLINE"
 msgstr "Radio Pangéa est actuellement EN LIGNE."
 
-#: .\templates\base_main.html:475
+#: .\templates\base_main.html:486
 msgid "Pangea webradio is currently OFFLINE"
 msgstr "Radio Pangée est actuellement HORS LIGNE."
 
-#: .\templates\base_main.html:494
+#: .\templates\base_main.html:505
 msgid "Unexisting help page:"
 msgstr "Page d'aide inexistante:"
 
-#: .\templates\base_main.html:495
+#: .\templates\base_main.html:506
 msgid ""
 "Unfortunately, no additional information about the current webpage is "
 "available"
@@ -1988,7 +1988,7 @@ msgstr ""
 "Malheureusement, aucune information supplémentaire n'est disponible pour la "
 "page web actuelle"
 
-#: .\templates\base_main.html:518
+#: .\templates\base_main.html:529
 msgid ""
 "\n"
 "                Online user:\n"
@@ -2005,15 +2005,15 @@ msgstr[1] ""
 "\n"
 "                En ligne:              "
 
-#: .\templates\base_main.html:525
+#: .\templates\base_main.html:536
 msgid "No users currently online."
 msgstr "Pas d'utilisateurs actuellement en ligne."
 
-#: .\templates\base_main.html:539
+#: .\templates\base_main.html:550
 msgid "Interface:"
 msgstr "Interface :"
 
-#: .\templates\base_main.html:557 .\templates\utilities\bug_report.html:5
+#: .\templates\base_main.html:568 .\templates\utilities\bug_report.html:5
 #: .\views\__init__.py:155
 msgid "Bug Report"
 msgstr "Rapporter un Bogue"
@@ -2148,11 +2148,30 @@ msgstr "Cliquez sur les liens du menu de gauche pour afficher leur contenu."
 msgid "Enter Clue Code"
 msgstr "Entrez le Code d'Indice"
 
-#: .\templates\information\web_radio_page.html:18
+#: .\templates\information\web_radio_page.html:13
 msgid "Standalone radio spots"
 msgstr "Spots radio autonomes"
 
-#: .\templates\information\web_radio_public.html:143
+#: .\templates\information\web_radio_popup.html:7
+#: .\templates\information\web_radio_popup.html:13 .\views\info_views.py:281
+#: .\views\info_views.py:290
+msgid "Pangea Webradio"
+msgstr "Webradio Pangéa"
+
+#: .\templates\information\web_radio_public.html:17
+#: .\templates\utilities\personal_radio_player.html:6
+msgid "Listen to the radio"
+msgstr "Écouter la radio"
+
+#: .\templates\information\web_radio_public.html:25
+msgid "Waiting for the next broadcast..."
+msgstr "En attente de la prochaine diffusion..."
+
+#: .\templates\information\web_radio_public.html:26
+msgid "On air"
+msgstr "À l'antenne"
+
+#: .\templates\information\web_radio_public.html:34
 msgid ""
 "\n"
 "                    Please provide the frequency of your favorite radio "
@@ -2163,7 +2182,7 @@ msgstr ""
 "                    Veuillez indiquer la fréquence de votre station radio "
 "favorite."
 
-#: .\templates\information\web_radio_public.html:150
+#: .\templates\information\web_radio_public.html:41
 msgid "Listen to Radio"
 msgstr "Ecouter la Radio"
 
@@ -2633,11 +2652,11 @@ msgstr "Requête d'Amitié"
 msgid "Further information is available in your mailbox."
 msgstr "Des informations supplémentaires vous attendent dans votre messagerie."
 
-#: .\templates\profile\login.html:21
+#: .\templates\profile\login.html:30
 msgid "Log Me In!"
 msgstr "Authentifiez moi !"
 
-#: .\templates\profile\login.html:26
+#: .\templates\profile\login.html:31
 msgid "Forgot password?"
 msgstr "Mot de passe oublié ?"
 
@@ -2700,6 +2719,18 @@ msgstr ""
 msgid "Terms of Use"
 msgstr "Conditions d'utilisation"
 
+#: .\templates\utilities\personal_radio_player.html:14
+msgid "Tuning in..."
+msgstr "Recherche de la fréquence..."
+
+#: .\templates\utilities\personal_radio_player.html:15
+msgid "[No radio spot currently available]"
+msgstr "[Pas de spot radio actuellement disponible]"
+
+#: .\templates\utilities\personal_radio_player.html:16
+msgid "Radio signal lost, retrying..."
+msgstr "Signal radio perdu, nouvelle tentative..."
+
 #: .\templates\utilities\rich_text.html:6
 msgid "Show Markup Sources"
 msgstr "Montrer les Sources"
@@ -2725,15 +2756,23 @@ msgstr "mon titre de test 1"
 msgid "my test title 2"
 msgstr "mon titre de test 2"
 
-#: .\utilities\mediaplayers.py:155
+#: .\utilities\mediaplayers.py:129
 msgid "Access file"
 msgstr "Accéder au fichier"
 
-#: .\utilities\mediaplayers.py:156
+#: .\utilities\mediaplayers.py:129
 msgid "here"
 msgstr "ici"
 
-#: .\utilities\mediaplayers.py:253
+#: .\utilities\mediaplayers.py:184
+msgid "Download the video"
+msgstr "Télécharger la vidéo"
+
+#: .\utilities\mediaplayers.py:219
+msgid "Download the audio file"
+msgstr "Télécharger le fichier audio"
+
+#: .\utilities\mediaplayers.py:293
 msgid "No media file available"
 msgstr "Pas de fichier média disponible"
 
@@ -3629,139 +3668,131 @@ msgstr "Vérification de sécurité"
 msgid "Security Captcha"
 msgstr "Captcha de Sécurité"
 
-#: .\views\info_views.py:17
+#: .\views\info_views.py:19
 msgid "Static World Map"
 msgstr "Carte du Monde Statique"
 
-#: .\views\info_views.py:29
+#: .\views\info_views.py:31
 msgid "Dynamic World Map"
 msgstr "Carte du Monde Dynamique"
 
-#: .\views\info_views.py:57
+#: .\views\info_views.py:59
 msgid "Article"
 msgstr "Article"
 
-#: .\views\info_views.py:88
+#: .\views\info_views.py:90
 msgid "Clue"
 msgstr "Indice"
 
-#: .\views\info_views.py:120
+#: .\views\info_views.py:122
 msgid "Full Index Visibility"
 msgstr "Visibilité d'Index Complète"
 
-#: .\views\info_views.py:129
+#: .\views\info_views.py:131
 msgid "Encyclopedia"
 msgstr "Encyclopédie"
 
-#: .\views\info_views.py:134
+#: .\views\info_views.py:136
 msgid "Set encyclopedia index visibility"
 msgstr "Changer la visibilité de l'index encyclopédique"
 
-#: .\views\info_views.py:179
+#: .\views\info_views.py:181
 #, python-format
 msgid "Sorry, no encyclopedia article has been found for id '%s'"
 msgstr "Désolé, pas d'article encyclopédique trouvé pour l'ID '%s'"
 
-#: .\views\info_views.py:189
+#: .\views\info_views.py:191
 #, python-format
 msgid "Sorry, no matching encyclopedia article has been found for '%s'"
 msgstr "Désolé, pas d'article encyclopédique correspondant à '%s'"
 
-#: .\views\info_views.py:194
+#: .\views\info_views.py:196
 msgid "Your search has led to a single article, below."
 msgstr "Votre recherche a mené à un unique article, ci-dessous."
 
-#: .\views\info_views.py:215
+#: .\views\info_views.py:217
 msgid "Pangea Encyclopedia"
 msgstr "Encyclopédie de Pangéa"
 
-#: .\views\info_views.py:226
+#: .\views\info_views.py:228
 #, python-format
 msgid "Encyclopedia index visibility has now been set to %s"
 msgstr "La visibilité de l'index encyclopédique a été mise à %s"
 
-#: .\views\info_views.py:235
+#: .\views\info_views.py:249
 msgid "Ajax Audio Message Finished"
 msgstr "Message Audio Ajax Fini"
 
-#: .\views\info_views.py:252
+#: .\views\info_views.py:264
 msgid "Ajax Next Audio Message"
 msgstr "Message Audio Ajax Suivant"
 
-#: .\views\info_views.py:270 .\views\info_views.py:279
-msgid "Pangea Webradio"
-msgstr "Webradio Pangéa"
-
-#: .\views\info_views.py:284
+#: .\views\info_views.py:295
 msgid "Webradio Popup"
 msgstr "Popup Webradio"
 
-#: .\views\info_views.py:290
-msgid "Radio Conf"
-msgstr "Configuration Radio"
+#: .\views\info_views.py:302
+msgid "Ajax Radio Playlist"
+msgstr "Ajax Playlist Radio"
 
-#: .\views\info_views.py:298
-msgid "[No radio spot currently available]"
-msgstr "[Pas de spot radio actuellement disponible]"
-
-#: .\views\info_views.py:313 .\views\info_views.py:335
+#: .\views\info_views.py:327 .\views\info_views.py:349
 msgid "Radio Station"
 msgstr "Station Radio"
 
-#: .\views\info_views.py:318
+#: .\views\info_views.py:332
 msgid "You're listening to Pangea Radio."
 msgstr "Vous écoutez Radio Pangée."
 
-#: .\views\info_views.py:341
+#: .\views\info_views.py:355
 msgid "Personal Files"
 msgstr "Documents Personnels"
 
-#: .\views\info_views.py:352
+#: .\views\info_views.py:366
 msgid "Your personal folder is unreachable."
 msgstr "Votre dossier personnel est inatteignable."
 
-#: .\views\info_views.py:357
+#: .\views\info_views.py:371
 msgid "You currently don't have any files in your personal folder."
 msgstr "Vous n'avez aucun fichier personnel pour le moment."
 
-#: .\views\info_views.py:362
+#: .\views\info_views.py:376
 msgid "Personal Folder"
 msgstr "Documents Personnels"
 
-#: .\views\info_views.py:369
+#: .\views\info_views.py:383
 msgid "View Media"
 msgstr "Voir Média"
 
-#: .\views\info_views.py:377
+#: .\views\info_views.py:391
 msgid "You must provide a valid media url."
 msgstr "Vous devez fournir une url de média valide."
 
-#: .\views\info_views.py:387
+#: .\views\info_views.py:401
 msgid "Encrypted Folder"
 msgstr "Dossier Chiffré"
 
-#: .\views\info_views.py:401
+#: .\views\info_views.py:415
 msgid "Folder decryption successful."
 msgstr "Décodage de l'archive réussi."
 
-#: .\views\info_views.py:412
+#: .\views\info_views.py:426
 #, python-format
 msgid "Encrypted archive '%s'"
 msgstr "Archive codée '%s'"
 
-#: .\views\info_views.py:423
+#: .\views\info_views.py:437
 msgid "No files were found in the folder."
 msgstr "Aucun fichier dans le dossier."
 
-#: .\views\info_views.py:428
+#: .\views\info_views.py:442
 msgid "Decrypted archive"
 msgstr "Décoder l'archive"
 
-#: .\views\info_views.py:436
+#: .\views\info_views.py:450
 msgid "Forbidden Area Entrance"
 msgstr "Entrée du Domaine Interdit"
 
-#: .\views\info_views.py:444
+#: .\views\info_views.py:458
 msgid "Song of Treasure Mill"
 msgstr "Chant du Moulin au Trésor"
 
@@ -4139,6 +4170,9 @@ msgstr "Tous les Evénements du Jeu"
 #: .\views\profile_views.py:337 .\views\profile_views.py:345
 msgid "Instructions"
 msgstr "Instructions"
+
+#~ msgid "Radio Conf"
+#~ msgstr "Configuration Radio"
 
 #, python-format
 #~ msgid "Reason: %(reason)s"
