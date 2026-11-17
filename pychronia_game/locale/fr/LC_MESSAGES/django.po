@@ -2364,6 +2364,18 @@ msgstr "MESSAGE TRANSFÉRÉ: cliquer pour le voir dans une autre fenêtre."
 msgid "Preview Message Body As Restructuredtext"
 msgstr "Prévisualiser le Corps du Message en RestructuredText"
 
+#: pychronia_game/templates/messaging/compose.html
+msgid "Preview"
+msgstr "Prévisualiser"
+
+#: pychronia_game/templates/messaging/compose.html
+msgid "Discard draft"
+msgstr "Abandonner le brouillon"
+
+#: pychronia_game/templates/messaging/compose.html
+msgid "Discard this message and its autosaved draft?"
+msgstr "Abandonner ce message et son brouillon autosauvegardé ?"
+
 #: .\templates\messaging\compose.html:215
 msgid "Parent Message"
 msgstr "Message Parent"

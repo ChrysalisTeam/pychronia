@@ -554,6 +554,19 @@ textarea.markItUpEditor {
     }
 }
 
+// secondary/destructive action of a .form_buttons row (e.g. "discard draft"): no frame until hovered,
+// so that it doesn't compete with the main action; keeps the ink or gold color of its context
+.form_buttons input.secondary_action[type=button]:not(.digit) {
+    border-color: transparent;
+    text-decoration: underline;
+    opacity: 0.85;
+
+    &:hover {
+        border-color: currentColor;
+        opacity: 1;
+    }
+}
+
 .login_form {
     text-align: left;
 }

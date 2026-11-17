@@ -2899,6 +2899,15 @@ table.realtable a:hover, table.realtable a:active, .missing-content a:hover,
   margin-left: 0 !important;
   margin-right: 0 !important;
 }
+.form_buttons input.secondary_action[type=button]:not(.digit) {
+  border-color: transparent;
+  text-decoration: underline;
+  opacity: 0.85;
+}
+.form_buttons input.secondary_action[type=button]:not(.digit):hover {
+  border-color: currentColor;
+  opacity: 1;
+}
 .login_form {
   text-align: left;
 }
