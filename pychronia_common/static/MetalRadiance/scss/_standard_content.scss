@@ -271,9 +271,8 @@ input[readonly=True] {
 
 #full_content form {
 
-    p:not(.required) label {
-        font-style: italic;
-    }
+    // (no more italic labels for optional fields: Open Sans has no real italic face here, and the meaning was obscure;
+    // forms that need it say "(optional)" in the label itself)
 
     select, input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password] {
         min-height: 29px;

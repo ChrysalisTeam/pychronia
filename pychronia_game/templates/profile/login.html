@@ -16,9 +16,7 @@
         {{ login_form.non_field_errors }}
 
         {% for field in login_form.visible_fields %}
-            {# "required" class on both rows: the password is optional only for the "forgot password" action, #}
-            {# and its label must not get the italic style of optional fields #}
-            <p class="required">
+            <p>
                 {{ field.errors }}
                 {{ field.label_tag }}
                 {{ field }}
