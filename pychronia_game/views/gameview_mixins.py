@@ -6,9 +6,10 @@ from pychronia_game.datamanager.abstract_game_view import AbstractGameView, regi
 
 ## TODO - test and move to datamanager package ####
 
+
 class AbstractCaptchaProtectedView(AbstractGameView):
     """
-    Protects a view with a captcha (atm no html post requests should be issues from that view, 
+    Protects a view with a captcha (atm no html post requests should be issues from that view,
     else it will interfere with the captcha system).
     """
 
@@ -22,12 +23,12 @@ class AbstractCaptchaProtectedView(AbstractGameView):
 
         request = self.request
 
-        #print (">>>>>>>>", request.POST)
+        # print (">>>>>>>>", request.POST)
         captcha_id = request.POST.get("captcha_id")  # CLEAR TEXT ATM
         if captcha_id:
             attempt = request.POST.get("captcha_answer", "")
             try:
-                #print (">>>>>>>>", captcha_id, attempt)
+                # print (">>>>>>>>", captcha_id, attempt)
                 explanation = request.datamanager.check_captcha_answer_attempt(captcha_id=captcha_id, attempt=attempt)
                 assert explanation, repr(explanation)  # necessarily, if "answer" wasn't null in DB
                 request.datamanager.user.add_message(_("Captcha check successful."))
@@ -43,12 +44,7 @@ class AbstractCaptchaProtectedView(AbstractGameView):
 
         captcha = self.request.datamanager.get_random_captcha()
 
-        return render(self.request,
-                      self.CAPTCHA_TEMPLATE,
-                      {
-                          'page_title': _("Security Check"),
-                          'captcha': captcha
-                      })
+        return render(self.request, self.CAPTCHA_TEMPLATE, {"page_title": _("Security Check"), "captcha": captcha})
 
     def _process_html_request(self):
         if self._is_nightmare_captcha_successful():

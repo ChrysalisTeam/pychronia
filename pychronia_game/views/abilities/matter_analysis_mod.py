@@ -2,10 +2,9 @@ from pychronia_game.common import *
 
 from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility
 from pychronia_game.forms import ArtefactForm, UninstantiableFormError
-from pychronia_game.datamanager import readonly_method, \
-    transaction_watcher
+from pychronia_game.datamanager import readonly_method, transaction_watcher
 
-'''
+"""
 class PersonalItemForm(AbstractGameForm):
 
     def __init__(self, datamanager, *args, **kwargs):
@@ -17,16 +16,18 @@ class PersonalItemForm(AbstractGameForm):
         self.fields["item_name"] = forms.ChoiceField(label=gettext_lazy(u"Item"), choices=_objects_choices)
 
         assert self.fields.keyOrder # if reordering needed OBSOLETE
-'''
+"""
 
 
 class MatterAnalysisAbility(AbstractPartnershipAbility):
     TITLE = gettext_lazy("Biophysical Analysis")
     NAME = "matter_analysis"
 
-    GAME_ACTIONS = dict(process_artefact=dict(title=gettext_lazy("Process object analysis"),
-                                              form_class=ArtefactForm,
-                                              callback="process_object_analysis"))
+    GAME_ACTIONS = dict(
+        process_artefact=dict(
+            title=gettext_lazy("Process object analysis"), form_class=ArtefactForm, callback="process_object_analysis"
+        )
+    )
 
     TEMPLATE = "abilities/matter_analysis.html"
 
@@ -38,19 +39,21 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
 
         # for now we don't exclude objects already analysed, players just have to take care !
         try:
-            item_form = self._instantiate_game_form(new_action_name="process_artefact",
-                                                    hide_on_success=False,
-                                                    previous_form_data=previous_form_data,
-                                                    propagate_errors=True)
+            item_form = self._instantiate_game_form(
+                new_action_name="process_artefact",
+                hide_on_success=False,
+                previous_form_data=previous_form_data,
+                propagate_errors=True,
+            )
             specific_message = None
         except UninstantiableFormError as e:
             item_form = None
             specific_message = str(e)
 
         return {
-            'page_title': _("Deep Matter Analysis"),
-            'item_form': item_form,
-            'specific_message': specific_message,
+            "page_title": _("Deep Matter Analysis"),
+            "item_form": item_form,
+            "specific_message": specific_message,
         }
 
     @readonly_method
@@ -73,8 +76,7 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
             # dummy request email, to allow wiretapping
             subject = _('Deep Analysis Request - item "%s"') % item_title
             body = _("Please analyse the physical and biological properties of this item.")
-            request_msg_data = dict(subject=subject,
-                                    body=body)
+            request_msg_data = dict(subject=subject, body=body)
             del subject, body
 
             # answer from laboratory
@@ -83,18 +85,19 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
             if result:
                 subject = _("<Deep Matter Analysis Report - %(item_title)s>") % SDICT(item_title=item_title)
                 body = result  # as is
-                response_msg_data = dict(subject=subject,
-                                         body=body,
-                                         attachment=None)
+                response_msg_data = dict(subject=subject, body=body, attachment=None)
                 del subject, body
 
-        best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
-                                                                   response_msg_data=response_msg_data)
+        best_msg_id = self._process_standard_exchange_with_partner(
+            request_msg_data=request_msg_data, response_msg_data=response_msg_data
+        )
 
-        self.log_game_event(gettext_noop("Item '%(item_title)s' sent for deep matter analysis."),
-                            PersistentMapping(item_title=item_title),
-                            url=self.get_message_viewer_url_or_none(best_msg_id),  # best_msg_id might be None
-                            visible_by=[self.username])
+        self.log_game_event(
+            gettext_noop("Item '%(item_title)s' sent for deep matter analysis."),
+            PersistentMapping(item_title=item_title),
+            url=self.get_message_viewer_url_or_none(best_msg_id),  # best_msg_id might be None
+            visible_by=[self.username],
+        )
 
         return _("Item '%s' successfully submitted, you'll receive the result by email") % item_title
 
@@ -110,8 +113,9 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
         settings = self.settings
 
         def reports_checker(reports):
-            utilities.assert_set_smaller_or_equal(list(reports.keys()),
-                                                  list(self.get_non_gem_items().keys()))  # some items might have no analysis data
+            utilities.assert_set_smaller_or_equal(
+                list(reports.keys()), list(self.get_non_gem_items().keys())
+            )  # some items might have no analysis data
             for body in list(reports.values()):
                 utilities.check_is_restructuredtext(body, strict=strict)
             return True

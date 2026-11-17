@@ -100,8 +100,9 @@ def test_plain_player_denied_permission_gated_view(page, base_url, name, url_pat
     """guy2 (PLAIN_PLAYER) has no extra permission, so it gets bounced back to its
     homepage with an "Access denied" error notification; the gated page itself is
     never rendered."""
-    _pages.login_as_player(page, base_url, GAME_ID, _configs.PLAIN_PLAYER,
-                           _configs.PLAYER_CREDENTIALS[_configs.PLAIN_PLAYER])
+    _pages.login_as_player(
+        page, base_url, GAME_ID, _configs.PLAIN_PLAYER, _configs.PLAYER_CREDENTIALS[_configs.PLAIN_PLAYER]
+    )
     page.goto("%s/%s/%s/%s" % (base_url, GAME_ID, _configs.PLAIN_PLAYER, url_path))
     assert page.url == _homepage_url(base_url, _configs.PLAIN_PLAYER)
     assert "notification_panel" in page.content()
@@ -124,8 +125,9 @@ def test_no_activated_views_still_blocks_plain_player(game, page, base_url):
     per-character permission involved) now redirects guy2 home with an error,
     since the view is no longer globally available to them."""
     _configs.apply_config(game, "no_activated_views")
-    _pages.login_as_player(page, base_url, GAME_ID, _configs.PLAIN_PLAYER,
-                           _configs.PLAYER_CREDENTIALS[_configs.PLAIN_PLAYER])
+    _pages.login_as_player(
+        page, base_url, GAME_ID, _configs.PLAIN_PLAYER, _configs.PLAYER_CREDENTIALS[_configs.PLAIN_PLAYER]
+    )
     page.goto("%s/%s/%s/%s" % (base_url, GAME_ID, _configs.PLAIN_PLAYER, ACTIVABLE_ONLY_VIEW_PATH))
     assert page.url == _homepage_url(base_url, _configs.PLAIN_PLAYER)
     assert "notification_panel" in page.content()

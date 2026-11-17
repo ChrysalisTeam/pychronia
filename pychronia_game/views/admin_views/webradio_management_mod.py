@@ -7,9 +7,11 @@ class WebradioManagement(AbstractGameView):
     TITLE = gettext_lazy("Manage Webradio Playlist")
     NAME = "webradio_management"
 
-    GAME_ACTIONS = dict(save_radio_playlist=dict(title=gettext_lazy("Save radio playlist"),
-                                                 form_class=None,
-                                                 callback="save_radio_playlist"))
+    GAME_ACTIONS = dict(
+        save_radio_playlist=dict(
+            title=gettext_lazy("Save radio playlist"), form_class=None, callback="save_radio_playlist"
+        )
+    )
 
     TEMPLATE = "administration/webradio_management.html"
 
@@ -21,17 +23,21 @@ class WebradioManagement(AbstractGameView):
         previous_playlist = self.datamanager.get_all_next_audio_messages()
         if previous_playlist:
             playlist_str = ", ".join(previous_playlist)
-            self.datamanager.log_game_event(gettext_noop("Radio playlist was emptied, it contained: %(playlist)s"),
-                                            substitutions=PersistentMapping(playlist=playlist_str),
-                                            url=None,
-                                            visible_by=None)  # only for game master
+            self.datamanager.log_game_event(
+                gettext_noop("Radio playlist was emptied, it contained: %(playlist)s"),
+                substitutions=PersistentMapping(playlist=playlist_str),
+                url=None,
+                visible_by=None,
+            )  # only for game master
 
     def get_template_vars(self, previous_form_data=None):
 
         radio_is_on = self.datamanager.get_global_parameter("radio_is_on")
 
-        pending_audio_messages = [(audio_id, self.datamanager.get_audio_message_properties(audio_id))
-                                  for audio_id in self.datamanager.get_all_next_audio_messages()]
+        pending_audio_messages = [
+            (audio_id, self.datamanager.get_audio_message_properties(audio_id))
+            for audio_id in self.datamanager.get_all_next_audio_messages()
+        ]
 
         players_with_new_messages = self.datamanager.get_pending_new_message_notifications()
 
@@ -45,11 +51,11 @@ class WebradioManagement(AbstractGameView):
         special_audio_messages.sort(key=lambda x: x[0])
 
         return {
-            'page_title': _("Web Radio Management"),
-            'radio_is_on': radio_is_on,
-            'pending_audio_messages': pending_audio_messages,
-            'players_with_new_messages': players_with_new_messages,
-            'special_audio_messages': special_audio_messages
+            "page_title": _("Web Radio Management"),
+            "radio_is_on": radio_is_on,
+            "pending_audio_messages": pending_audio_messages,
+            "players_with_new_messages": players_with_new_messages,
+            "special_audio_messages": special_audio_messages,
         }
 
     def _process_html_post_data(self):
@@ -74,7 +80,7 @@ class WebradioManagement(AbstractGameView):
             result = False
             with action_failure_handler(request, _("Player notifications have been enqueued.")):
                 self.datamanager.add_radio_message("intro_audio_messages")
-                for (username, audio_id) in list(self.datamanager.get_pending_new_message_notifications().items()):
+                for username, audio_id in list(self.datamanager.get_pending_new_message_notifications().items()):
                     self.datamanager.add_radio_message(audio_id)
                 result = True
         elif "add_audio_message" in POST:
@@ -95,8 +101,9 @@ class WebradioManagement(AbstractGameView):
                 result = True
         """
 
-        return dict(result=result,
-                    form_data=None)  # no form data unless with went through super()._process_html_request() above
+        return dict(
+            result=result, form_data=None
+        )  # no form data unless with went through super()._process_html_request() above
 
     def save_radio_playlist(self, audio_ids=None):
         audio_ids = audio_ids if audio_ids is not None else []  # ajax won't send any audio_ids if playlist is emptied

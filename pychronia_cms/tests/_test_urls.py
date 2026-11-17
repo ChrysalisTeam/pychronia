@@ -6,10 +6,11 @@ from django.contrib.staticfiles.urls import urlpatterns as staticfiles_urlpatter
 from ..urls import urlpatterns as site_urls
 
 test_urls = [
-
-    re_path(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], serve,
-            {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
-
+    re_path(
+        r"^%s(?P<path>.*)$" % settings.MEDIA_URL[1:],
+        serve,
+        {"document_root": settings.MEDIA_ROOT, "show_indexes": True},
+    ),
 ]
 
 urlpatterns = test_urls + site_urls  # all test urls

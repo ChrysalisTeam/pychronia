@@ -1,14 +1,19 @@
 from django import forms
 
 from pychronia_game.common import *
-from pychronia_game.datamanager.abstract_form import (AbstractGameForm, SimpleForm, UninstantiableFormError,
-                                                      GemHandlingFormUtils, autostrip_form_charfields,
-                                                      GAMEMASTER_HINTS_FIELD)
+from pychronia_game.datamanager.abstract_form import (
+    AbstractGameForm,
+    SimpleForm,
+    UninstantiableFormError,
+    GemHandlingFormUtils,
+    autostrip_form_charfields,
+    GAMEMASTER_HINTS_FIELD,
+)
 from pychronia_game.utilities import add_to_ordered_dict
 
 
 def _get_bank_choice(datamanager):
-    return (datamanager.get_global_parameter("bank_name"), '<' + _("Bank") + '>')
+    return (datamanager.get_global_parameter("bank_name"), "<" + _("Bank") + ">")
 
 
 @autostrip_form_charfields
@@ -19,25 +24,38 @@ class MoneyTransferForm(AbstractGameForm):
 
         # dynamic fields here ...
         if user.is_master:
-            _money_all_character_choices = [_get_bank_choice(datamanager)] + \
-                                           datamanager.build_select_choices_from_character_usernames(
-                                               datamanager.get_character_usernames())
-            self.fields = add_to_ordered_dict(self.fields, 0, "sender_name", forms.ChoiceField(label=_("Sender"),
-                                                                                               choices=_money_all_character_choices))
-            self.fields = add_to_ordered_dict(self.fields, 1, "recipient_name", forms.ChoiceField(label=_("Recipient"),
-                                                                                                  choices=_money_all_character_choices))
+            _money_all_character_choices = [
+                _get_bank_choice(datamanager)
+            ] + datamanager.build_select_choices_from_character_usernames(datamanager.get_character_usernames())
+            self.fields = add_to_ordered_dict(
+                self.fields,
+                0,
+                "sender_name",
+                forms.ChoiceField(label=_("Sender"), choices=_money_all_character_choices),
+            )
+            self.fields = add_to_ordered_dict(
+                self.fields,
+                1,
+                "recipient_name",
+                forms.ChoiceField(label=_("Recipient"), choices=_money_all_character_choices),
+            )
         else:
             # for standard characters
             if datamanager.get_character_properties()["account"] <= 0:
                 raise UninstantiableFormError(_("No money available for transfer."))
             others = datamanager.get_other_known_characters()
             others_choices = datamanager.build_select_choices_from_character_usernames(others, add_empty=True)
-            self.fields = add_to_ordered_dict(self.fields, 0, "recipient_name",
-                                              forms.ChoiceField(label=_("Recipient"), choices=others_choices))
+            self.fields = add_to_ordered_dict(
+                self.fields, 0, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices)
+            )
 
-    amount = forms.IntegerField(label=gettext_lazy("Amount"), widget=forms.TextInput(
-        attrs={'size': '8', 'style': 'text-align:left;', 'autocomplete': 'off'}),
-                                initial=0, min_value=1, max_value=1000000)
+    amount = forms.IntegerField(
+        label=gettext_lazy("Amount"),
+        widget=forms.TextInput(attrs={"size": "8", "style": "text-align:left;", "autocomplete": "off"}),
+        initial=0,
+        min_value=1,
+        max_value=1000000,
+    )
 
     reason = forms.CharField(label=gettext_lazy("Reason"), required=False)
 
@@ -49,7 +67,8 @@ class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
 
         if user.is_master:
             available_gems = datamanager.get_global_parameter("spent_gems")[
-                             :]  # COPY, gems taken so that we can "revive" them
+                :
+            ]  # COPY, gems taken so that we can "revive" them
             for character, properties in list(datamanager.get_character_sets().items()):
                 available_gems += properties["gems"]
         else:
@@ -64,22 +83,33 @@ class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
         # dynamic fields here ...
         if user.is_master:
             _character_choices = datamanager.build_select_choices_from_character_usernames(
-                datamanager.get_character_usernames(), add_empty=True)
+                datamanager.get_character_usernames(), add_empty=True
+            )
             _character_choices.insert(1, _get_bank_choice(datamanager))  # we add the BANK as sender and recipient!
-            self.fields = add_to_ordered_dict(self.fields, 0, "sender_name",
-                                              forms.ChoiceField(label=_("Sender"), choices=_character_choices))
-            self.fields = add_to_ordered_dict(self.fields, 1, "recipient_name",
-                                              forms.ChoiceField(label=_("Recipient"), choices=_character_choices))
+            self.fields = add_to_ordered_dict(
+                self.fields, 0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_character_choices)
+            )
+            self.fields = add_to_ordered_dict(
+                self.fields, 1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=_character_choices)
+            )
         else:
             others = datamanager.get_other_known_characters()  # character CANNOT send gems to the Bank here
             others_choices = datamanager.build_select_choices_from_character_usernames(others, add_empty=True)
-            self.fields = add_to_ordered_dict(self.fields, 1, "recipient_name",
-                                              forms.ChoiceField(label=_("Recipient"), choices=others_choices))
+            self.fields = add_to_ordered_dict(
+                self.fields, 1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices)
+            )
 
-        self.fields = add_to_ordered_dict(self.fields, 2, "gems_choices",
-                                          forms.MultipleChoiceField(required=False, label=_("Gems"),
-                                                                    choices=gems_choices, widget=forms.SelectMultiple(
-                                                  attrs={"class": "multichecklist"})))
+        self.fields = add_to_ordered_dict(
+            self.fields,
+            2,
+            "gems_choices",
+            forms.MultipleChoiceField(
+                required=False,
+                label=_("Gems"),
+                choices=gems_choices,
+                widget=forms.SelectMultiple(attrs={"class": "multichecklist"}),
+            ),
+        )
 
     def clean(self):
         """We transform back *gems_choices* to proper python objects."""
@@ -94,11 +124,9 @@ class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
 
 
 class ArtefactTransferForm(AbstractGameForm):
-
     recipient_name = forms.ChoiceField(label=gettext_lazy("Recipient"), required=True)
 
     artefact_name = forms.ChoiceField(label=gettext_lazy("Artefact"), required=True)
-
 
     def __init__(self, datamanager, *args, **kwargs):
         super().__init__(datamanager, *args, **kwargs)
@@ -121,6 +149,7 @@ class CharacterProfileForm(AbstractGameForm):
     """
     CHAR fields are auto-stripped thanks to that base class.
     """
+
     target_username = forms.CharField(widget=forms.HiddenInput())
 
     is_npc = forms.BooleanField(label=gettext_lazy("Is NPC"), required=False)
@@ -133,13 +162,20 @@ class CharacterProfileForm(AbstractGameForm):
 
     gamemaster_hints = GAMEMASTER_HINTS_FIELD()  # optional
 
-    allegiances = forms.MultipleChoiceField(label=gettext_lazy("Allegiances"), required=False,
-                                            widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
-    permissions = forms.MultipleChoiceField(label=gettext_lazy("Permissions"), required=False,
-                                            widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
+    allegiances = forms.MultipleChoiceField(
+        label=gettext_lazy("Allegiances"),
+        required=False,
+        widget=forms.SelectMultiple(attrs={"class": "multichecklist"}),
+    )
+    permissions = forms.MultipleChoiceField(
+        label=gettext_lazy("Permissions"),
+        required=False,
+        widget=forms.SelectMultiple(attrs={"class": "multichecklist"}),
+    )
 
-    extra_goods = forms.CharField(label=gettext_lazy("Extra Goods"),
-                                  widget=forms.Textarea(attrs={'rows': '2', 'cols': '40'}), required=False)
+    extra_goods = forms.CharField(
+        label=gettext_lazy("Extra Goods"), widget=forms.Textarea(attrs={"rows": "2", "cols": "40"}), required=False
+    )
 
     secret_question = forms.CharField(label=gettext_lazy("New secret question"), required=False)
     secret_answer = forms.CharField(label=gettext_lazy("New secret answer"), required=False)
@@ -150,29 +186,39 @@ class CharacterProfileForm(AbstractGameForm):
         allegiances_choices = datamanager.build_domain_select_choices()
         permissions_choices = datamanager.build_permission_select_choices()
 
-        self.fields['allegiances'].choices = allegiances_choices
-        self.fields['permissions'].choices = permissions_choices
+        self.fields["allegiances"].choices = allegiances_choices
+        self.fields["permissions"].choices = permissions_choices
 
 
 class CleartextPasswordForm(SimpleForm):
-    simple_password = forms.CharField(label=gettext_lazy("Password"), required=True,
-                                      widget=forms.TextInput(attrs={"autocomplete": "off"}))
+    simple_password = forms.CharField(
+        label=gettext_lazy("Password"), required=True, widget=forms.TextInput(attrs={"autocomplete": "off"})
+    )
 
 
 class AuthenticationForm(SimpleForm):
-    secret_username = forms.CharField(label=gettext_lazy("Username"), required=True, max_length=30,
-                                      widget=forms.TextInput(attrs={'autocomplete': 'on'}))
+    secret_username = forms.CharField(
+        label=gettext_lazy("Username"),
+        required=True,
+        max_length=30,
+        widget=forms.TextInput(attrs={"autocomplete": "on"}),
+    )
 
     # autocomplete OFF doesn't work anymore for password fields... so we workaround
-    secret_password = forms.CharField(label=gettext_lazy("Password"), required=False, max_length=30,
-                                      widget=forms.TextInput(attrs=SimpleForm.AUTOCOMPLETION_DISABLING_ATTRS))
+    secret_password = forms.CharField(
+        label=gettext_lazy("Password"),
+        required=False,
+        max_length=30,
+        widget=forms.TextInput(attrs=SimpleForm.AUTOCOMPLETION_DISABLING_ATTRS),
+    )
 
 
 class PasswordChangeForm(AbstractGameForm):
     old_password = forms.CharField(label=gettext_lazy("Current password"), required=True, widget=forms.PasswordInput)
     new_password1 = forms.CharField(label=gettext_lazy("New password"), required=True, widget=forms.PasswordInput)
-    new_password2 = forms.CharField(label=gettext_lazy("New password (again)"), required=True,
-                                    widget=forms.PasswordInput)
+    new_password2 = forms.CharField(
+        label=gettext_lazy("New password (again)"), required=True, widget=forms.PasswordInput
+    )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -191,12 +237,22 @@ class SecretQuestionChangeForm(AbstractGameForm):
     """
     Lets a character set or remove (with both fields empty) its own secret question.
     """
-    current_password = forms.CharField(label=gettext_lazy("Current password"), required=True,
-                                       widget=forms.PasswordInput)
-    secret_question = forms.CharField(label=gettext_lazy("New secret question"), required=False, max_length=200,
-                                      widget=forms.TextInput(attrs={'autocomplete': 'off'}))
-    secret_answer = forms.CharField(label=gettext_lazy("New secret answer"), required=False, max_length=50,
-                                    widget=forms.TextInput(attrs={'autocomplete': 'off'}))
+
+    current_password = forms.CharField(
+        label=gettext_lazy("Current password"), required=True, widget=forms.PasswordInput
+    )
+    secret_question = forms.CharField(
+        label=gettext_lazy("New secret question"),
+        required=False,
+        max_length=200,
+        widget=forms.TextInput(attrs={"autocomplete": "off"}),
+    )
+    secret_answer = forms.CharField(
+        label=gettext_lazy("New secret answer"),
+        required=False,
+        max_length=50,
+        widget=forms.TextInput(attrs={"autocomplete": "off"}),
+    )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -212,8 +268,9 @@ class SecretQuestionChangeForm(AbstractGameForm):
 
 class SecretQuestionForm(SimpleForm):
     secret_username = forms.CharField(widget=forms.HiddenInput())
-    secret_answer = forms.CharField(label=gettext_lazy("Answer"), max_length=50,
-                                    widget=forms.TextInput(attrs={'autocomplete': 'off'}))
+    secret_answer = forms.CharField(
+        label=gettext_lazy("Answer"), max_length=50, widget=forms.TextInput(attrs={"autocomplete": "off"})
+    )
     target_email = forms.EmailField(label=gettext_lazy("Email"), max_length=50)
 
     def __init__(self, username, *args, **kwargs):
@@ -222,23 +279,32 @@ class SecretQuestionForm(SimpleForm):
 
 
 class RadioFrequencyForm(SimpleForm):
-    frequency = forms.CharField(label=gettext_lazy("Radio Frequency"),
-                                widget=forms.TextInput(attrs={'autocomplete': 'off'}))
+    frequency = forms.CharField(
+        label=gettext_lazy("Radio Frequency"), widget=forms.TextInput(attrs={"autocomplete": "off"})
+    )
 
 
 class HiddenClueForm(SimpleForm):
     """
     We do not use password inputs, to avoid triggering credentials saving in browser...
     """
-    clue_category = forms.CharField(label=gettext_lazy("Category"), required=True, max_length=30,
-                                    widget=forms.TextInput(attrs=SimpleForm.AUTOCOMPLETION_DISABLING_ATTRS))
 
-    clue_code = forms.CharField(label=gettext_lazy("Code"), required=True, max_length=30,
-                                      widget=forms.TextInput(attrs=SimpleForm.AUTOCOMPLETION_DISABLING_ATTRS))
+    clue_category = forms.CharField(
+        label=gettext_lazy("Category"),
+        required=True,
+        max_length=30,
+        widget=forms.TextInput(attrs=SimpleForm.AUTOCOMPLETION_DISABLING_ATTRS),
+    )
+
+    clue_code = forms.CharField(
+        label=gettext_lazy("Code"),
+        required=True,
+        max_length=30,
+        widget=forms.TextInput(attrs=SimpleForm.AUTOCOMPLETION_DISABLING_ATTRS),
+    )
 
 
 class HouseReportForm(AbstractGameForm):
-
     def __init__(self, ability, *args, **kwargs):
         super().__init__(ability, *args, **kwargs)
 
@@ -252,21 +318,22 @@ class HouseReportForm(AbstractGameForm):
         self.fields["period"] = forms.ChoiceField(label=_("Period"), choices=_periods_choices, required=True)
 
 
-
 class TranslationForm(SimpleForm):
     def __init__(self, datamanager, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         _translatable_items_ids = list(datamanager.get_translatable_items().keys())
-        _translatable_items_pretty_names = [datamanager.get_all_items()[item_name]["title"] for item_name in
-                                            _translatable_items_ids]
+        _translatable_items_pretty_names = [
+            datamanager.get_all_items()[item_name]["title"] for item_name in _translatable_items_ids
+        ]
         _translatable_items_choices = list(zip(_translatable_items_ids, _translatable_items_pretty_names))
         _translatable_items_choices.sort(key=lambda double: double[1])
 
         # WARNING - we always put ALL runic items, even before they have been sold at auction - it's OK !
         self.fields["target_item"] = forms.ChoiceField(label=_("Object"), choices=_translatable_items_choices)
-        self.fields["transcription"] = forms.CharField(label=_("Transcription"),
-                                                       widget=forms.Textarea(attrs={'rows': '5', 'cols': '30'}))
+        self.fields["transcription"] = forms.CharField(
+            label=_("Transcription"), widget=forms.Textarea(attrs={"rows": "5", "cols": "30"})
+        )
 
 
 class ScanningForm(SimpleForm):
@@ -276,16 +343,17 @@ class ScanningForm(SimpleForm):
         reference_items_choices = [("", _("< Use Description Instead >"))]
         reference_items_choices += [(name, value["title"]) for (name, value) in list(available_items.items())]
 
-        self.fields["item_name"] = forms.ChoiceField(label=_("Reference Object"), choices=reference_items_choices,
-                                                     required=False)
+        self.fields["item_name"] = forms.ChoiceField(
+            label=_("Reference Object"), choices=reference_items_choices, required=False
+        )
 
-        self.fields["description"] = forms.CharField(label=_("Or Description"), required=False,
-                                                     widget=forms.Textarea(attrs={'rows': '8', 'cols': '35'}))
+        self.fields["description"] = forms.CharField(
+            label=_("Or Description"), required=False, widget=forms.Textarea(attrs={"rows": "8", "cols": "35"})
+        )
 
 
 class ArmedInterventionForm(SimpleForm):
-    message = forms.CharField(label=gettext_lazy("Message"),
-                              widget=forms.Textarea(attrs={'rows': '8', 'cols': '35'}))
+    message = forms.CharField(label=gettext_lazy("Message"), widget=forms.Textarea(attrs={"rows": "8", "cols": "35"}))
 
     def __init__(self, available_locations, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -315,12 +383,13 @@ class OtherKnownCharactersForm(AbstractGameForm):
         super().__init__(datamanager=datamanager, *args, **kwargs)
 
         usernames = datamanager.get_other_known_characters()
-        usernames_choices = [("", _(
-            "Select an acquaintance..."))] + datamanager.build_select_choices_from_character_usernames(usernames)
-        self.fields['target_username'] = forms.ChoiceField(label=_("User"), choices=usernames_choices)
+        usernames_choices = [
+            ("", _("Select an acquaintance..."))
+        ] + datamanager.build_select_choices_from_character_usernames(usernames)
+        self.fields["target_username"] = forms.ChoiceField(label=_("User"), choices=usernames_choices)
 
 
-'''
+"""
 class CharacterForm(SimpleForm):
 
     def __init__(self, datamanager, *args, **kwargs):
@@ -331,4 +400,4 @@ class CharacterForm(SimpleForm):
         _usernames_choices.sort()
 
         self.fields['target_username'] = forms.ChoiceField(label=_("User"), choices=_usernames_choices)
-'''
+"""

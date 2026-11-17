@@ -3,7 +3,7 @@ import os, random
 ## PYCHRONIA SPECIFIC CONF ##
 
 
-ROOT_URLCONF = 'pychronia_game.tests._test_urls'
+ROOT_URLCONF = "pychronia_game.tests._test_urls"
 
 _curdir = os.path.dirname(os.path.realpath(__file__))
 GAME_FILES_ROOT = os.path.join(_curdir, "test_game_files") + os.sep

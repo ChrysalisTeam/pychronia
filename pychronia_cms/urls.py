@@ -29,6 +29,7 @@ Disallow: *.zip
 Sitemap: http://chrysalis-game.com/sitemap.xml
 """
 
+
 class PerLanguageStoriesSitemap(StoriesSitemap):
     """StoriesSitemap.items() resolves each PostContent's url in the *request* language, so it
     listed every post twice in that language and none in the other; resolve it in its own."""
@@ -40,49 +41,43 @@ class PerLanguageStoriesSitemap(StoriesSitemap):
         return items
 
 
-sitemaps = {'cmspages': ExtendedSitemap,
-            #'tags': TagSitemap,
-            'blog': PerLanguageStoriesSitemap,
-            #'authors': AuthorSitemap,
-            }
+sitemaps = {
+    "cmspages": ExtendedSitemap,
+    #'tags': TagSitemap,
+    "blog": PerLanguageStoriesSitemap,
+    #'authors': AuthorSitemap,
+}
 
 urlpatterns = [
-
-    re_path(r'^robots.txt$', lambda r: HttpResponse(ROBOTS_TEXT, content_type="text/plain")),
-
-    re_path(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}),
-
-    re_path(r'^admin/', admin.site.urls),
-
-    re_path(r'^i18n/', include('django.conf.urls.i18n')),  # to set language
+    re_path(r"^robots.txt$", lambda r: HttpResponse(ROBOTS_TEXT, content_type="text/plain")),
+    re_path(r"^sitemap\.xml$", sitemap, {"sitemaps": sitemaps}),
+    re_path(r"^admin/", admin.site.urls),
+    re_path(r"^i18n/", include("django.conf.urls.i18n")),  # to set language
 ]
 
 urlpatterns += i18n_patterns(
-                             #(r'^accounts/', include('userprofiles.urls')), # one-step registration
-
-                             # not needed, CMS does it: (r'^weblog/', include(...)),
-
-                             #url(r'^comments/', include('django.contrib.comments.urls')), useless ATM ?
-
-                             re_path(r'^$', RedirectView.as_view(url=reverse_lazy('pages-root'))),
-                             # REDIRECT TO CMS HOMEPAGE
-                             re_path(r'^cms/', include('cms.urls')),  # this MUST end with '/' or be empty
-                             )
+    # (r'^accounts/', include('userprofiles.urls')), # one-step registration
+    # not needed, CMS does it: (r'^weblog/', include(...)),
+    # url(r'^comments/', include('django.contrib.comments.urls')), useless ATM ?
+    re_path(r"^$", RedirectView.as_view(url=reverse_lazy("pages-root"))),
+    # REDIRECT TO CMS HOMEPAGE
+    re_path(r"^cms/", include("cms.urls")),  # this MUST end with '/' or be empty
+)
 
 # Django Debug Toolbar
 import debug_toolbar
 
 urlpatterns += [
-    re_path(r'^__debug__/', include(debug_toolbar.urls)),
+    re_path(r"^__debug__/", include(debug_toolbar.urls)),
 ]
 
-#from pprint import pprint
-#pprint(urlpatterns)
+# from pprint import pprint
+# pprint(urlpatterns)
 
-''' UNUSED MODULES
+""" UNUSED MODULES
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     #(r'^admin/filebrowser/', include('filebrowser.urls')), # TO BE PUT BEFORE "admin/" !!
-'''
+"""

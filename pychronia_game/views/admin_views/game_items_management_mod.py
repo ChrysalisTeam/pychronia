@@ -9,8 +9,9 @@ class GameItemForm(DataTableForm):
 
     title = forms.CharField(label=gettext_lazy("Title"), required=True)
 
-    comments = forms.CharField(label=gettext_lazy("Description"),
-                               widget=forms.Textarea(attrs={'rows': '2', 'cols': '40'}), required=True)
+    comments = forms.CharField(
+        label=gettext_lazy("Description"), widget=forms.Textarea(attrs={"rows": "2", "cols": "40"}), required=True
+    )
 
     image = forms.CharField(label=gettext_lazy("Image (url or local file)"), required=True)
 
@@ -30,12 +31,10 @@ class GameItemsManagement(AbstractDataTableManagement):
     TITLE = gettext_lazy("Edit Game Items")
     NAME = "game_items_management"
 
-    GAME_ACTIONS = dict(submit_item=dict(title=gettext_lazy("Submit an item"),
-                                         form_class=GameItemForm,
-                                         callback="submit_item"),
-                        delete_item=dict(title=gettext_lazy("Delete an item"),
-                                         form_class=None,
-                                         callback="delete_item"))
+    GAME_ACTIONS = dict(
+        submit_item=dict(title=gettext_lazy("Submit an item"), form_class=GameItemForm, callback="submit_item"),
+        delete_item=dict(title=gettext_lazy("Delete an item"), form_class=None, callback="delete_item"),
+    )
 
     TEMPLATE = "administration/game_items_management.html"
 

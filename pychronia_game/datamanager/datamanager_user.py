@@ -4,25 +4,32 @@ from django.contrib import messages
 
 
 class GameUser:
-    def __init__(self, datamanager, username=None,
-                 impersonation_target=None, impersonation_writability=False,
-                 is_superuser=False, is_observer=False):
+    def __init__(
+        self,
+        datamanager,
+        username=None,
+        impersonation_target=None,
+        impersonation_writability=False,
+        is_superuser=False,
+        is_observer=False,
+    ):
         """
         Builds a user object, storing notifications for the current HTTP request,
         and exposing shortcuts to useful data.
-        
-        Existence of provided logins is checked, not the permission to use them 
+
+        Existence of provided logins is checked, not the permission to use them
         (which must be done at upper levels).
-        
-        If is_superuser (django notion, different from is_master), user can impersonate anyone, 
+
+        If is_superuser (django notion, different from is_master), user can impersonate anyone,
         yet keep his real_username as anonymous.
-        
+
         Observers may never WRITE the game.
         """
         assert datamanager
         assert impersonation_writability in (None, True, False)
         impersonation_writability = bool(
-            impersonation_writability)  # we don't care about genesis details here, None => False
+            impersonation_writability
+        )  # we don't care about genesis details here, None => False
         # data normalization #
         _game_anonymous_login = datamanager.anonymous_login
         _available_logins = datamanager.get_available_logins()
@@ -39,9 +46,11 @@ class GameUser:
 
         assert not impersonation_target or is_superuser or datamanager.can_impersonate(username, impersonation_target)
         assert not (
-        is_superuser and username != _game_anonymous_login)  # game authentication "hides" the superuser status
-        assert is_superuser or datamanager.is_master(
-            username) or not impersonation_target or not impersonation_writability  # atm only special user can take full control of other user
+            is_superuser and username != _game_anonymous_login
+        )  # game authentication "hides" the superuser status
+        assert (
+            is_superuser or datamanager.is_master(username) or not impersonation_target or not impersonation_writability
+        )  # atm only special user can take full control of other user
         assert not (is_observer and impersonation_writability)
 
         self.is_superuser = is_superuser  # REAL django state of user, whatever impersonation is happening ; can mean both "staff" or "superuser"
@@ -53,10 +62,11 @@ class GameUser:
         if is_observer:
             self.has_write_access = False  # ALWAYS, for both impersonation and "normal user"
         else:
-            self.has_write_access = bool(
-                impersonation_writability) if impersonation_target else True  # normal logged-in user always HAS write access ATM
+            self.has_write_access = (
+                bool(impersonation_writability) if impersonation_target else True
+            )  # normal logged-in user always HAS write access ATM
 
-        _effective_username = (impersonation_target if impersonation_target else username)
+        _effective_username = impersonation_target if impersonation_target else username
         assert _effective_username in _available_logins  # redundant but yah...
         del username, impersonation_target, impersonation_writability, _game_anonymous_login  # security
 
@@ -67,8 +77,9 @@ class GameUser:
         self._effective_username = _effective_username
 
         assert len([item for item in (self.is_master, self.is_character, self.is_anonymous) if item]) == 1
-        assert self.is_superuser or datamanager.is_master(
-            self._real_username) or not self.impersonation_writability  # normal players can NEVER impersonate with write access
+        assert (
+            self.is_superuser or datamanager.is_master(self._real_username) or not self.impersonation_writability
+        )  # normal players can NEVER impersonate with write access
 
         # weakref only for garbage collection - should never become None while in use
         self._datamanager = weakref.ref(datamanager)
@@ -115,8 +126,9 @@ class GameUser:
 
         assert self.datamanager.request
         if utilities.is_ajax_request(self.datamanager.request):
-            self.datamanager.logger.critical("Ajax request may not add user message %r (url=%s)", context,
-                                             self.datamanager.request.get_full_path())
+            self.datamanager.logger.critical(
+                "Ajax request may not add user message %r (url=%s)", context, self.datamanager.request.get_full_path()
+            )
             return False
 
         return True
@@ -155,6 +167,7 @@ class GameUser:
 
     def discard_notifications(self):
         from django.contrib.messages.storage import default_storage
+
         if self._is_user_messaging_possible(context="<discard_notifications>"):
             self.datamanager.request._messages = default_storage(self.datamanager.request)  # big hack
 

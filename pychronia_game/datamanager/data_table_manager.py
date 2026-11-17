@@ -5,7 +5,7 @@ from .datamanager_tools import *
 
 class DataTableManager:
     """
-    Put an instance of this class as an attribute of a datamanager class, 
+    Put an instance of this class as an attribute of a datamanager class,
     to automatically extend it to handle (get/set/delete...)
     a (ZODB) dict of data items.
     """
@@ -27,7 +27,7 @@ class DataTableManager:
         """
         Method that completes and normalizes a new item (for example with enforced default values).
         Must return the (possibly modified) (key, value) pair.
-        
+
         Beware of well converting python types to zodb types here if needed.
         """
         raise NotImplementedError("_preprocess_new_item")
@@ -60,7 +60,7 @@ class DataTableManager:
     def _item_can_be_deleted(self, key, value):
         """
         Returns True iff this entry can be deleted from dict.
-        
+
         Non-deletable items can't be "moved" either, since it's actually a delete+recreate operation.
         """
         raise NotImplementedError("_item_can_be_deleted")
@@ -77,13 +77,14 @@ class DataTableManager:
     def _check_item_is_in_table(cls, table, key):
         if key not in table:
             raise AbnormalUsageError(
-                _("Couldn't find %(type)s item with key %(key)s") % SDICT(type=cls.TRANSLATABLE_ITEM_NAME, key=key))
+                _("Couldn't find %(type)s item with key %(key)s") % SDICT(type=cls.TRANSLATABLE_ITEM_NAME, key=key)
+            )
 
     @readonly_method
     def get_all_data(self, as_sorted_list=False, mutability=None):
         """
         returns STANDARD python objects, no ZODB ones.
-        
+
         If mutability is not None, then its value is enforced for selected items.
         """
         items_gen = list(self._table.items())
@@ -100,6 +101,7 @@ class DataTableManager:
         if __debug__:
             utilities.check_object_tree(data, allowed_types=utilities.allowed_python_types, path=[])
             import json
+
             json.dumps(data)  # compatibility test
         return data
 
@@ -115,7 +117,7 @@ class DataTableManager:
 
     @readonly_method
     def __contains__(self, key):
-        return (key in self._table)
+        return key in self._table
 
     @readonly_method
     def __getitem__(self, key):
@@ -128,7 +130,8 @@ class DataTableManager:
         table = self._table
         if key in table and not self._item_can_be_modified(key, table[key]):
             raise AbnormalUsageError(
-                _("Can't modify %(type)s item with key %(key)s") % SDICT(type=self.TRANSLATABLE_ITEM_NAME, key=key))
+                _("Can't modify %(type)s item with key %(key)s") % SDICT(type=self.TRANSLATABLE_ITEM_NAME, key=key)
+            )
         key, value = self._preprocess_new_item(key, value)
         self._check_item_validity(key, value)
         table[key] = value
@@ -140,7 +143,8 @@ class DataTableManager:
         self._check_item_is_in_table(table, key)
         if not self._item_can_be_deleted(key, table[key]):
             raise AbnormalUsageError(
-                _("Can't delete %(type)s item with key %(key)s") % SDICT(type=self.TRANSLATABLE_ITEM_NAME, key=key))
+                _("Can't delete %(type)s item with key %(key)s") % SDICT(type=self.TRANSLATABLE_ITEM_NAME, key=key)
+            )
         del table[key]
         self._callback_on_any_update()
 
@@ -160,7 +164,7 @@ class DataTableManager:
 
 class LazyInstantiationDescriptor:
     """
-    Used to place a special attribute in datamanager modules, 
+    Used to place a special attribute in datamanager modules,
     proxying to a new instance of DataTableManager on attribute access.
     """
 

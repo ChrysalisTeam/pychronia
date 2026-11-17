@@ -41,9 +41,9 @@ LEGACY_VIDEO_EXTENSIONS = ("flv", "avi", "divx")
 
 IMAGE_EXTENSIONS = ("jpg", "jpeg", "gif", "bmp", "png", "tif", "webp")
 
-_INIT_SCRIPT = mark_safe('<script type="text/javascript">'
-                         'if (window.PychroniaMedia) { PychroniaMedia.init(); }'
-                         '</script>')
+_INIT_SCRIPT = mark_safe(
+    '<script type="text/javascript">if (window.PychroniaMedia) { PychroniaMedia.init(); }</script>'
+)
 
 
 def _get_extension(fileurl):
@@ -60,7 +60,7 @@ def _localize_url(fileurl):
     """
     site_domain = config.SITE_DOMAIN
     if site_domain and fileurl.startswith(site_domain + "/"):
-        return fileurl[len(site_domain):]
+        return fileurl[len(site_domain) :]
     return fileurl
 
 
@@ -109,7 +109,7 @@ def _find_subtitle_tracks(fileurl):
 
     tracks = []
     for abs_vtt_path in sorted(glob.glob(glob.escape(abs_base_path) + "*.vtt")):
-        suffix = abs_vtt_path[len(abs_base_path):-len(".vtt")]  # eg. "" or ".fr"
+        suffix = abs_vtt_path[len(abs_base_path) : -len(".vtt")]  # eg. "" or ".fr"
         if suffix and not re.match(r"^\.[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})?$", suffix):
             continue  # unrelated file, like "<basename>_other.vtt"
         lang = suffix[1:] or translation.get_language() or "en"
@@ -123,8 +123,12 @@ def _find_subtitle_tracks(fileurl):
 
 def _render_fallback_link(fileurl):
     name = os.path.basename(urlparse(fileurl).path)
-    return format_html('<div class="medialink">{} <a target="_blank" href="{}">{}</a></div>',
-                       _("Access file"), fileurl, name if name else _("here"))
+    return format_html(
+        '<div class="medialink">{} <a target="_blank" href="{}">{}</a></div>',
+        _("Access file"),
+        fileurl,
+        name if name else _("here"),
+    )
 
 
 def generate_media_player(fileurl, image="", autostart=False, width=None, height=None, title="", **kwargs):
@@ -159,19 +163,22 @@ def generate_media_player(fileurl, image="", autostart=False, width=None, height
     fileurl = _localize_url(fileurl)
 
     max_width = _css_length(width)
-    tracks_html = format_html_join("", '<track kind="subtitles" src="{}" srclang="{}" label="{}" />',
-                                   ((track["url"], track["lang"], track["label"]) for track in tracks))
+    tracks_html = format_html_join(
+        "",
+        '<track kind="subtitles" src="{}" srclang="{}" label="{}" />',
+        ((track["url"], track["lang"], track["label"]) for track in tracks),
+    )
 
     return format_html(
         '<div class="pychronia-media pychronia-video"{style}>'
         '<video class="pychronia-media-element" controls playsinline preload="metadata"'
         '{poster}{autostart} title="{title}">'
         '<source src="{src}" type="{mimetype}" />'
-        '{tracks}'
+        "{tracks}"
         '<a target="_blank" href="{src}">{link_label}</a>'
-        '</video>'
-        '</div>'
-        '{init_script}',
+        "</video>"
+        "</div>"
+        "{init_script}",
         style=format_html(' style="max-width: {}"', max_width) if max_width else "",
         poster=format_html(' poster="{}"', _localize_url(image)) if image else "",
         autostart=mark_safe(' data-autostart="true"') if autostart else "",
@@ -201,21 +208,23 @@ def generate_audio_player(files, titles=None, artists=None, autostart=False, **k
         mimetype = AUDIO_MIMETYPES.get(extension)
         fileurl = _localize_url(fileurl)
 
-        players.append(format_html(
-            '<div class="pychronia-media pychronia-audio">'
-            '{title_html}'
-            '<audio class="pychronia-media-element" controls preload="none"{autostart} title="{title}">'
-            '<source src="{src}"{type_attr} />'
-            '<a target="_blank" href="{src}">{link_label}</a>'
-            '</audio>'
-            '</div>',
-            title_html=format_html('<div class="pychronia-media-title">{}</div>', full_title) if full_title else "",
-            autostart=mark_safe(' data-autostart="true"') if autostart else "",
-            title=full_title,
-            src=fileurl,
-            type_attr=format_html(' type="{}"', mimetype) if mimetype else "",
-            link_label=_("Download the audio file"),
-        ))
+        players.append(
+            format_html(
+                '<div class="pychronia-media pychronia-audio">'
+                "{title_html}"
+                '<audio class="pychronia-media-element" controls preload="none"{autostart} title="{title}">'
+                '<source src="{src}"{type_attr} />'
+                '<a target="_blank" href="{src}">{link_label}</a>'
+                "</audio>"
+                "</div>",
+                title_html=format_html('<div class="pychronia-media-title">{}</div>', full_title) if full_title else "",
+                autostart=mark_safe(' data-autostart="true"') if autostart else "",
+                title=full_title,
+                src=fileurl,
+                type_attr=format_html(' type="{}"', mimetype) if mimetype else "",
+                link_label=_("Download the audio file"),
+            )
+        )
 
     return mark_safe("".join(players) + _INIT_SCRIPT)
 
@@ -228,7 +237,7 @@ def generate_image_viewer(imageurl, width=500, height=400, preset=None, align=""
     """
 
     md5 = hashlib.md5()
-    md5.update(imageurl.encode('ascii', 'ignore'))
+    md5.update(imageurl.encode("ascii", "ignore"))
     myhash = md5.hexdigest()[0:8]
 
     thumb = None
@@ -244,36 +253,38 @@ def generate_image_viewer(imageurl, width=500, height=400, preset=None, align=""
                 try:
                     thumb = thumbnailer[preset]
                 except Exception:  # eg. if preset name is unexisting
-                    logging.critical("generate_image_viewer preset selection failed for %s/%s", imageurl, preset,
-                                     exc_info=True)
+                    logging.critical(
+                        "generate_image_viewer preset selection failed for %s/%s", imageurl, preset, exc_info=True
+                    )
                     pass
-            if not thumb:  #we fallback to default options
+            if not thumb:  # we fallback to default options
                 options = {
-                    'autocrop': False,  # remove useless whitespace
-                    'crop': False,  # no cropping at all,thumb must fit in both W and H
-                    'size': (width, height),  # one of these can be 0
+                    "autocrop": False,  # remove useless whitespace
+                    "crop": False,  # no cropping at all,thumb must fit in both W and H
+                    "size": (width, height),  # one of these can be 0
                 }
                 thumb = thumbnailer.get_thumbnail(options)
             thumburl = thumb.url
         except Exception:
-            logging.critical("generate_image_viewer thumbnail generation failed %s - %s", imageurl, preset,
-                             exc_info=True)
+            logging.critical(
+                "generate_image_viewer thumbnail generation failed %s - %s", imageurl, preset, exc_info=True
+            )
             thumburl = imageurl  # we give up thumbnailing...
 
-    options = \
-        {
-            "title": "",  # no title for now
-            "id": myhash,
-            "imageurl": escape(imageurl),
-            "thumburl": escape(thumburl),
-            "width": escape(thumb.width if thumb else width),
-            "height": escape(thumb.height if thumb else height),
-            "classes": "align-%s" % align if align else "",
-        }
+    options = {
+        "title": "",  # no title for now
+        "id": myhash,
+        "imageurl": escape(imageurl),
+        "thumburl": escape(thumburl),
+        "width": escape(thumb.width if thumb else width),
+        "height": escape(thumb.height if thumb else height),
+        "classes": "align-%s" % align if align else "",
+    }
 
     template = (
-    """<a href="%(imageurl)s"><img class="imageviewer %(classes)s" src="%(thumburl)s" title="%(title)s" id="%(id)s" """ +
-    """style="max-width: %(width)spx; max-height:%(height)spx"/></a>""")
+        """<a href="%(imageurl)s"><img class="imageviewer %(classes)s" src="%(thumburl)s" title="%(title)s" id="%(id)s" """
+        + """style="max-width: %(width)spx; max-height:%(height)spx"/></a>"""
+    )
 
     return template % options
 

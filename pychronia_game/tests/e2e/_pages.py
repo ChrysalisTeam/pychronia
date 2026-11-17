@@ -29,8 +29,11 @@ def set_impersonation_writability(page, base_url, game_id, writable):
     url = "%s/%s/anyuser/profile/" % (base_url, game_id)
     # like the AJAX setup of base_main.html, send the CSRF token (cookie set by any previously visited game page)
     csrf_token = next(c["value"] for c in page.context.cookies(base_url) if c["name"] == "csrftoken")
-    response = page.context.request.post(url, form={"_set_impersonation_writability_": "true" if writable else "false"},
-                                         headers={"X-CSRFToken": csrf_token})
+    response = page.context.request.post(
+        url,
+        form={"_set_impersonation_writability_": "true" if writable else "false"},
+        headers={"X-CSRFToken": csrf_token},
+    )
     assert response.ok, (url, response.status)
 
 

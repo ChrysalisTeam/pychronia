@@ -22,9 +22,10 @@ email_re = re.compile(
     r"(^\[?[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*"  # dot-atom
     # quoted-string, see also http://tools.ietf.org/html/rfc2822#section-3.2.5
     r'|^"([\001-\010\013\014\016-\037!#-\[\]-\177]|\\[\001-\011\013\014\016-\177])*"'
-    r')\]?@((?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?$)'  # domain
-    r'|\[(25[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}\]$',
-    re.IGNORECASE)  # literal form, ipv4 address (SMTP 4.1.3)
+    r")\]?@((?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?$)"  # domain
+    r"|\[(25[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}\]$",
+    re.IGNORECASE,
+)  # literal form, ipv4 address (SMTP 4.1.3)
 
 
 class Conf:
@@ -69,7 +70,7 @@ def get_default_game_scenario():
 
 def safe_copy(value):
     """
-    dict.copy() and copy.copy() are not safe regarding ZODB persistent objects, 
+    dict.copy() and copy.copy() are not safe regarding ZODB persistent objects,
     so we use our own function.
     """
     if isinstance(value, (dict, PersistentMapping)):
@@ -95,11 +96,11 @@ def normalize(v):
 
 ATOMIC_PYTHON_TYPES = (type(None), int, float, str, datetime, Callable)
 
-python_to_zodb_types = {list: PersistentList,
-                        dict: PersistentMapping,
-                        str: lambda x: normalize(x)}
-zodb_to_python_types = dict((value, key) if isinstance(value, type) else (key, value)  # NOT ALL are reversed
-                            for (key, value) in list(python_to_zodb_types.items()))
+python_to_zodb_types = {list: PersistentList, dict: PersistentMapping, str: lambda x: normalize(x)}
+zodb_to_python_types = dict(
+    (value, key) if isinstance(value, type) else (key, value)  # NOT ALL are reversed
+    for (key, value) in list(python_to_zodb_types.items())
+)
 
 allowed_zodb_types = (tuple, PersistentMapping, PersistentList) + ATOMIC_PYTHON_TYPES
 allowed_python_types = (tuple, dict, list) + ATOMIC_PYTHON_TYPES
@@ -107,6 +108,7 @@ allowed_python_types = (tuple, dict, list) + ATOMIC_PYTHON_TYPES
 
 def usage_assert(value, comment=None):
     from pychronia_game.common import UsageError
+
     if not value:
         raise UsageError("Check failed: %r (comment: %r)" % (value, comment))
     return True
@@ -140,7 +142,7 @@ class SDICT(dict):
             logging.critical("Wrong key %s looked up in dict %r", name, self)
             return "<UNKNOWN>"
 
-    ''' obsolete
+    """ obsolete
     def SDICT(**kwargs):
         import collections
         # TODO - log errors when wrong lookup happens!!!
@@ -148,9 +150,10 @@ class SDICT(dict):
         for (name, value) in kwargs.items():
             mydict[name] = value # we mimic the normal dict constructor
         return mydict
-    '''
+    """
 
-''' FIXME REMOVE THIS
+
+""" FIXME REMOVE THIS
 def monkey_patch_django_zodb_parser():
     import django_zodb.utils, django_zodb.config, django_zodb.tests.test_utils
     from django_zodb.utils import parse_uri as original_parse_uri
@@ -167,7 +170,8 @@ def monkey_patch_django_zodb_parser():
 
 
 monkey_patch_django_zodb_parser()
-'''
+"""
+
 
 def open_zodb_url(zodb_url):
     db = database.get_database_from_uris([zodb_url])
@@ -175,22 +179,22 @@ def open_zodb_url(zodb_url):
 
 
 def open_zodb_file(zodb_file):
-    #print ("RETRIEVING DB FROM FILE", zodb_file)
+    # print ("RETRIEVING DB FROM FILE", zodb_file)
     url = "file:///" + zodb_file.replace("\\", "/")  # note the 3 "/" after scheme!
     return open_zodb_url(url)
     # .replace(":", "|") # or "mem://"    # we have problems with URIs in win32, so replace : with |
-    #print (">>>>>>", URI)
+    # print (">>>>>>", URI)
 
 
 def convert_object_tree(tree, type_mapping):
     """
     Recursively transforms a tree of objects (lists, dicts, instances...)
     into an equivalent structure with alternative types.
-    
+
     Operations might occur IN PLACE.
     """
 
-    for (A, B) in list(type_mapping.items()):
+    for A, B in list(type_mapping.items()):
         if isinstance(tree, A):
             tree = B(tree)
             break
@@ -198,10 +202,10 @@ def convert_object_tree(tree, type_mapping):
     if isinstance(tree, ATOMIC_PYTHON_TYPES):
         return tree  # Warning - we must thus avoid infinite recursion on character sequences (aka strings)...
     elif isinstance(tree, collections.abc.MutableSequence):
-        for (index, item) in enumerate(tree):
+        for index, item in enumerate(tree):
             tree[index] = convert_object_tree(item, type_mapping)
     elif isinstance(tree, collections.abc.MutableMapping):
-        for (key, value) in sorted(tree.items()):
+        for key, value in sorted(tree.items()):
             tree[key] = convert_object_tree(value, type_mapping)
     elif isinstance(tree, collections.abc.MutableSet):
         for value in tree:
@@ -210,7 +214,7 @@ def convert_object_tree(tree, type_mapping):
     elif isinstance(tree, tuple):
         tree = tuple(convert_object_tree(value, type_mapping) for value in tree)
     elif hasattr(tree, "__dict__"):
-        for (key, value) in list(tree.__dict__.items()):
+        for key, value in list(tree.__dict__.items()):
             setattr(tree, key, convert_object_tree(value, type_mapping))
     else:
         raise ValueError("Can't handle value %r (type=%s) in convert_object_tree" % (tree, type(tree)))
@@ -225,10 +229,10 @@ def check_object_tree(tree, allowed_types, path):
     if isinstance(tree, ATOMIC_PYTHON_TYPES):
         return
     elif isinstance(tree, collections.abc.MutableSequence):
-        for (index, item) in enumerate(tree):
+        for index, item in enumerate(tree):
             check_object_tree(item, allowed_types, path + [index])
     elif isinstance(tree, collections.abc.MutableMapping):
-        for (key, value) in reversed(sorted(tree.items())):
+        for key, value in reversed(sorted(tree.items())):
             check_object_tree(value, allowed_types, path + [key])
     elif isinstance(tree, collections.abc.MutableSet):
         for value in tree:
@@ -237,7 +241,7 @@ def check_object_tree(tree, allowed_types, path):
         for value in tree:
             check_object_tree(value, allowed_types, path + ["<tuple>"])
     elif hasattr(tree, "__dict__"):
-        for (key, value) in list(tree.__dict__.items()):
+        for key, value in list(tree.__dict__.items()):
             check_object_tree(value, allowed_types, path + [key])
     else:
         raise ValueError("Can't check value %r (type=%s) in check_object_tree" % (tree, type(tree)))
@@ -307,7 +311,7 @@ def sanitize_query_dict(query_dict):
     """
     We remove terminal '[]' in request data keys and replace enforce their value to be a list
     to allow mapping of these to methods arguments (which can't contain '[]').
-    
+
     *query_dict* must be mutable.
     """
     for key in list(query_dict.keys()):
@@ -315,7 +319,7 @@ def sanitize_query_dict(query_dict):
             new_key = key[:-2]
             query_dict[new_key] = query_dict.getlist(key)
             del query_dict[key]
-    #print ("NE QUERY DICT", query_dict)
+    # print ("NE QUERY DICT", query_dict)
     return query_dict
 
 
@@ -336,7 +340,7 @@ def adapt_parameters_to_func(all_parameters, func):
         relevant_args = {key: value for (key, value) in list(all_parameters.items()) if key in args}
 
     try:
-        #print("#<<<<<<<", func, relevant_args)
+        # print("#<<<<<<<", func, relevant_args)
         inspect.getcallargs(func, **relevant_args)
     except (TypeError, ValueError):
         raise  # signature problem, probably
@@ -352,7 +356,7 @@ def load_multipart_rst(val):
 
 
 # IMPORTANT - globally registered encoder for unicode strings and OrderedDict #
-yaml.add_representer(str, lambda dumper, value: dumper.represent_scalar('tag:yaml.org,2002:str', value))
+yaml.add_representer(str, lambda dumper, value: dumper.represent_scalar("tag:yaml.org,2002:str", value))
 
 _mapping_tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
@@ -379,9 +383,9 @@ def dump_data_tree_to_yaml(data_tree, convert_types=True, **kwargs):
     """
     BEWARE - if the end of a string is made of spaces, the double-quotes dump style is forced,
     see (http://sourceforge.net/p/yaml/mailman/message/30159253/)
-    
+
     Valid keywords for the method def dump(data, stream=None, Dumper=Dumper, **kwds) in python-yaml :
-    
+
         default_style : indicates the style of the scalar. Possible values are None, '', '\'', '"', '|', '>'.
 
         default_flow_style :  indicates if a collection is block or flow. The possible values are None, True, False.
@@ -411,12 +415,14 @@ def dump_data_tree_to_yaml(data_tree, convert_types=True, **kwargs):
     if convert_types:
         data_tree = convert_object_tree(data_tree, zodb_to_python_types)
 
-    dump_args = dict(width=100,  # NOT canonical
-                     indent=4,
-                     default_style="|",
-                     default_flow_style=False,  # not BLOCK
-                     allow_unicode=True,
-                     Dumper=yaml.Dumper)
+    dump_args = dict(
+        width=100,  # NOT canonical
+        indent=4,
+        default_style="|",
+        default_flow_style=False,  # not BLOCK
+        allow_unicode=True,
+        Dumper=yaml.Dumper,
+    )
     dump_args.update(kwargs)
 
     string = yaml.dump(data_tree, **dump_args)
@@ -438,7 +444,6 @@ def load_data_tree_from_yaml(string, convert_types=True):
 ## Tools for database sanity checks ##
 
 
-
 def check_no_duplicates(value):
     usage_assert(len(set(value)) == len(value), value)
     return True
@@ -458,6 +463,7 @@ def check_is_range_or_num(value):
 
 def check_is_lazy_translation(value):
     from django.utils.functional import Promise
+
     usage_assert(isinstance(value, Promise), type(value))
     return True
 
@@ -480,6 +486,7 @@ def check_is_ascii_string(value)
     except (TypeError, ValueError) as e:
         raise UsageError(.......)
 """
+
 
 def check_is_float(value):
     usage_assert(isinstance(value, (int, float)), value)  # integers are considered as floats too!!
@@ -577,16 +584,15 @@ def check_is_django_template(value):
 
 def check_is_restructuredtext(value, strict):
     from pychronia_game.templatetags.helpers import advanced_restructuredtext
+
     assert isinstance(value, str)  # NOT A LIST
-    #print("LOADING RST...", repr(value[0:70]))
+    # print("LOADING RST...", repr(value[0:70]))
 
     regex = r"""\[\s*(GAME_FILE_URL|GAME_THUMBNAIL_URL).+?\s*]"""
     sanitized_value = re.sub(regex, "http://dummy_check_is_restructuredtext_url/file.flv", value)
 
     with io.StringIO() as warning_stream:
-        output = advanced_restructuredtext(sanitized_value,
-                                           report_level=1,
-                                           warning_stream=warning_stream)
+        output = advanced_restructuredtext(sanitized_value, report_level=1, warning_stream=warning_stream)
         usage_assert(output)
         warnings = warning_stream.getvalue()
         if strict and warnings:
@@ -722,15 +728,16 @@ def validate_value(value, validator):
 
 def check_dictionary_with_template(my_dict, template, strict=False):
     # checks that the keys and value types of a dictionary matches that of a template
-    #print("==> we check_dictionary_with_template", my_dict, template)
+    # print("==> we check_dictionary_with_template", my_dict, template)
     if strict:
         assert_sets_equal(list(my_dict.keys()), list(template.keys()))
     else:
-        usage_assert(set(template.keys()) <= set(my_dict.keys()),
-                     comment=(set(template.keys()) - set(my_dict.keys()), my_dict))
+        usage_assert(
+            set(template.keys()) <= set(my_dict.keys()), comment=(set(template.keys()) - set(my_dict.keys()), my_dict)
+        )
 
     for key in list(template.keys()):
-        #print("WE VALIDATE MORE PRECISELY", key, my_dict[key], template[key])
+        # print("WE VALIDATE MORE PRECISELY", key, my_dict[key], template[key])
         validate_value(my_dict[key], template[key])
 
 
@@ -752,14 +759,19 @@ def recursive_dict_sum(d1, d2, appendable_fields):
         raise ValueError([d1, d2])
 
     all_keys = list(d1.keys()) + list(d2.keys())
-    #print("---->", repr(all_keys)[0:30])
-    return {k: ((d1[k] if k in d1 else d2[k])
-                     if k not in d1 or k not in d2
-                     else (_append_or_replace(k, d1[k], d2[k])
-                           if not isinstance(d1[k], dict)
-                           else recursive_dict_sum(d1[k], d2[k],
-                                                   appendable_fields=appendable_fields)))
-                for k in set(all_keys)}
+    # print("---->", repr(all_keys)[0:30])
+    return {
+        k: (
+            (d1[k] if k in d1 else d2[k])
+            if k not in d1 or k not in d2
+            else (
+                _append_or_replace(k, d1[k], d2[k])
+                if not isinstance(d1[k], dict)
+                else recursive_dict_sum(d1[k], d2[k], appendable_fields=appendable_fields)
+            )
+        )
+        for k in set(all_keys)
+    }
 
 
 def load_yaml_file(yaml_file, pretreatment=None, convert_types=False):
@@ -771,14 +783,15 @@ def load_yaml_file(yaml_file, pretreatment=None, convert_types=False):
     with open(yaml_file, encoding="utf-8-sig") as f:  # beware of the unicode BOM
         raw_data = f.read()
 
-    for (lineno, linestr) in enumerate(raw_data.split("\n"), start=1):
+    for lineno, linestr in enumerate(raw_data.split("\n"), start=1):
         if "\t" in linestr:
             raise ValueError(
-                "Forbidden tabulation found at line %d in yaml file %s : '%r'!" % (lineno, yaml_file, linestr))
+                "Forbidden tabulation found at line %d in yaml file %s : '%r'!" % (lineno, yaml_file, linestr)
+            )
 
     if pretreatment:
         raw_data = pretreatment(raw_data)
-    #print("LOADING RAW DATA", repr(raw_data[:100]))
+    # print("LOADING RAW DATA", repr(raw_data[:100]))
 
     data = load_data_tree_from_yaml(raw_data, convert_types=convert_types)
     return data
@@ -822,7 +835,7 @@ def load_yaml_fixture(yaml_fixture, language=None):
     assert language is None or language in config.GAME_LANGUAGES, language
 
     if isinstance(yaml_fixture, str):
-        yaml_entries =  [yaml_fixture]
+        yaml_entries = [yaml_fixture]
     else:
         assert isinstance(yaml_fixture, list)
         yaml_entries = yaml_fixture
@@ -830,7 +843,6 @@ def load_yaml_fixture(yaml_fixture, language=None):
     data = {}
 
     for yaml_entry in yaml_entries:
-
         yaml_entry = _localize_yaml_path(yaml_entry, language=language)
 
         if not os.path.exists(yaml_entry):
@@ -842,15 +854,12 @@ def load_yaml_fixture(yaml_fixture, language=None):
         else:
             assert os.path.isdir(yaml_entry)
 
-            yaml_files = [path for pattern in YAML_FILE_GLOBS
-                          for path in glob.glob(os.path.join(yaml_entry, pattern))]
+            yaml_files = [path for pattern in YAML_FILE_GLOBS for path in glob.glob(os.path.join(yaml_entry, pattern))]
 
             if language:
-                yaml_files = [path for path in yaml_files
-                              if _get_yaml_file_language(path) in (None, language)]
+                yaml_files = [path for path in yaml_files if _get_yaml_file_language(path) in (None, language)]
 
         for yaml_file in yaml_files:
-
             if os.path.basename(yaml_file).startswith("_"):
                 continue  # skip deactivated yaml file
 
@@ -923,8 +932,10 @@ class TechnicalEventsMixin:
         else:
             (old_calling_frame, cur_count) = self._event_registry[event_name]
             if calling_frame != old_calling_frame:
-                raise RuntimeError("Duplicated event name %s found for locations '%s' and '%s'" % (
-                    event_name, old_calling_frame, calling_frame))
+                raise RuntimeError(
+                    "Duplicated event name %s found for locations '%s' and '%s'"
+                    % (event_name, old_calling_frame, calling_frame)
+                )
             self._event_registry[event_name] = (calling_frame, cur_count + 1)
 
     def get_event_count(self, event_name):
@@ -952,9 +963,10 @@ class TechnicalEventsMixin:
 
 ## conversions between variable naming conventions ##
 
+
 def to_snake_case(text):
-    s1 = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', text)
-    return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    s1 = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", text)
+    return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
 
 def to_pascal_case(text):
@@ -965,5 +977,3 @@ def to_pascal_case(text):
             text = text[0].upper() + text[1:]
         return text
     return text[0].upper() + text[1:]
-
-

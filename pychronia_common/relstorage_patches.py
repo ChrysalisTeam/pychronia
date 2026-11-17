@@ -41,7 +41,7 @@ def apply_mariadb_patches():
     def _create_object_state(self, cursor):
         if not _is_mariadb(self.version_detector, cursor):
             return original_create_object_state(self, cursor)
-        script = re.sub(r'\s+REFERENCES "transaction"', '', self.CREATE_OBJECT_STATE_TMPL)
+        script = re.sub(r'\s+REFERENCES "transaction"', "", self.CREATE_OBJECT_STATE_TMPL)
         self.runner.run_script(cursor, script)
 
     MySQLSchemaInstaller._create_object_state = _create_object_state

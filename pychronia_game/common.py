@@ -28,6 +28,7 @@ from django.template.loader import render_to_string
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
+
 ## from django.utils.text import slugify - FIXME - for 1.5 only
 from django.template.defaultfilters import slugify
 
@@ -47,6 +48,7 @@ class UserAccess:
     """
     Enumeration attached to game views, to define the kind of users that can access them.
     """
+
     anonymous = "anonymous"
     authenticated = "authenticated"  # both players and masters
     character = "character"
@@ -58,6 +60,7 @@ class AccessResult:  # result of global computation
     """
     Result of a computation between a view's access permissions and a current user.
     """
+
     globally_forbidden = "globally_forbidden"  # eg. view disabled by the master
     authentication_required = "authentication_required"  # eg. wrong kind of user logged in
     permission_required = "permission_required"  # character permissions are lacking
@@ -69,6 +72,7 @@ class AvailablePermissions:
     """
     Centralized enum of permissions, to ensure no typo is made...
     """
+
     pass
 
 
@@ -81,9 +85,10 @@ class GameError(Exception):
 
 class AccessDeniedError(GameError):
     """
-    Raised if a view can't be accessed for whatever reason (if not subclass is used, 
+    Raised if a view can't be accessed for whatever reason (if not subclass is used,
     it's probably a global deactivation of the concerned view by the game master).
     """
+
     pass
 
 
@@ -91,6 +96,7 @@ class GameMaintenanceError(AccessDeniedError):
     """
     Raised when the game instance has been locked for maintenance, eg. to manually edit the data tree.
     """
+
     pass
 
 
@@ -98,6 +104,7 @@ class AuthenticationRequiredError(AccessDeniedError):
     """
     Raised if access if denied, but could be granted provided the user logs in.
     """
+
     pass
 
 
@@ -105,6 +112,7 @@ class PermissionRequiredError(AccessDeniedError):
     """
     Raised if additional character privileges are required.
     """
+
     pass
 
 
@@ -112,6 +120,7 @@ class UsageError(GameError):
     """
     Base class for command workflow errors.
     """
+
     pass  # FIXME - make this class pure abstract !!!
 
 
@@ -132,14 +141,14 @@ def action_failure_handler(request, success_message=gettext_lazy("Operation succ
         # nothing in __enter__()
         yield None
     except UsageError as e:
-        #print(">YYYY", repr(e))
+        # print(">YYYY", repr(e))
         user.add_error(str(e))
         if isinstance(e, AbnormalUsageError):
             logger.critical(str(e), exc_info=True)
     except Exception as e:
-        #print(">OOOOOOO", repr(e))
-        #import traceback
-        #traceback.print_exc()
+        # print(">OOOOOOO", repr(e))
+        # import traceback
+        # traceback.print_exc()
         # we must locate this serious error, as often (eg. assertion errors) there is no specific message attached...
 
         if isinstance(e, ConflictError) and request.datamanager.is_under_top_level_wrapping():
@@ -168,7 +177,6 @@ def exception_swallower():
     try:
         yield
     except Exception as e:
-
         msg = _("Unexpected exception occurred in exception swallower context: %r !")
 
         try:
@@ -188,24 +196,25 @@ def hash_url_path(url_path):
     url_hash = hash(url_path.lstrip("/"), length=8)  # in prod, we remove the possible "/" anyway
     assert url_hash == url_hash.lower()
     return url_hash
-    '''
+    """
     hash = hashlib.sha1(config.SECRET_KEY + url_path.lstrip("/")).digest() 
     url_hash = base64.b32encode(hash)[:8].lower()
     return url_hash
-    '''
+    """
 
 
 def game_view_url(view, datamanager, neutral_link=False, **kwargs):
     from .authentication import UNIVERSAL_URL_USERNAME
+
     game_username = UNIVERSAL_URL_USERNAME if neutral_link else datamanager.username
-    return reverse(view, kwargs=dict(game_instance_id=datamanager.game_instance_id,
-                                     game_username=game_username,
-                                     **kwargs))
+    return reverse(
+        view, kwargs=dict(game_instance_id=datamanager.game_instance_id, game_username=game_username, **kwargs)
+    )
 
 
 def game_file_url(url):
     """
-    If URL is relative, complete it with the secret hash and make it absolute. 
+    If URL is relative, complete it with the secret hash and make it absolute.
     """
     url = url.strip()
     assert url
@@ -226,9 +235,9 @@ _game_files_url_prefix = urlparse(config.GAME_FILES_URL).path
 
 def checked_game_file_path(url):
     """
-    Returns a relative (without leading /) file path, or None if the given 
+    Returns a relative (without leading /) file path, or None if the given
     url doesn't have a proper security hash inside.
-    
+
     Url can be complete, or only an absolute path component starting with /.
     """
     match_obj = None
@@ -289,9 +298,13 @@ def utc_to_local(value):
 
 def is_past_datetime(dt):
     # WARNING - to compute delays, we always work in UTC TIME
-    return (dt <= get_utc_now())
+    return dt <= get_utc_now()
 
 
 __all__ = [key for key in globals().copy() if not key.startswith("_")]
-__all__ += ["_", "gettext_lazy", "gettext_noop",
-            "_undefined"]  # we add translation shortcuts and _undefined placeholder for default function args
+__all__ += [
+    "_",
+    "gettext_lazy",
+    "gettext_noop",
+    "_undefined",
+]  # we add translation shortcuts and _undefined placeholder for default function args

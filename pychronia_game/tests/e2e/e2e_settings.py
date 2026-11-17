@@ -8,8 +8,7 @@ from pychronia_game.tests.common_test_settings import *  # ROOT_URLCONF, GAME_FI
 
 E2E_WORK_DIR = os.environ["PYCHRONIA_E2E_WORK_DIR"]
 
-DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3",
-                         "NAME": os.path.join(E2E_WORK_DIR, "django.db")}}
+DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": os.path.join(E2E_WORK_DIR, "django.db")}}
 ZODB_URL = None
 ZODB_FILE = os.path.join(E2E_WORK_DIR, "active", "gamedata.fs")
 

@@ -2,14 +2,11 @@ from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility
 from pychronia_game import utilities
 from pychronia_game.forms import ArtefactForm, UninstantiableFormError
-from pychronia_game.datamanager.datamanager_tools import transaction_watcher, \
-    readonly_method
+from pychronia_game.datamanager.datamanager_tools import transaction_watcher, readonly_method
 from pychronia_game.datamanager.abstract_game_view import register_view
 
 
 # TODO - change "scanning" to "scan" everywhere!!!
-
-
 
 
 @register_view
@@ -18,9 +15,13 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
     NAME = "world_scan"
 
-    GAME_ACTIONS = dict(scan_form=dict(title=gettext_lazy("Choose world scan model"),
-                                       form_class=ArtefactForm,
-                                       callback="process_world_scan_submission"))
+    GAME_ACTIONS = dict(
+        scan_form=dict(
+            title=gettext_lazy("Choose world scan model"),
+            form_class=ArtefactForm,
+            callback="process_world_scan_submission",
+        )
+    )
 
     TEMPLATE = "abilities/world_scan.html"
 
@@ -31,29 +32,31 @@ class WorldScanAbility(AbstractPartnershipAbility):
     def get_template_vars(self, previous_form_data=None):
 
         try:
-            scan_form = self._instantiate_game_form(new_action_name="scan_form",
-                                                    hide_on_success=False,
-                                                    previous_form_data=previous_form_data,
-                                                    propagate_errors=True, )
+            scan_form = self._instantiate_game_form(
+                new_action_name="scan_form",
+                hide_on_success=False,
+                previous_form_data=previous_form_data,
+                propagate_errors=True,
+            )
             specific_message = None
         except UninstantiableFormError as e:
             scan_form = None
             specific_message = str(e)
 
         return {
-            'page_title': _("World Scan"),
-            'scan_form': scan_form,
-            'specific_message': specific_message,  # TODO FIXME DISPLAY THIS
+            "page_title": _("World Scan"),
+            "scan_form": scan_form,
+            "specific_message": specific_message,  # TODO FIXME DISPLAY THIS
         }
 
     @classmethod
     def _setup_ability_settings(cls, settings):
         pass
-        '''
+        """
         for (name, scan_set) in settings["scanning_sets"].items():
             if scan_set == "__everywhere__":
                 settings["scanning_sets"][name] = self.get_locations().keys()
-        '''
+        """
 
     def _setup_private_ability_data(self, private_data):
         pass  # at the moment we don't care about the history of scans performed
@@ -65,7 +68,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
         all_artefact_items = list(self.get_non_gem_items().keys())
         all_locations = list(self.get_locations().keys())
 
-        for (name, scan_set) in list(settings["scanning_sets"].items()):
+        for name, scan_set in list(settings["scanning_sets"].items()):
             utilities.check_is_slug(name)
             utilities.check_no_duplicates(scan_set)
             utilities.usage_assert(scan_set, comment=name)  # NOT EMPTY
@@ -73,10 +76,11 @@ class WorldScanAbility(AbstractPartnershipAbility):
                 assert location in all_locations, location
 
         # for now items can't be deleted, so we're OK
-        utilities.assert_set_smaller_or_equal(list(settings["item_locations"].keys()),
-                                              all_artefact_items)  # some items might have no scanning locations
+        utilities.assert_set_smaller_or_equal(
+            list(settings["item_locations"].keys()), all_artefact_items
+        )  # some items might have no scanning locations
 
-        for (item_name, scan_set_details) in list(settings["item_locations"].items()):
+        for item_name, scan_set_details in list(settings["item_locations"].items()):
             utilities.check_is_slug(item_name)  # in case it's NOT a valid item name, in unstrict mode...
 
             if strict:
@@ -93,8 +97,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
         if strict:
             utilities.check_num_custom_settings(settings, 4)  # with dedicated email
 
-        assert not any(x for x in list(self.all_private_data.values())
-                       if set(x.keys()) - {"middlewares"})
+        assert not any(x for x in list(self.all_private_data.values()) if set(x.keys()) - {"middlewares"})
 
     @readonly_method
     def _compute_scanning_result_or_none(self, item_name):
@@ -107,18 +110,19 @@ class WorldScanAbility(AbstractPartnershipAbility):
         message = scanning_set_details["message"]  # might be None
 
         scanning_set_name = scanning_set_details["scanning_set"]  # might be None
-        locations = self.settings["scanning_sets"][scanning_set_name] if scanning_set_name else None  # list of city names
+        locations = (
+            self.settings["scanning_sets"][scanning_set_name] if scanning_set_name else None
+        )  # list of city names
 
         return (message, locations)  # one of them might be None
 
-    '''
+    """
     # WARNING - do not put inside a transaction manager, else too many levels of transaction when processing scheduled tasks...
     @transaction_watcher
     def _add_to_scanned_locations(self, locations):
         self.data["global_parameters"]["scanned_locations"] = PersistentList(set(self.data["global_parameters"][
                                                                                  "scanned_locations"] + locations)) # we let the _check_coherence system ensure it's OK
-    '''
-
+    """
 
     @staticmethod
     def _format_scanning_result(scanning_result):
@@ -136,7 +140,6 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
         return locations_found
 
-
     @transaction_watcher
     def process_world_scan_submission(self, item_name, use_gems=()):
 
@@ -149,8 +152,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
             # dummy request email, to allow wiretapping
             subject = _('<Scanning Request - "%s">') % item_title
             body = _("Please scan the world according to the features of this object.")
-            request_msg_data = dict(subject=subject,
-                                    body=body)
+            request_msg_data = dict(subject=subject, body=body)
             del subject, body
 
             # answer email
@@ -158,32 +160,34 @@ class WorldScanAbility(AbstractPartnershipAbility):
             scanning_result = self._compute_scanning_result_or_none(item_name)
 
             if scanning_result:
-
                 locations_found_msg = self._format_scanning_result(scanning_result)
 
                 subject = _("<World Scan Result - %(item)s>") % SDICT(item=item_title)
 
-                body = dedent(_("""
+                body = dedent(
+                    _("""
                         Below is the result of the scanning operation which has been performed according to the documents you sent.
                         Please note that these results might be incomplete or erroneous, depending on the accuracy of the information available.
     
                         Potential locations of similar items: 
                     
                         %(locations_found)s
-                        """)) % SDICT(locations_found=locations_found_msg)
+                        """)
+                ) % SDICT(locations_found=locations_found_msg)
 
-                response_msg_data = dict(subject=subject,
-                                         body=body,
-                                         attachment=None)
+                response_msg_data = dict(subject=subject, body=body, attachment=None)
                 del subject, body
 
-        best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
-                                                                   response_msg_data=response_msg_data)
+        best_msg_id = self._process_standard_exchange_with_partner(
+            request_msg_data=request_msg_data, response_msg_data=response_msg_data
+        )
 
-        self.log_game_event(gettext_noop("Automated scanning request sent for item '%(item_title)s'."),
-                            PersistentMapping(item_title=item_title),
-                            url=self.get_message_viewer_url_or_none(best_msg_id),  # best_msg_id might be None
-                            visible_by=[self.username])
+        self.log_game_event(
+            gettext_noop("Automated scanning request sent for item '%(item_title)s'."),
+            PersistentMapping(item_title=item_title),
+            url=self.get_message_viewer_url_or_none(best_msg_id),  # best_msg_id might be None
+            visible_by=[self.username],
+        )
 
         return _("World scan submission in progress, the result will be emailed to you.")
 

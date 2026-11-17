@@ -8,38 +8,94 @@ from django.utils.translation import gettext as _, gettext_lazy
 from pychronia_game.common import *
 from pychronia_game.datamanager import register_view
 
-from .auction_views import (_build_display_data_from_viewer_settings, homepage, view_characters,
-                            view_sales, auction_items_slideshow, personal_items_slideshow, item_3d_view, ajax_chat,
-                            chatroom)
+from .auction_views import (
+    _build_display_data_from_viewer_settings,
+    homepage,
+    view_characters,
+    view_sales,
+    auction_items_slideshow,
+    personal_items_slideshow,
+    item_3d_view,
+    ajax_chat,
+    chatroom,
+)
 
-from .info_views import (view_encyclopedia, view_static_page, view_hidden_clue,
-                         personal_webradio_popup, personal_webradio_page, ajax_get_radio_playlist, public_webradio,
-                         ajax_get_next_audio_message, ajax_notify_audio_message_finished,
-                         personal_folder, view_media, encrypted_folder, view_world_map_static, view_world_map_dynamic,
-                         enigma_runes_puzzle, enigma_runes_cards)
+from .info_views import (
+    view_encyclopedia,
+    view_static_page,
+    view_hidden_clue,
+    personal_webradio_popup,
+    personal_webradio_page,
+    ajax_get_radio_playlist,
+    public_webradio,
+    ajax_get_next_audio_message,
+    ajax_notify_audio_message_finished,
+    personal_folder,
+    view_media,
+    encrypted_folder,
+    view_world_map_static,
+    view_world_map_dynamic,
+    enigma_runes_puzzle,
+    enigma_runes_cards,
+)
 
 from .profile_views import login, logout, secret_question, character_profile, friendship_management, game_events
 
-from .messaging_views import (ajax_set_message_template_state_flags, ajax_set_dispatched_message_state_flags,
-                              ajax_force_email_sending, ajax_permanently_delete_message,
-                              standard_conversations, view_single_message, compose_message, preview_message,
-                              all_dispatched_messages, all_queued_messages, intercepted_messages, all_archived_messages,
-                              messages_templates)
+from .messaging_views import (
+    ajax_set_message_template_state_flags,
+    ajax_set_dispatched_message_state_flags,
+    ajax_force_email_sending,
+    ajax_permanently_delete_message,
+    standard_conversations,
+    view_single_message,
+    compose_message,
+    preview_message,
+    all_dispatched_messages,
+    all_queued_messages,
+    intercepted_messages,
+    all_archived_messages,
+    messages_templates,
+)
 
-from .abilities import (house_locking, runic_translation, runic_translation_open, wiretapping_management, artificial_intelligence,
-                        mercenaries_hiring, matter_analysis, world_scan, chess_challenge, geoip_location,
-                        business_escrow, black_market, ability_introduction, telecom_investigation,
-                        house_reports)
+from .abilities import (
+    house_locking,
+    runic_translation,
+    runic_translation_open,
+    wiretapping_management,
+    artificial_intelligence,
+    mercenaries_hiring,
+    matter_analysis,
+    world_scan,
+    chess_challenge,
+    geoip_location,
+    business_escrow,
+    black_market,
+    ability_introduction,
+    telecom_investigation,
+    house_reports,
+)
 
-from .admin_views import (admin_dashboard, webradio_management, gamemaster_manual,
-                          manage_databases, static_pages_management, global_contacts_management,
-                          game_items_management, radio_spots_editing, admin_information,
-                          manage_characters, CHARACTERS_IDENTITIES,
-                          DATABASE_OPERATIONS, FAIL_TEST, MEDIA_TEST)
+from .admin_views import (
+    admin_dashboard,
+    webradio_management,
+    gamemaster_manual,
+    manage_databases,
+    static_pages_management,
+    global_contacts_management,
+    game_items_management,
+    radio_spots_editing,
+    admin_information,
+    manage_characters,
+    CHARACTERS_IDENTITIES,
+    DATABASE_OPERATIONS,
+    FAIL_TEST,
+    MEDIA_TEST,
+)
 
 # USEFUL TO DEBUG LOGGING
 if False:
     import logging_tree
+
     print("DUMPING LOGGING TREE")
     logging_tree.printout()
 
@@ -57,8 +113,9 @@ def set_interface_language(request):
     from pychronia_game.middlewares import INTERFACE_LANGUAGE_SESSION_KEY
 
     next_url = request.POST.get("next") or request.headers.get("referer")
-    if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()},
-                                           require_https=request.is_secure()):
+    if not url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
         next_url = "/"
 
     if request.method == "POST":
@@ -88,35 +145,39 @@ def serve_game_file(request, hash="", path="", **kwargs):
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Logo Animation"))
-def ___logo_animation(request, template_name='utilities/item_3d_viewer.html'):
+def ___logo_animation(request, template_name="utilities/item_3d_viewer.html"):
     """
     These settings are heavily dependant on values hard-coded on templates (dimensions, colors...),
     so they needn't be exposed inside the YAML configuration file
     """
-    viewer_settings = dict(levels=1,
-                           per_level=31,  # real total of images : 157, but we use steps
-                           index_steps=5,
-                           index_offset=0,
-                           start_level=1,
-                           file_template="openinglogo/crystal%04d.jpg",
-                           image_width=528,
-                           image_height=409,
-                           mode="object",
-                           x_coefficient=12,
-                           y_coefficient=160,
-                           autoreverse=True,
-                           rotomatic=150,  # ms between rotations
-                           music=None)
+    viewer_settings = dict(
+        levels=1,
+        per_level=31,  # real total of images : 157, but we use steps
+        index_steps=5,
+        index_offset=0,
+        start_level=1,
+        file_template="openinglogo/crystal%04d.jpg",
+        image_width=528,
+        image_height=409,
+        mode="object",
+        x_coefficient=12,
+        y_coefficient=160,
+        autoreverse=True,
+        rotomatic=150,  # ms between rotations
+        music=None,
+    )
 
-    return render(request,
-                  template_name,
-                  {
-                      'settings': _build_display_data_from_viewer_settings(viewer_settings),
-                  })
+    return render(
+        request,
+        template_name,
+        {
+            "settings": _build_display_data_from_viewer_settings(viewer_settings),
+        },
+    )
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("View Help Page"))
-def view_help_page(request, keyword, template_name='utilities/help_page.html'):
+def view_help_page(request, keyword, template_name="utilities/help_page.html"):
     """
     Access for targeted pages is checked here!
     """
@@ -125,7 +186,7 @@ def view_help_page(request, keyword, template_name='utilities/help_page.html'):
 
     allowed_entry = None
     if keyword:
-        view_name = keyword[len("help-"):]
+        view_name = keyword[len("help-") :]
         if view_name in datamanager.get_game_views():
             token = datamanager.get_game_view_access_token(view_name)
             del view_name
@@ -140,12 +201,14 @@ def view_help_page(request, keyword, template_name='utilities/help_page.html'):
     if datamanager.is_game_writable():
         datamanager.mark_static_page_as_accessed(keyword)
 
-    return render(request,
-                  template_name,
-                  {
-                      'page_title': _("Help"),
-                      'entry': allowed_entry,
-                  })
+    return render(
+        request,
+        template_name,
+        {
+            "page_title": _("Help"),
+            "entry": allowed_entry,
+        },
+    )
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Bug Report"))
@@ -168,14 +231,13 @@ def bug_report_treatment(request):
                     URL: %(location)s
                     
                     Message: %(report_data)s
-                    """) % dict(username=dm.user.username,
-                                location=location,
-                                report_data=report_data)
+                    """) % dict(username=dm.user.username, location=location, report_data=report_data)
 
     dm.logger.warning("Submitting pychronia bug report by email:\n%r", message)
 
-    mail_admins("Pychronia Bug Report", message=message,
-                html_message=None)  # we don't know if it REALLY sends stuffs...
+    mail_admins(
+        "Pychronia Bug Report", message=message, html_message=None
+    )  # we don't know if it REALLY sends stuffs...
 
     return HttpResponse("OK - bug reported")
 

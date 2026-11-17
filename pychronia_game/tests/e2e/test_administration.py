@@ -7,7 +7,8 @@ from django.core import mail
 from pychronia_game.common import get_utc_now
 from pychronia_game.datamanager import datamanager_administrator as dma
 from pychronia_game.meta_administration_views import (
-    compute_game_activation_token, GAME_ACTIVATION_EMAIL_SUBJECT,
+    compute_game_activation_token,
+    GAME_ACTIVATION_EMAIL_SUBJECT,
 )
 from pychronia_game.tests.e2e import _configs, _pages
 
@@ -18,8 +19,10 @@ SECONDARY_GAME_ID = _configs.SECONDARY_GAME_ID
 
 
 def _lock_secondary_instance(minutes=15):
-    dma.change_game_instance_status(game_instance_id=SECONDARY_GAME_ID,
-                                    maintenance_until=get_utc_now() + __import__("datetime").timedelta(minutes=minutes))
+    dma.change_game_instance_status(
+        game_instance_id=SECONDARY_GAME_ID,
+        maintenance_until=get_utc_now() + __import__("datetime").timedelta(minutes=minutes),
+    )
 
 
 def _unlock_secondary_instance():
@@ -48,6 +51,7 @@ def _delete_form(page, instance_id):
 
 # --- 1-2: access control ---
 
+
 def test_administration_anonymous_redirects_to_admin_login(page, base_url):
     response = page.goto("%s/administration/" % base_url)
     assert "/admin/login/" in page.url
@@ -62,6 +66,7 @@ def test_administration_player_redirects_to_admin_login(player_page, base_url):
 
 # --- 3: superuser listing ---
 
+
 def test_administration_lists_both_instances_as_superuser(superuser_page, base_url):
     response = superuser_page.goto("%s/administration/" % base_url)
     _pages.assert_page_ok(superuser_page, response)
@@ -72,6 +77,7 @@ def test_administration_lists_both_instances_as_superuser(superuser_page, base_u
 
 
 # --- 4: create instance via admin form ---
+
 
 def test_create_instance_via_admin_form(superuser_page, base_url):
     new_instance_id = "e2e-admin-created"
@@ -91,6 +97,7 @@ def test_create_instance_via_admin_form(superuser_page, base_url):
 
 
 # --- 5: lock/unlock toggles 503 ---
+
 
 def test_lock_unlock_instance_toggles_503(superuser_page, base_url):
     superuser_page.goto("%s/administration/" % base_url)
@@ -118,6 +125,7 @@ def test_lock_unlock_instance_toggles_503(superuser_page, base_url):
 
 # --- 6: edit_instance_db requires maintenance ---
 
+
 def test_edit_instance_db_while_in_maintenance_shows_editor(superuser_page, base_url):
     _lock_secondary_instance()
 
@@ -138,6 +146,7 @@ def test_edit_instance_db_while_not_in_maintenance_is_refused(superuser_page, ba
 
 
 # --- 7: status change, backup, enforced-login ticket ---
+
 
 def test_change_instance_status_shows_success_message(superuser_page, base_url):
     superuser_page.goto("%s/administration/" % base_url)
@@ -186,6 +195,7 @@ def test_compute_enforced_login_ticket_and_use_it(superuser_page, page, base_url
 
 # --- 8: delete instance (secondary only, after deletable status) ---
 
+
 def test_delete_instance_only_on_secondary_after_terminated(superuser_page, base_url):
     dma.change_game_instance_status(game_instance_id=SECONDARY_GAME_ID, new_status=dma.GAME_STATUSES.terminated)
 
@@ -204,6 +214,7 @@ def test_delete_instance_only_on_secondary_after_terminated(superuser_page, base
 
 
 # --- 9: anonymous create_instance sends activation mail ---
+
 
 def test_create_instance_anonymous_sends_activation_mail(page, base_url):
     if hasattr(mail, "outbox"):
@@ -235,13 +246,19 @@ def test_create_instance_anonymous_sends_activation_mail(page, base_url):
 
 # --- 10: activate_instance ---
 
+
 def test_activate_instance_with_valid_token_creates_and_logs_in(page, base_url):
     new_instance_id = "e2e-activate-created"
     creator_login = "e2e_activate_creator"
     assert not dma.game_instance_exists(new_instance_id)
 
-    token = compute_game_activation_token(game_instance_id=new_instance_id, creator_login=creator_login,
-                                          creator_email=None, game_language="en", game_scenario="default")
+    token = compute_game_activation_token(
+        game_instance_id=new_instance_id,
+        creator_login=creator_login,
+        creator_email=None,
+        game_language="en",
+        game_scenario="default",
+    )
     url = "%s/administration/activate/?%s" % (base_url, urlencode({"token": token}))
 
     response = page.goto(url)
@@ -256,6 +273,7 @@ def test_activate_instance_with_bad_token_is_forbidden(page, base_url):
 
 
 # --- 11: Django admin smoke ---
+
 
 def test_django_admin_index_smoke(superuser_page, base_url):
     response = superuser_page.goto("%s/admin/" % base_url)

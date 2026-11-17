@@ -2,8 +2,7 @@ from django import forms
 
 from pychronia_game.common import *
 from pychronia_game.forms import AbstractGameForm
-from pychronia_game.datamanager.datamanager_tools import transaction_watcher, \
-    readonly_method
+from pychronia_game.datamanager.datamanager_tools import transaction_watcher, readonly_method
 from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility
 
 
@@ -21,9 +20,11 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
     TITLE = gettext_lazy("Mercenaries Hiring")
     NAME = "mercenaries_hiring"
 
-    GAME_ACTIONS = dict(hiring_form=dict(title=gettext_lazy("Hire mercenaries"),
-                                         form_class=AgentsHiringForm,
-                                         callback="hire_remote_agent"))
+    GAME_ACTIONS = dict(
+        hiring_form=dict(
+            title=gettext_lazy("Hire mercenaries"), form_class=AgentsHiringForm, callback="hire_remote_agent"
+        )
+    )
 
     TEMPLATE = "abilities/mercenaries_hiring.html"
 
@@ -34,37 +35,36 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
     def _get_admin_summary_html(self):
         assert self.is_master()
         data = list(self.all_private_data.items())
-        all_mercenaries_locations = sorted((k, v["mercenaries_locations"])
-                                           for (k, v) in data
-                                           if v["mercenaries_locations"])
+        all_mercenaries_locations = sorted(
+            (k, v["mercenaries_locations"]) for (k, v) in data if v["mercenaries_locations"]
+        )
 
         template_vars = dict(all_mercenaries_locations=all_mercenaries_locations)
-        res = render_to_string("abilities/mercenaries_hiring_summary.html",
-                               template_vars)
+        res = render_to_string("abilities/mercenaries_hiring_summary.html", template_vars)
 
         return res
 
     def get_template_vars(self, previous_form_data=None):
 
         assert self.is_character()
-        #_user_profile = self.get_character_properties()
-        #gems = _user_profile["gems"]
-        #total_gems_value = sum(gem[0] for gem in gems)
+        # _user_profile = self.get_character_properties()
+        # gems = _user_profile["gems"]
+        # total_gems_value = sum(gem[0] for gem in gems)
 
         # for now we don't exclude locations of already hired mercenaries
-        hiring_form = self._instantiate_game_form(new_action_name="hiring_form",
-                                                  hide_on_success=False,
-                                                  previous_form_data=previous_form_data)
+        hiring_form = self._instantiate_game_form(
+            new_action_name="hiring_form", hide_on_success=False, previous_form_data=previous_form_data
+        )
 
         mercenaries_locations = self.private_data["mercenaries_locations"]
 
-        #print (">>>>>>>>>>>>>>>>", self.settings)
+        # print (">>>>>>>>>>>>>>>>", self.settings)
         return {
-            'page_title': _("Mercenaries Management"),
-            'settings': self.settings,
-            'mercenaries_locations': mercenaries_locations,
-            'hiring_form': hiring_form,
-            'dedicated_email': self.dedicated_email,
+            "page_title": _("Mercenaries Management"),
+            "settings": self.settings,
+            "mercenaries_locations": mercenaries_locations,
+            "hiring_form": hiring_form,
+            "dedicated_email": self.dedicated_email,
         }
 
     @readonly_method
@@ -73,8 +73,7 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
         return location in self.private_data["mercenaries_locations"]
 
     @transaction_watcher
-    def hire_remote_agent(self, location,
-                          use_gems=()):  # intercepted by action middlewares
+    def hire_remote_agent(self, location, use_gems=()):  # intercepted by action middlewares
         assert location in self.datamanager.get_locations()
 
         if self.has_remote_agent(location):
@@ -84,10 +83,12 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
 
         ### self._process_spy_activation(location) # USELESS ?
 
-        self.log_game_event(gettext_noop("Mercenary hired in %(location)s"),
-                            PersistentMapping(location=location),
-                            url=None,
-                            visible_by=[self.username])
+        self.log_game_event(
+            gettext_noop("Mercenary hired in %(location)s"),
+            PersistentMapping(location=location),
+            url=None,
+            visible_by=[self.username],
+        )
 
         return _("Mercenaries have been successfully hired")
 
@@ -103,16 +104,15 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
 
         settings = self.settings
 
-        ''' OBSOLETE
+        """ OBSOLETE
         _reference = dict(
                             mercenary_cost_money=utilities.check_is_positive_int,
                             mercenary_cost_gems=utilities.check_is_positive_int
                          )
         utilities.check_dictionary_with_template(settings, _reference, strict=strict)
-        '''
+        """
 
         for data in list(self.all_private_data.values()):
-
             if strict:
                 utilities.check_num_custom_settings(data, 1)
 
@@ -122,7 +122,7 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
             assert set(data["mercenaries_locations"]) <= set(all_locations), data["mercenaries_locations"]
 
 
-'''
+"""
 
 @game_player_required(permission="manage_agents")
 def network_management(request, template_name='specific_operations/network_management.html'):
@@ -230,4 +230,4 @@ def network_management(request, template_name='specific_operations/network_manag
                               date_or_delay_mn=self.get_global_parameter("spy_report_delays"))
 
 
-        '''
+        """

@@ -23,6 +23,8 @@ class AdminInformation(AbstractGameView):
         admin_summaries = self.datamanager.get_game_view_admin_summaries()
         admin_summaries = sorted(list(admin_summaries.items()), key=lambda x: x[0])
 
-        return dict(global_parameters=global_parameters,
-                    folders_info=sorted(folders_info.items()),
-                    admin_summaries=admin_summaries)
+        return dict(
+            global_parameters=global_parameters,
+            folders_info=sorted(folders_info.items()),
+            admin_summaries=admin_summaries,
+        )

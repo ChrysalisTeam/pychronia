@@ -27,11 +27,20 @@ NAVIGABLE_ENTRY_IDS = _inventory.NAVIGABLE_ENTRY_IDS
 
 # A handful of representative pages driven through a real browser navigation, for a
 # rendering-level sanity check (menu/title present, no Django error page).
-REPRESENTATIVE_ENTRY_IDS = frozenset([
-    "homepage", "characters_view", "view_sales", "personal_items_slideshow",
-    "character_profile", "friendship_management", "standard_conversations",
-    "view_encyclopedia", "view_encyclopedia__current_article_id", "chatroom",
-])
+REPRESENTATIVE_ENTRY_IDS = frozenset(
+    [
+        "homepage",
+        "characters_view",
+        "view_sales",
+        "personal_items_slideshow",
+        "character_profile",
+        "friendship_management",
+        "standard_conversations",
+        "view_encyclopedia",
+        "view_encyclopedia__current_article_id",
+        "chatroom",
+    ]
+)
 
 
 @pytest.mark.parametrize("entry", NAVIGABLE_ENTRIES, ids=NAVIGABLE_ENTRY_IDS)
@@ -40,7 +49,8 @@ def test_boosted_player_reaches_every_allowed_page(entry, player_page, base_url,
     his ACCESS tier allows (anonymous/authenticated/character), and get redirected away
     only from ACCESS=master pages."""
     expected_available = _inventory.expect_available_for_page_visit(
-        entry, BOOSTED_PLAYER, game, owns_sample_item=True)  # guy1 owns "sacred_chest"
+        entry, BOOSTED_PLAYER, game, owns_sample_item=True
+    )  # guy1 owns "sacred_chest"
 
     for sample in entry.sample_paths(game):
         url = _inventory.url_for(base_url, GAME_ID, BOOSTED_PLAYER, sample)
@@ -60,8 +70,7 @@ def test_plain_player_gated_pages_redirect(entry, page, base_url, game):
         pytest.skip("item_3d_view ownership is checked separately below (404, not a redirect)")
 
     _pages.login_as_player(page, base_url, GAME_ID, PLAIN_PLAYER, _configs.PLAYER_CREDENTIALS[PLAIN_PLAYER])
-    expected_available = _inventory.expect_available_for_page_visit(
-        entry, PLAIN_PLAYER, game, owns_sample_item=False)
+    expected_available = _inventory.expect_available_for_page_visit(entry, PLAIN_PLAYER, game, owns_sample_item=False)
 
     for sample in entry.sample_paths(game):
         url = _inventory.url_for(base_url, GAME_ID, PLAIN_PLAYER, sample)

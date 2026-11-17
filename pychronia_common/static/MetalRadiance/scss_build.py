@@ -8,6 +8,7 @@ start of the expression"), which makes pyscss unusable as-is. We patch the
 pattern in-memory (``(?i:opacity)`` is equivalent and Python 3.11+-safe)
 before running the real CLI.
 """
+
 import scss.grammar.expression as expression
 
 _patterns = expression.SassExpressionScanner._patterns

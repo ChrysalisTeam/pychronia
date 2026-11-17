@@ -8,14 +8,10 @@ def gamemaster_manual(request, template_name="administration/master_manual.html"
 
     gamemaster_manual = dm.get_gamemaster_manual_for_html()
 
-    return render(request,
-                  template_name,
-                  {
-                      "gamemaster_manual": gamemaster_manual
-                  })
+    return render(request, template_name, {"gamemaster_manual": gamemaster_manual})
 
 
-'''
+"""
 
 MAYBE ONE DAY, generate pdf directly from webserver 
 (but security issues with RAW docutils directives must be handled first)
@@ -67,4 +63,4 @@ def gamemaster_manual_pdf(request, template_name="administration/master_manual.h
                     {
                      "gamemaster_manual": gamemaster_manual
                     })
-'''
+"""

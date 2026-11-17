@@ -2,30 +2,27 @@ from pychronia_common.common_settings import *
 
 TEMPLATES[0]["OPTIONS"]["context_processors"].append("pychronia_game.context_processors.pychronia_template_context")
 
-'''
+"""
 _old_middlewares = list(MIDDLEWARE)
 if "debug_toolbar.middleware.DebugToolbarMiddleware" in _old_middlewares:
     # Django Debug Toolbar bugs on pychronia_game, troubles with ZODB late access...
     _old_middlewares.remove("debug_toolbar.middleware.DebugToolbarMiddleware")
-'''
+"""
 
 # beware of ordering here
-MIDDLEWARE = (tuple(MIDDLEWARE) +
-                      (
-                          'pychronia_game.middlewares.ZodbTransactionMiddleware',
-                       'pychronia_game.middlewares.AuthenticationMiddleware',
-                       'pychronia_game.middlewares.PeriodicProcessingMiddleware',
-                       'django_cprofile_middleware.middleware.ProfilerMiddleware', # use in DEBUG mode with '?prof' at the end of URL
-                       ))
+MIDDLEWARE = tuple(MIDDLEWARE) + (
+    "pychronia_game.middlewares.ZodbTransactionMiddleware",
+    "pychronia_game.middlewares.AuthenticationMiddleware",
+    "pychronia_game.middlewares.PeriodicProcessingMiddleware",
+    "django_cprofile_middleware.middleware.ProfilerMiddleware",  # use in DEBUG mode with '?prof' at the end of URL
+)
 
-#print(">>>>>>>>>>>>>>>>", MIDDLEWARE)
+# print(">>>>>>>>>>>>>>>>", MIDDLEWARE)
 
 INSTALLED_APPS += [
-    'pychronia_game',
-
-    'django.contrib.admin',
-
-    'debug_toolbar',
+    "pychronia_game",
+    "django.contrib.admin",
+    "debug_toolbar",
 ]
 
 ############# DJANGO-APP CONFS ############
@@ -33,56 +30,54 @@ INSTALLED_APPS += [
 
 ## EASY-THUMBNAILS CONF ##
 
-THUMBNAIL_DEFAULT_STORAGE = 'pychronia_game.storage.ProtectedGameFileSystemStorage'  # important
-THUMBNAIL_MEDIA_ROOT = ''  # NOT used by default
-THUMBNAIL_MEDIA_URL = ''  # NOT used by default
+THUMBNAIL_DEFAULT_STORAGE = "pychronia_game.storage.ProtectedGameFileSystemStorage"  # important
+THUMBNAIL_MEDIA_ROOT = ""  # NOT used by default
+THUMBNAIL_MEDIA_URL = ""  # NOT used by default
 
-THUMBNAIL_ALIASES = {'': {
-    # project-wide aliases here
-    'default': {  # NECESSARY
-        'autocrop': True,  # remove useless whitespace
-        'size': (300, 300),  # one of these can be 0 to ignore that dimension
-        #'crop': "scale", # True or <smart|scale|W,H>, scale means "only 1 dimension must fit", remove this setting to disable any cropping
-    },
-
-    'item_avatar': {  # Eg. in sales page
-        'autocrop': True,
-        'size': (150, 220),
-    },
-    'character_avatar': {  # Eg. in characters page
-        'autocrop': False,
-        'size': (100, 100),
-    },
-    'contact_avatar': {  # Eg. in list of email contacts
-        'autocrop': False,
-        'size': (60, 60),
-    },
-
-    'small_width': {
-        'autocrop': False,
-        'size': (200, 0),
-    },
-    'medium_width': {
-        'autocrop': False,
-        'size': (350, 0),
-    },
-    'big_width': {
-        'autocrop': False,
-        'size': (500, 0),
-    },
-    'giant_width': {
-        'autocrop': False,
-        'size': (800, 0),
-    },
-}}
+THUMBNAIL_ALIASES = {
+    "": {
+        # project-wide aliases here
+        "default": {  # NECESSARY
+            "autocrop": True,  # remove useless whitespace
+            "size": (300, 300),  # one of these can be 0 to ignore that dimension
+            #'crop': "scale", # True or <smart|scale|W,H>, scale means "only 1 dimension must fit", remove this setting to disable any cropping
+        },
+        "item_avatar": {  # Eg. in sales page
+            "autocrop": True,
+            "size": (150, 220),
+        },
+        "character_avatar": {  # Eg. in characters page
+            "autocrop": False,
+            "size": (100, 100),
+        },
+        "contact_avatar": {  # Eg. in list of email contacts
+            "autocrop": False,
+            "size": (60, 60),
+        },
+        "small_width": {
+            "autocrop": False,
+            "size": (200, 0),
+        },
+        "medium_width": {
+            "autocrop": False,
+            "size": (350, 0),
+        },
+        "big_width": {
+            "autocrop": False,
+            "size": (500, 0),
+        },
+        "giant_width": {
+            "autocrop": False,
+            "size": (800, 0),
+        },
+    }
+}
 ### medium_width
-
-
-
 
 
 # The Chrysalis game data repository has one root folder per game, containing its media,
 # and its scenario sources in a "scenario_fixtures/" subfolder.
+
 
 def get_chrysalis_game_files_root(chrysalis_data_dir):
     """
@@ -102,7 +97,9 @@ def generate_mindstorm_settings(chrysalis_data_dir):
     # SELECT ONLY SOME FIXTURES, FOR MYSTERY PARTY
 
     _GAME_INITIAL_DATA_DIR = chrysalis_data_dir
-    assert os.path.isdir(os.path.join(_GAME_INITIAL_DATA_DIR, "alternate_reality_game_auction", "scenario_fixtures")), _GAME_INITIAL_DATA_DIR
+    assert os.path.isdir(os.path.join(_GAME_INITIAL_DATA_DIR, "alternate_reality_game_auction", "scenario_fixtures")), (
+        _GAME_INITIAL_DATA_DIR
+    )
 
     _selected_yaml_files = """
         alternate_reality_game_auction/scenario_fixtures/abilities.yaml
@@ -138,9 +135,11 @@ def generate_mindstorm_settings(chrysalis_data_dir):
         mysteryparty_mindstorm/scenario_fixtures/anthropia_portal_game_data_overrides.yaml
         """.split()
 
-    GAME_INITIAL_DATA_PATH = [os.path.join(_GAME_INITIAL_DATA_DIR, _selected_yaml_file)
-                              for _selected_yaml_file in _selected_yaml_files
-                              if _selected_yaml_file[0] != "#"]
+    GAME_INITIAL_DATA_PATH = [
+        os.path.join(_GAME_INITIAL_DATA_DIR, _selected_yaml_file)
+        for _selected_yaml_file in _selected_yaml_files
+        if _selected_yaml_file[0] != "#"
+    ]
 
     def GAME_INITIAL_FIXTURE_SCRIPT(dm):
 
@@ -175,25 +174,25 @@ def generate_mindstorm_settings(chrysalis_data_dir):
         dm.set_global_parameter("game_theoretical_length_days", 1)
 
         activable_views = [
-            #"artificial_intelligence",
+            # "artificial_intelligence",
             "auction_items_slideshow",
-            #"intercepted_messages",
-            #"black_market",
+            # "intercepted_messages",
+            # "black_market",
             "business_escrow",
-            #"chatroom",
-            #"chess_challenge",
+            # "chatroom",
+            # "chess_challenge",
             "game_events",
-            #"geoip_location",   # COULD be enabled!
-            #"house_locking",
+            # "geoip_location",   # COULD be enabled!
+            # "house_locking",
             "house_reports",
             "matter_analysis",
             "mercenaries_hiring",
             "personal_items_slideshow",
             "runic_translation",
-            #"telecom_investigation",
+            # "telecom_investigation",
             "view_sales",
-            #"view_world_map_dynamic",
-            #"wiretapping",  # IMPORTANT!!!
+            # "view_world_map_dynamic",
+            # "wiretapping",  # IMPORTANT!!!
             "world_scan",
         ]
         dm.set_activated_game_views(activable_views)
@@ -204,18 +203,20 @@ def generate_mindstorm_settings(chrysalis_data_dir):
             ("peridot", "topaz"),
             ##("cynthia", "waden"), NO not blind confidence
             ## ("opal", "lydia"), NO not blind confidence
-            ]
-        for (player_name, player_name_bis) in friendships:
+        ]
+        for player_name, player_name_bis in friendships:
             _domains1 = dm.get_character_properties(player_name)["domains"]
             _domains2 = dm.get_character_properties(player_name_bis)["domains"]
-            assert (_domains1 == _domains2), (player_name, player_name_bis, _domains1, _domains2)
+            assert _domains1 == _domains2, (player_name, player_name_bis, _domains1, _domains2)
             dm.propose_friendship(player_name, player_name_bis)
             dm.propose_friendship(player_name_bis, player_name)
 
         # mystery party: all players are in the same room, so they know each other's addresses from the start
         from persistent.list import PersistentList
-        player_usernames = [name for name in dm.get_character_usernames()
-                            if not dm.get_character_properties(name)["is_npc"]]
+
+        player_usernames = [
+            name for name in dm.get_character_usernames() if not dm.get_character_properties(name)["is_npc"]
+        ]
         player_emails = {name: dm.get_character_email(name) for name in player_usernames}
         for name in player_usernames:
             props = dm.get_character_properties(name)
@@ -228,18 +229,27 @@ def generate_mindstorm_settings(chrysalis_data_dir):
             ("anonymous_threat_4", dict(), -20),
             ("lg_welcome_message", dict(), -19),
             ("waden_report_orb_analysis", dict(), -10),
-            ("inspector_shark_arrival", dict(recipient_emails=[ml_address],), -7),
-            ("security_measures", dict(recipient_emails=[ml_address],), -2),
-
+            (
+                "inspector_shark_arrival",
+                dict(
+                    recipient_emails=[ml_address],
+                ),
+                -7,
+            ),
+            (
+                "security_measures",
+                dict(
+                    recipient_emails=[ml_address],
+                ),
+                -2,
+            ),
             ("cynthia_location_description", dict(), -2),
-
             ("masslavian_initial_orb_hint", dict(), -1),
             ("dorian_initial_orb_hint", dict(), -1),
             ("lordanian_initial_orb_hint", dict(), -1),
             ("magnus_initial_orb_hint", dict(), -1),
             ("cynthia_initial_orb_hint", dict(), -1),
             ("sabarith_services_initial_instructions", dict(), -1),
-
         ]
 
         for idx, (template_id, params, offset_days) in enumerate(email_predispatches):
@@ -247,7 +257,7 @@ def generate_mindstorm_settings(chrysalis_data_dir):
                 assert "date_or_delay_mn" not in params
                 params["date_or_delay_mn"] = offset_days * 24 * 60
                 assert params["date_or_delay_mn"] < 0, params["date_or_delay_mn"]
-            #print(">>>>>>>>> Preposting message with template_id=%s and params=%s" % (template_id, params))
+            # print(">>>>>>>>> Preposting message with template_id=%s and params=%s" % (template_id, params))
             dm.post_message_with_template(template_id, **params)
 
         for item_name, item_data in list(dm.data["game_items"].items()):
@@ -289,8 +299,6 @@ def generate_mindstorm_settings(chrysalis_data_dir):
     return (GAME_INITIAL_DATA_PATH, GAME_INITIAL_FIXTURE_SCRIPT)
 
 
-
-
 def generate_auction_settings(chrysalis_data_dir):
     """
     Called just before conversion of initial data tree, and coherence check.
@@ -300,7 +308,9 @@ def generate_auction_settings(chrysalis_data_dir):
     import time
 
     _GAME_INITIAL_DATA_DIR = chrysalis_data_dir
-    assert os.path.isdir(os.path.join(_GAME_INITIAL_DATA_DIR, "alternate_reality_game_auction", "scenario_fixtures")), _GAME_INITIAL_DATA_DIR
+    assert os.path.isdir(os.path.join(_GAME_INITIAL_DATA_DIR, "alternate_reality_game_auction", "scenario_fixtures")), (
+        _GAME_INITIAL_DATA_DIR
+    )
 
     _selected_yaml_files = """
         alternate_reality_game_auction/scenario_fixtures/abilities.yaml
@@ -319,10 +329,11 @@ def generate_auction_settings(chrysalis_data_dir):
         alternate_reality_game_auction/scenario_fixtures/messaging
         """.split()
 
-    GAME_INITIAL_DATA_PATH = [os.path.join(_GAME_INITIAL_DATA_DIR, _selected_yaml_file)
-                              for _selected_yaml_file in _selected_yaml_files
-                              if _selected_yaml_file[0] != "#"]
-
+    GAME_INITIAL_DATA_PATH = [
+        os.path.join(_GAME_INITIAL_DATA_DIR, _selected_yaml_file)
+        for _selected_yaml_file in _selected_yaml_files
+        if _selected_yaml_file[0] != "#"
+    ]
 
     def GAME_INITIAL_FIXTURE_SCRIPT(dm):
 
@@ -353,40 +364,77 @@ def generate_auction_settings(chrysalis_data_dir):
         # first, spam emails to fill messaging pages
         for i in range(100):
             # will be intercepted by player_name_ter
-            _msg_id = dm.post_message(sender_email=email_guy4, recipient_emails=email_guy1, subject="Flood %s" % i,
-                                      body="Ceci est le message %s" % i)
+            _msg_id = dm.post_message(
+                sender_email=email_guy4,
+                recipient_emails=email_guy1,
+                subject="Flood %s" % i,
+                body="Ceci est le message %s" % i,
+            )
 
             if i % 2:
-                dm.set_dispatched_message_state_flags(username=player_name,
-                                                      msg_id=_msg_id,
-                                                      has_archived=True)
+                dm.set_dispatched_message_state_flags(username=player_name, msg_id=_msg_id, has_archived=True)
 
-        msg_id1 = dm.post_message(sender_email=email_guy1, recipient_emails=email_guy2, subject="NULL TEST", body="hello",
-                                  transferred_msg="UNEXISTING_TRANSFERRED_MSG_SYZH")  # wrong transferred_msg shouldn't fail
+        msg_id1 = dm.post_message(
+            sender_email=email_guy1,
+            recipient_emails=email_guy2,
+            subject="NULL TEST",
+            body="hello",
+            transferred_msg="UNEXISTING_TRANSFERRED_MSG_SYZH",
+        )  # wrong transferred_msg shouldn't fail
         msg1 = dm.get_dispatched_message_by_id(msg_id1)
-        msg_id2 = dm.post_message(sender_email=email_guy2, recipient_emails=email_guy1, subject="RE:%s" % msg1["subject"],
-                                  body="hello world", parent_id=msg_id1)
+        msg_id2 = dm.post_message(
+            sender_email=email_guy2,
+            recipient_emails=email_guy1,
+            subject="RE:%s" % msg1["subject"],
+            body="hello world",
+            parent_id=msg_id1,
+        )
         msg2 = dm.get_dispatched_message_by_id(msg_id2)
-        dm.post_message(sender_email=email_guy1, recipient_emails=email_guy2, subject="Bis:%s" % msg2["subject"],
-                        body="hello hello", parent_id=msg_id2)
+        dm.post_message(
+            sender_email=email_guy1,
+            recipient_emails=email_guy2,
+            subject="Bis:%s" % msg2["subject"],
+            body="hello hello",
+            parent_id=msg_id2,
+        )
 
-        msg_id4 = dm.post_message(sender_email=email_guy1, recipient_emails=email_external, subject="Ask master TEST",
-                                  body="for something")
+        msg_id4 = dm.post_message(
+            sender_email=email_guy1, recipient_emails=email_external, subject="Ask master TEST", body="for something"
+        )
         msg4 = dm.get_dispatched_message_by_id(msg_id4)
-        msg_id5 = dm.post_message(sender_email=email_external, recipient_emails=email_guy1,
-                                  subject="RE:%s TEST" % msg4["subject"], body="answer something", parent_id=msg_id4)
+        msg_id5 = dm.post_message(
+            sender_email=email_external,
+            recipient_emails=email_guy1,
+            subject="RE:%s TEST" % msg4["subject"],
+            body="answer something",
+            parent_id=msg_id4,
+        )
         msg5 = dm.get_dispatched_message_by_id(msg_id5)
-        dm.post_message(sender_email=email_guy1, recipient_emails=email_external,
-                        subject="Bis:%s TEST" % msg5["subject"], body="ask for something", parent_id=msg_id5)
+        dm.post_message(
+            sender_email=email_guy1,
+            recipient_emails=email_external,
+            subject="Bis:%s TEST" % msg5["subject"],
+            body="ask for something",
+            parent_id=msg_id5,
+        )
 
-        msg_id7 = dm.post_message(sender_email=email_guy3, recipient_emails=email_guy4, subject="Vol de Tapis",
-                                  body="Je pense qu'on doit voler les tapis de guy1")
+        msg_id7 = dm.post_message(
+            sender_email=email_guy3,
+            recipient_emails=email_guy4,
+            subject="Vol de Tapis",
+            body="Je pense qu'on doit voler les tapis de guy1",
+        )
         msg7 = dm.get_dispatched_message_by_id(msg_id7)
 
         time.sleep(1)
 
-        dm.post_message(sender_email=email_guy4, recipient_emails=[email_guy3], subject="RE:%s" % msg7["subject"],
-                        body="T'as raison ils sont si doux", parent_id=msg_id7)
+        dm.post_message(
+            sender_email=email_guy4,
+            recipient_emails=[email_guy3],
+            subject="RE:%s" % msg7["subject"],
+            body="T'as raison ils sont si doux",
+            parent_id=msg_id7,
+        )
 
         tpl = dm.get_message_template("feedback_akaris_threats_geoip")
         assert tpl["transferred_msg"] is None
@@ -400,11 +448,10 @@ def generate_auction_settings(chrysalis_data_dir):
         dm.transfer_object_to_character(item, player_name)
 
         # NOPE no more auto-friendship here
-        #dm.propose_friendship(player_name, player_name_bis)
-        #dm.propose_friendship(player_name_bis, player_name)  # accept friendship
+        # dm.propose_friendship(player_name, player_name_bis)
+        # dm.propose_friendship(player_name_bis, player_name)  # accept friendship
 
         logging.warning("Finished special AUCTION game fixture script...")
-
 
     return (GAME_INITIAL_DATA_PATH, GAME_INITIAL_FIXTURE_SCRIPT)
 
@@ -416,8 +463,9 @@ def generate_chrysalis_scenarios(chrysalis_data_dir):
 
     The chrysalis_data_dir is the root of the Chrysalis game data repository.
     """
-    return dict(auction=generate_auction_settings(chrysalis_data_dir),
-                mindstorm=generate_mindstorm_settings(chrysalis_data_dir))
+    return dict(
+        auction=generate_auction_settings(chrysalis_data_dir), mindstorm=generate_mindstorm_settings(chrysalis_data_dir)
+    )
 
 
 INTERNAL_IPS = ("127.0.0.1",)
@@ -428,9 +476,10 @@ def show_toolbar_to_superusers_only(request):
 
 
 DEBUG_TOOLBAR_CONFIG = {
-    'SHOW_TOOLBAR_CALLBACK': show_toolbar_to_superusers_only,  # only show toolbar to authenticated users
-    'SHOW_COLLAPSED': False,
+    "SHOW_TOOLBAR_CALLBACK": show_toolbar_to_superusers_only,  # only show toolbar to authenticated users
+    "SHOW_COLLAPSED": False,
 }
 
 import mimetypes
+
 mimetypes.add_type("application/javascript", ".js", True)

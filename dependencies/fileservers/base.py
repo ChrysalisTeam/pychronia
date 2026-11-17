@@ -8,7 +8,7 @@ class ServerBase:
         pass
 
     def get_mimetype(self, path):
-        return mimetypes.guess_type(path, strict=False)[0] or 'application/octet-stream'
+        return mimetypes.guess_type(path, strict=False)[0] or "application/octet-stream"
 
     def default_headers(self, **kwargs):
         self.save_as_header(**kwargs)
@@ -26,7 +26,7 @@ class ServerBase:
             filename = save_as
         else:
             filename = os.path.basename(path)
-        response['Content-Disposition'] = smart_str('attachment; filename=%s' % filename)
+        response["Content-Disposition"] = smart_str("attachment; filename=%s" % filename)
 
     def size_header(self, response, size=None, path=None, **kwargs):
         if size is None and path:
@@ -35,5 +35,4 @@ class ServerBase:
             except OSError:
                 pass
         if size is not None:
-            response['Content-Length'] = str(size)
-
+            response["Content-Length"] = str(size)

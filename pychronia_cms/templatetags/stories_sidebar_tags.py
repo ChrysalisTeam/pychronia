@@ -14,6 +14,7 @@ Unlike the stock BlogArchivePlugin (which groups by year+month), the archive wid
 only goes down to year granularity (and counts the posts visible in the current language), per product decision - djangocms-stories has no month/day
 URL below the year/month archive routes, and the project no longer wants day-level navigation.
 """
+
 from collections import Counter
 
 from django.contrib.sites.shortcuts import get_current_site
@@ -41,8 +42,9 @@ def stories_categories_widget(context):
     # Sorted in Python: order_by("translations__name") would join ALL translation rows (incl.
     # the fallback-language ones matched by active_translations()), duplicating each category
     # translated in several languages despite distinct().
-    categories = sorted(qs.distinct(),
-                        key=lambda c: (c.safe_translation_getter("name", any_language=True) or "").lower())
+    categories = sorted(
+        qs.distinct(), key=lambda c: (c.safe_translation_getter("name", any_language=True) or "").lower()
+    )
     return {"categories": categories}
 
 

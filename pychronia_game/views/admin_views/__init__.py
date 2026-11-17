@@ -36,25 +36,27 @@ from .gamemaster_manual_mod import gamemaster_manual
 
 
 @register_view(access=UserAccess.master, title=gettext_lazy("View Database"))
-def manage_databases(request, template_name='administration/database_management.html'):
-    ''' OBSOLETE
+def manage_databases(request, template_name="administration/database_management.html"):
+    """OBSOLETE
     if request.method == "POST":
         if "pack_database" in request.POST:
             with action_failure_handler(request, _("ZODB file packed.")):
                 request.datamanager.pack_database(days=1)  # safety measure - take at least one day of gap !
-    '''
+    """
 
     formatted_data = request.datamanager.dump_zope_database(width=80)
 
-    return render(request,
-                  template_name,
-                  {
-                      'formatted_data': formatted_data,
-                  })
+    return render(
+        request,
+        template_name,
+        {
+            "formatted_data": formatted_data,
+        },
+    )
 
 
 @register_view(access=UserAccess.master, title=gettext_lazy("Manage Characters"))
-def manage_characters(request, template_name='administration/character_management.html'):
+def manage_characters(request, template_name="administration/character_management.html"):
     dm = request.datamanager
 
     characters_items = sorted(list(dm.get_character_sets().items()), key=lambda x: (x[1]["is_npc"], x[0]))
@@ -68,14 +70,10 @@ def manage_characters(request, template_name='administration/character_managemen
     successful_character_updates_count = 0
 
     if request.method == "POST":
-
         character_updates_were_attempted = True
 
         for idx, (username, __character_data) in enumerate(characters_items):
-
-            form = forms.CharacterProfileForm(datamanager=dm,
-                                              data=request.POST,
-                                              prefix=_prefix(idx))
+            form = forms.CharacterProfileForm(datamanager=dm, data=request.POST, prefix=_prefix(idx))
 
             if form.is_valid():
                 target_username = form.cleaned_data["target_username"]
@@ -95,36 +93,37 @@ def manage_characters(request, template_name='administration/character_managemen
                 assert official_role == official_role.strip()
 
                 with action_failure_handler(request, success_message=None):
-
                     assert not dm.is_in_writing_transaction()  # each call below will be separately atomic
 
                     previous_data = copy.deepcopy(dm.get_character_properties(username=target_username))
 
-                    dm.update_official_character_data(username=target_username,
-                                                      official_name=official_name,
-                                                      official_role=official_role,
-                                                      gamemaster_hints=gamemaster_hints,
-                                                      extra_goods=extra_goods,
-                                                      is_npc=is_npc)
+                    dm.update_official_character_data(
+                        username=target_username,
+                        official_name=official_name,
+                        official_role=official_role,
+                        gamemaster_hints=gamemaster_hints,
+                        extra_goods=extra_goods,
+                        is_npc=is_npc,
+                    )
 
-                    dm.update_secret_question_and_answer(username=target_username,
-                                                         secret_question=secret_question,
-                                                         secret_answer=secret_answer)
+                    dm.update_secret_question_and_answer(
+                        username=target_username, secret_question=secret_question, secret_answer=secret_answer
+                    )
 
-                    dm.update_allegiances(username=target_username,
-                                          allegiances=allegiances)
+                    dm.update_allegiances(username=target_username, allegiances=allegiances)
 
-                    dm.update_permissions(username=target_username,
-                                          permissions=permissions)
-                    dm.update_real_life_data(username=target_username,
-                                             real_life_identity=real_life_identity,
-                                             real_life_email=real_life_email)
+                    dm.update_permissions(username=target_username, permissions=permissions)
+                    dm.update_real_life_data(
+                        username=target_username, real_life_identity=real_life_identity, real_life_email=real_life_email
+                    )
 
                     new_data = dm.get_character_properties(username=target_username)
 
                     utilities.assert_sets_equal(list(previous_data.keys()), list(new_data.keys()))
 
-                    successful_character_updates_count += 1  # NOW ONLY, we know that forms are OK and that updates really worked
+                    successful_character_updates_count += (
+                        1  # NOW ONLY, we know that forms are OK and that updates really worked
+                    )
 
                     with exception_swallower():  # we don't want this advanced logging to mess with the game
 
@@ -134,53 +133,60 @@ def manage_characters(request, template_name='administration/character_managemen
                             return a == b
 
                         # we create a list of tuples (key, old_value, new_value) ONLY for modified fields
-                        all_changes = [(k, previous_data[k], new_data[k])
-                                       for k in sorted(new_data.keys()) if
-                                       not _is_equivalent(previous_data[k], new_data[k])]
+                        all_changes = [
+                            (k, previous_data[k], new_data[k])
+                            for k in sorted(new_data.keys())
+                            if not _is_equivalent(previous_data[k], new_data[k])
+                        ]
 
                         if all_changes:
-
                             message = gettext_noop("""Attributes of user "%(username)s" have been modified:""")
 
                             additional_details = ""
                             for change_triplet in all_changes:
                                 additional_details += """~ %s: "%s" => "%s"\n""" % change_triplet
-                            additional_details = re.sub(r"\bu'", "'",
-                                                        additional_details)  # WORKAROUND for ugly "unicode" prefixes of python2
-                            additional_details = additional_details.replace("%",
-                                                                            "%%")  # security against rogue placeholders
+                            additional_details = re.sub(
+                                r"\bu'", "'", additional_details
+                            )  # WORKAROUND for ugly "unicode" prefixes of python2
+                            additional_details = additional_details.replace(
+                                "%", "%%"
+                            )  # security against rogue placeholders
 
-                            dm.log_game_event(message,
-                                              substitutions=PersistentMapping(username=target_username),
-                                              additional_details=additional_details,
-                                              url=None,
-                                              visible_by=None)  # only for game master
+                            dm.log_game_event(
+                                message,
+                                substitutions=PersistentMapping(username=target_username),
+                                additional_details=additional_details,
+                                url=None,
+                                visible_by=None,
+                            )  # only for game master
 
             character_forms.append(form)
 
-    form_validation_failed = None if not character_updates_were_attempted else (
-    successful_character_updates_count != len(characters_items))
+    form_validation_failed = (
+        None if not character_updates_were_attempted else (successful_character_updates_count != len(characters_items))
+    )
 
     if not form_validation_failed:  # i.e if None or False
-
         character_forms = []
 
         for idx, (username, character_data) in enumerate(characters_items):
             f = forms.CharacterProfileForm(
                 datamanager=dm,
                 prefix=_prefix(idx),
-                initial=dict(target_username=username,
-                             official_name=character_data["official_name"],
-                             official_role=character_data["official_role"],
-                             allegiances=list(character_data["domains"]),  # IMPORTANT - coerce to normal list!
-                             permissions=list(character_data["permissions"]),  # IMPORTANT - coerce to normal list!
-                             real_life_identity=character_data["real_life_identity"],
-                             real_life_email=character_data["real_life_email"],
-                             gamemaster_hints=character_data["gamemaster_hints"],
-                             is_npc=character_data["is_npc"],
-                             extra_goods=character_data["extra_goods"],
-                             secret_question=character_data["secret_question"],
-                             secret_answer=character_data["secret_answer"], )
+                initial=dict(
+                    target_username=username,
+                    official_name=character_data["official_name"],
+                    official_role=character_data["official_role"],
+                    allegiances=list(character_data["domains"]),  # IMPORTANT - coerce to normal list!
+                    permissions=list(character_data["permissions"]),  # IMPORTANT - coerce to normal list!
+                    real_life_identity=character_data["real_life_identity"],
+                    real_life_email=character_data["real_life_email"],
+                    gamemaster_hints=character_data["gamemaster_hints"],
+                    is_npc=character_data["is_npc"],
+                    extra_goods=character_data["extra_goods"],
+                    secret_question=character_data["secret_question"],
+                    secret_answer=character_data["secret_answer"],
+                ),
             )
             character_forms.append(f)
 
@@ -201,14 +207,16 @@ def manage_characters(request, template_name='administration/character_managemen
 
     characters_emails = [x["real_life_email"] for (_username, x) in characters_items if x["real_life_email"]]
 
-    return render(request,
-                  template_name,
-                  dict(
-                      character_forms=character_forms,
-                      sealed_friendships=sealed_friendships,
-                      proposed_friendships=proposed_friendships,
-                      characters_emails=characters_emails,
-                  ))
+    return render(
+        request,
+        template_name,
+        dict(
+            character_forms=character_forms,
+            sealed_friendships=sealed_friendships,
+            proposed_friendships=proposed_friendships,
+            characters_emails=characters_emails,
+        ),
+    )
 
 
 @register_view(access=UserAccess.master, title=gettext_lazy("Character Identities"))
@@ -230,8 +238,8 @@ def CHARACTERS_IDENTITIES(request):
 
     # body = chr(0xEF) + chr(0xBB) + chr(0xBF) + body # utf8 bom ?
 
-    response = HttpResponse(body, content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=characters.csv'
+    response = HttpResponse(body, content_type="text/csv")
+    response["Content-Disposition"] = "attachment; filename=characters.csv"
 
     return response
 
@@ -242,7 +250,6 @@ def DATABASE_OPERATIONS(request):
         raise Http404
 
     try:
-
         if request.GET.get("reset_game_data"):
             request.datamanager.reset_game_data()
             return HttpResponse("OK - Game data reset")
@@ -260,14 +267,17 @@ def FAIL_TEST(request):
 
 @register_view(access=UserAccess.master, title=gettext_lazy("Media Display Test"))
 def MEDIA_TEST(request):
-    return render(request,
-                  "administration/media_test.html",
-                  {
-                      'audioplayer': mediaplayers.generate_audio_player([game_file_url("test_samples/music.mp3")]),
-                      'videoplayers': ["<p>%s</p>" % extension +
-                                       mediaplayers.generate_media_player(
-                                           game_file_url("test_samples/video." + extension),
-                                           game_file_url('test_samples/image.jpg'))
-                                       for extension in sorted(mediaplayers.VIDEO_MIMETYPES) +
-                                                        list(mediaplayers.LEGACY_VIDEO_EXTENSIONS)]
-                  })
+    return render(
+        request,
+        "administration/media_test.html",
+        {
+            "audioplayer": mediaplayers.generate_audio_player([game_file_url("test_samples/music.mp3")]),
+            "videoplayers": [
+                "<p>%s</p>" % extension
+                + mediaplayers.generate_media_player(
+                    game_file_url("test_samples/video." + extension), game_file_url("test_samples/image.jpg")
+                )
+                for extension in sorted(mediaplayers.VIDEO_MIMETYPES) + list(mediaplayers.LEGACY_VIDEO_EXTENSIONS)
+            ],
+        },
+    )

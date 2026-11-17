@@ -38,11 +38,14 @@ class ZodbTransactionMiddleware(MiddlewareMixin):
     def process_view(self, request, view_func, view_args, view_kwargs):
         # on exception : normal 500 handling takes place
 
-        assert hasattr(request, 'session'), "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."
+        assert hasattr(request, "session"), (
+            "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."
+        )
 
         request.process_view = None  # GameView instance will attach itself here on execution
 
-        if __debug__: request.start_time = time.time()
+        if __debug__:
+            request.start_time = time.time()
 
         if "game_instance_id" in view_kwargs:
             # TOFIX select the proper subtree of ZODB
@@ -52,15 +55,14 @@ class ZodbTransactionMiddleware(MiddlewareMixin):
             del view_kwargs["game_instance_id"]
 
             try:
-                update_timestamp = (request.method == "POST")  # we consider that other accesses are not meaningful
+                update_timestamp = request.method == "POST"  # we consider that other accesses are not meaningful
                 # by default, this checks that game is not in maintenance
-                request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id,
-                                                             request=request,
-                                                             update_timestamp=update_timestamp)
+                request.datamanager = retrieve_game_instance(
+                    game_instance_id=game_instance_id, request=request, update_timestamp=update_timestamp
+                )
             except GameMaintenanceError as e:
                 # TODO - better handling of 503 code, with dedicated template #
-                return HttpResponse(content=str(e) + "<br/>" + _("Please come back later."),
-                                    status=503)
+                return HttpResponse(content=str(e) + "<br/>" + _("Please come back later."), status=503)
             except UsageError:
                 raise Http404  # unexisting instance
 
@@ -102,8 +104,8 @@ class ZodbTransactionMiddleware(MiddlewareMixin):
             if hasattr(request, "datamanager"):
                 if config.DEBUG:
                     pass
-                    #request.datamanager.check_database_coherence() # checking after each request, then
-                    #logger.info("Pychronia debug mode: post-processing check_database_coherence() is over (might take a long time)")
+                    # request.datamanager.check_database_coherence() # checking after each request, then
+                    # logger.info("Pychronia debug mode: post-processing check_database_coherence() is over (might take a long time)")
                 request.datamanager.close()
         except Exception as e:
             # exception should NEVER flow out of response processing middlewares
@@ -120,9 +122,10 @@ class AuthenticationMiddleware(MiddlewareMixin):
 
         utilities.make_request_querydicts_mutable(request)
 
-        if not hasattr(request, 'session'):
+        if not hasattr(request, "session"):
             raise RuntimeError(
-                "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'.")
+                "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."
+            )
 
         raw_url_game_username = None
         if "game_username" in view_kwargs:
@@ -131,14 +134,18 @@ class AuthenticationMiddleware(MiddlewareMixin):
 
         url_game_username = None
         if raw_url_game_username and raw_url_game_username not in (
-        authentication.UNIVERSAL_URL_USERNAME, authentication.TEMP_URL_USERNAME):
+            authentication.UNIVERSAL_URL_USERNAME,
+            authentication.TEMP_URL_USERNAME,
+        ):
             url_game_username = raw_url_game_username  # WILL be transmitted for potential impersonation
 
         authentication.try_authenticating_with_session(request, url_game_username=url_game_username)
         del url_game_username
 
         if raw_url_game_username and raw_url_game_username not in (
-        request.datamanager.username, authentication.UNIVERSAL_URL_USERNAME):
+            request.datamanager.username,
+            authentication.UNIVERSAL_URL_USERNAME,
+        ):
             # we redirect to the proper url prefix, so that current "effective username" is well kept during navigation (but not for UNIVERSAL_URL_USERNAME)
             new_kwargs = view_kwargs.copy()  # additional URL parts like "msg_id"
             new_kwargs["game_instance_id"] = request.datamanager.game_instance_id

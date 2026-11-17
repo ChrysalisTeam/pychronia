@@ -107,34 +107,42 @@ CATEGORY_PARAMETRIZED = "parametrized"
 CATEGORY_AJAX_OR_NON_HTML = "ajax_or_non_html"
 CATEGORY_EXCLUDED = "excluded"
 
-ALL_CATEGORIES = frozenset([
-    CATEGORY_PLAIN_GET,
-    CATEGORY_PARAMETRIZED,
-    CATEGORY_AJAX_OR_NON_HTML,
-    CATEGORY_EXCLUDED,
-])
+ALL_CATEGORIES = frozenset(
+    [
+        CATEGORY_PLAIN_GET,
+        CATEGORY_PARAMETRIZED,
+        CATEGORY_AJAX_OR_NON_HTML,
+        CATEGORY_EXCLUDED,
+    ]
+)
 
 # Views that must never be blindly visited by generic page-inventory tests.
 # NAME values as actually registered (see AbstractGameView.NAME), not the URL fragments.
-EXCLUDED_NAMES = frozenset([
-    "test_captcha",            # /TEST_CAPTCHA/
-    "CHARACTERS_IDENTITIES",   # exports a CSV of real-life identities
-    "DATABASE_OPERATIONS",     # can reset game data
-    "FAIL_TEST",               # deliberately raises an IOError
-    "MEDIA_TEST",              # not dangerous per se, but a pure media smoke-test, excluded for simplicity
-    "logout",                  # gets its own dedicated test (must not be hit incidentally while enumerating pages)
-])
+EXCLUDED_NAMES = frozenset(
+    [
+        "test_captcha",  # /TEST_CAPTCHA/
+        "CHARACTERS_IDENTITIES",  # exports a CSV of real-life identities
+        "DATABASE_OPERATIONS",  # can reset game data
+        "FAIL_TEST",  # deliberately raises an IOError
+        "MEDIA_TEST",  # not dangerous per se, but a pure media smoke-test, excluded for simplicity
+        "logout",  # gets its own dedicated test (must not be hit incidentally while enumerating pages)
+    ]
+)
 
 # Non-ajax-named endpoints that are nonetheless not real HTML "pages" (binary/XML/etc).
-EXTRA_NON_HTML_NAMES = frozenset([
-    # none currently (the webradio's former XML endpoint became "ajax_get_radio_playlist")
-])
+EXTRA_NON_HTML_NAMES = frozenset(
+    [
+        # none currently (the webradio's former XML endpoint became "ajax_get_radio_playlist")
+    ]
+)
 
 # Entries with no URL capture group that must nonetheless be treated as "parametrized"
 # (they need extra data -- query string / POST body -- to be meaningfully exercised).
-FORCED_PARAMETRIZED_ENTRY_IDS = frozenset([
-    "view_hidden_clue",   # clues/ -- POST clue_category/clue_code to see real content
-])
+FORCED_PARAMETRIZED_ENTRY_IDS = frozenset(
+    [
+        "view_hidden_clue",  # clues/ -- POST clue_category/clue_code to see real content
+    ]
+)
 
 # Per-page caveats NOT modeled by compute_access_result() (see the module docstring's
 # final section): shared here so test_pages_player.py / test_pages_superuser.py apply
@@ -146,6 +154,7 @@ ALWAYS_AVAILABLE_ENTRY_IDS = frozenset(["view_hidden_clue"])
 # --------------------------------------------------------------------------------------
 # Data structures
 # --------------------------------------------------------------------------------------
+
 
 class SamplePath:
     """A concrete, currently-valid way to exercise a (possibly parametrized) view.
@@ -170,18 +179,20 @@ class SamplePath:
 
 @dataclass(frozen=True)
 class InventoryEntry:
-    name: str                      # GameView NAME (may repeat across URL patterns, eg. view_encyclopedia)
-    entry_id: str                  # unique identifier for THIS url pattern (name, possibly suffixed by its params)
-    pattern: str                   # raw regex pattern string, straight from inner_game_urlpatterns
-    url_params: tuple[str, ...]    # named capture groups in the URL pattern, eg. ("current_article_id",)
-    view_class: type               # the AbstractGameView subclass (callback.klass)
-    access: str                    # UserAccess.{anonymous,authenticated,character,master}
-    requires_permission: bool      # REQUIRES_CHARACTER_PERMISSION -- gated by access_permission_name
-    requires_activation: bool      # REQUIRES_GLOBAL_PERMISSION -- must be in dm's activated_views, unless requires_permission overrides it
-    access_permission_name: str | None   # "access_<name>" iff requires_permission, else None
-    extra_permissions: tuple[str, ...]      # EXTRA_PERMISSIONS -- feature-specific, do NOT gate view access itself
+    name: str  # GameView NAME (may repeat across URL patterns, eg. view_encyclopedia)
+    entry_id: str  # unique identifier for THIS url pattern (name, possibly suffixed by its params)
+    pattern: str  # raw regex pattern string, straight from inner_game_urlpatterns
+    url_params: tuple[str, ...]  # named capture groups in the URL pattern, eg. ("current_article_id",)
+    view_class: type  # the AbstractGameView subclass (callback.klass)
+    access: str  # UserAccess.{anonymous,authenticated,character,master}
+    requires_permission: bool  # REQUIRES_CHARACTER_PERMISSION -- gated by access_permission_name
+    requires_activation: (
+        bool  # REQUIRES_GLOBAL_PERMISSION -- must be in dm's activated_views, unless requires_permission overrides it
+    )
+    access_permission_name: str | None  # "access_<name>" iff requires_permission, else None
+    extra_permissions: tuple[str, ...]  # EXTRA_PERMISSIONS -- feature-specific, do NOT gate view access itself
     category: str
-    sample_paths: Callable[[object | None], list]   # fn(dm=None) -> list[SamplePath]; dm needed only for dynamic samples
+    sample_paths: Callable[[object | None], list]  # fn(dm=None) -> list[SamplePath]; dm needed only for dynamic samples
     notes: str = ""
 
     def __str__(self):
@@ -197,6 +208,7 @@ class InventoryEntry:
 # for the couple of plan-doc examples that turned out to already be correct, and which
 # ones were double checked.
 
+
 def _static_sample(path, **kwargs):
     return lambda dm=None: [SamplePath(path=path, **kwargs)]
 
@@ -210,7 +222,8 @@ def _sample_message_id(dm):
             return msg["id"]
     raise LookupError(
         "Baseline 'Hello' message (guy2 -> guy1) not found; "
-        "check _configs.apply_baseline_tweaks() is still posting it under that subject.")
+        "check _configs.apply_baseline_tweaks() is still posting it under that subject."
+    )
 
 
 def _view_single_message_samples(dm):
@@ -229,38 +242,36 @@ SAMPLE_PROVIDERS = {
     "encrypted_folder__folder": _static_sample(
         "encrypted_folders/guy2_report/",
         description="real encrypted folder from the default fixture; "
-                     "POST simple_password='evans' to decrypt (see test_interactions.py)"),
-
+        "POST simple_password='evans' to decrypt (see test_interactions.py)",
+    ),
     "item_3d_view__item": _static_sample(
         "item3dview/sacred_chest/",
         description="owned by BOOSTED_PLAYER (guy1) only, per apply_baseline_tweaks(); "
-                     "has item_3d_settings in the YAML fixture. PLAIN_PLAYER (guy2) gets a 404 here, "
-                     "not a redirect -- see module docstring."),
-
+        "has item_3d_settings in the YAML fixture. PLAIN_PLAYER (guy2) gets a 404 here, "
+        "not a redirect -- see module docstring.",
+    ),
     "view_static_page__page_id": _static_sample(
-        "pages/top-homepage/",
-        description="static page id from the default YAML fixture (categories: content)"),
-
+        "pages/top-homepage/", description="static page id from the default YAML fixture (categories: content)"
+    ),
     "view_hidden_clue": _static_sample(
         "clues/",
         description="GET always 200s with an empty form regardless of identity; "
-                     "POST clue_category='magic'&clue_code='kxz' (some_clue1 in the fixture) to see real content"),
-
+        "POST clue_category='magic'&clue_code='kxz' (some_clue1 in the fixture) to see real content",
+    ),
     # Only the detail URL pattern (encyclopedia/<current_article_id>/) is parametrized;
     # the bare encyclopedia/ index is plain_get and needs no sample.
     "view_encyclopedia__current_article_id": _static_sample(
-        "encyclopedia/lokon/",
-        description="encyclopedia article id from the default YAML fixture"),
-
+        "encyclopedia/lokon/", description="encyclopedia article id from the default YAML fixture"
+    ),
     "view_help_page__keyword": _static_sample(
         "manual/help-homepage/",
-        description='static help page "help-homepage", backing the always-anonymous-available "homepage" view'),
-
+        description='static help page "help-homepage", backing the always-anonymous-available "homepage" view',
+    ),
     "secret_question__concerned_username": _static_sample(
         "secret_question/%s/" % _configs.PLAYER_WITH_SECRET_QUESTION,
         description="guy3 is the only default character with a non-null secret_question/secret_answer; "
-                     "any other username would redirect to the homepage with an error instead of 200"),
-
+        "any other username would redirect to the homepage with an error instead of 200",
+    ),
     "view_single_message__msg_id": _view_single_message_samples,
 }
 
@@ -268,6 +279,7 @@ SAMPLE_PROVIDERS = {
 # --------------------------------------------------------------------------------------
 # Building the inventory from the live URL patterns
 # --------------------------------------------------------------------------------------
+
 
 def _build_entry_id(name, url_params):
     if not url_params:
@@ -292,8 +304,8 @@ def _literal_path_from_pattern(pattern):
     assert pattern.startswith("^") and pattern.endswith("$"), pattern
     literal = pattern[1:-1]
     assert _LITERAL_PATTERN_RE.match(literal), (
-        "Pattern %r has capture groups or regex metacharacters; "
-        "it can't be used as a literal plain_get path" % pattern)
+        "Pattern %r has capture groups or regex metacharacters; it can't be used as a literal plain_get path" % pattern
+    )
     return literal
 
 
@@ -306,17 +318,22 @@ def _build_inventory():
         view_class = getattr(callback, "klass", None)
         assert view_class is not None, (
             "URL pattern %r has a callback with no .klass -- it isn't GameView-backed, "
-            "_inventory.py needs updating to handle it explicitly" % (url_pattern,))
+            "_inventory.py needs updating to handle it explicitly" % (url_pattern,)
+        )
 
         pattern_str = str(url_pattern.pattern)
-        url_params = tuple(sorted(
-            url_pattern.pattern.regex.groupindex,
-            key=lambda group_name: url_pattern.pattern.regex.groupindex[group_name],
-        ))
+        url_params = tuple(
+            sorted(
+                url_pattern.pattern.regex.groupindex,
+                key=lambda group_name: url_pattern.pattern.regex.groupindex[group_name],
+            )
+        )
 
         name = view_class.NAME
         entry_id = _build_entry_id(name, url_params)
-        assert entry_id not in seen_entry_ids, "Duplicate entry_id %r -- inventory needs a better disambiguation key" % entry_id
+        assert entry_id not in seen_entry_ids, (
+            "Duplicate entry_id %r -- inventory needs a better disambiguation key" % entry_id
+        )
         seen_entry_ids.add(entry_id)
 
         category = _classify(name, entry_id, url_params)
@@ -328,26 +345,29 @@ def _build_inventory():
             sample_paths = SAMPLE_PROVIDERS.get(entry_id)
             assert sample_paths is not None, (
                 "No SAMPLE_PROVIDERS entry for parametrized view %r (entry_id=%r); "
-                "add one so pages tests can exercise it" % (name, entry_id))
+                "add one so pages tests can exercise it" % (name, entry_id)
+            )
         elif category == CATEGORY_PLAIN_GET:
             sample_paths = _static_sample(_literal_path_from_pattern(pattern_str))
         else:
             sample_paths = lambda dm=None: []  # ajax_or_non_html / excluded: not meant to be navigated directly
 
-        entries.append(InventoryEntry(
-            name=name,
-            entry_id=entry_id,
-            pattern=pattern_str,
-            url_params=url_params,
-            view_class=view_class,
-            access=view_class.ACCESS,
-            requires_permission=requires_permission,
-            requires_activation=bool(view_class.REQUIRES_GLOBAL_PERMISSION),
-            access_permission_name=access_permission_name,
-            extra_permissions=tuple(view_class.EXTRA_PERMISSIONS or ()),
-            category=category,
-            sample_paths=sample_paths,
-        ))
+        entries.append(
+            InventoryEntry(
+                name=name,
+                entry_id=entry_id,
+                pattern=pattern_str,
+                url_params=url_params,
+                view_class=view_class,
+                access=view_class.ACCESS,
+                requires_permission=requires_permission,
+                requires_activation=bool(view_class.REQUIRES_GLOBAL_PERMISSION),
+                access_permission_name=access_permission_name,
+                extra_permissions=tuple(view_class.EXTRA_PERMISSIONS or ()),
+                category=category,
+                sample_paths=sample_paths,
+            )
+        )
 
     assert {entry.category for entry in entries} <= ALL_CATEGORIES
     return entries
@@ -359,6 +379,7 @@ _INVENTORY = _build_inventory()
 # --------------------------------------------------------------------------------------
 # Public API
 # --------------------------------------------------------------------------------------
+
 
 def iter_inventory_entries(category=None):
     """Yields every InventoryEntry, one per URL pattern in inner_game_urlpatterns.
@@ -386,6 +407,7 @@ def entries_by_category(category):
 # --------------------------------------------------------------------------------------
 # Expected-access computation (plan section 8.2)
 # --------------------------------------------------------------------------------------
+
 
 def compute_access_result(entry, username, dm):
     """Delegates to the real AbstractGameView.get_access_token_for_username() (see
@@ -423,8 +445,8 @@ def expect_available(entry, username, dm):
 # --------------------------------------------------------------------------------------
 
 NAVIGABLE_ENTRIES = [
-    entry for entry in list(iter_inventory_entries(CATEGORY_PLAIN_GET))
-    + list(iter_inventory_entries(CATEGORY_PARAMETRIZED))
+    entry
+    for entry in list(iter_inventory_entries(CATEGORY_PLAIN_GET)) + list(iter_inventory_entries(CATEGORY_PARAMETRIZED))
     if entry.entry_id != "view_single_message__msg_id"  # covered separately, needs a live dm for its sample
 ]
 NAVIGABLE_ENTRY_IDS = [entry.entry_id for entry in NAVIGABLE_ENTRIES]

@@ -21,15 +21,18 @@ class AbstractActionMiddleware:
     Action middlewares are meant to be active ONLY for characters, not anonymous/master!
     """
 
-    COMPATIBLE_ACCESSES = None  # must be overriden as a list of UserAccess entries, for which that middleware can be activated
+    COMPATIBLE_ACCESSES = (
+        None  # must be overriden as a list of UserAccess entries, for which that middleware can be activated
+    )
 
     @classmethod
     def _setup_action_middleware_settings(cls, settings):
         """
         These methods must call their parent.
         """
-        settings.setdefault("middlewares",
-                            PersistentMapping())  # mapping action_name => dict of (middleware_name => data_dict) entries
+        settings.setdefault(
+            "middlewares", PersistentMapping()
+        )  # mapping action_name => dict of (middleware_name => data_dict) entries
 
         for action_name, action_middlewares in list(settings["middlewares"].items()):
             for middleware_name, data_dict in list(action_middlewares.items()):
@@ -60,23 +63,29 @@ class AbstractActionMiddleware:
 
         known_middleware_names_set = {klass.__name__ for klass in ACTION_MIDDLEWARES}
         compatible_middleware_names_set = {
-            klass.__name__ for klass in ACTION_MIDDLEWARES if self.ACCESS in klass.COMPATIBLE_ACCESSES}
+            klass.__name__ for klass in ACTION_MIDDLEWARES if self.ACCESS in klass.COMPATIBLE_ACCESSES
+        }
 
-        #print("------DATAPACKS-------->", self.__class__.__name__, all_middleware_data_packs)
+        # print("------DATAPACKS-------->", self.__class__.__name__, all_middleware_data_packs)
 
         for pack in all_middleware_data_packs:
             pack_keys = set(pack.keys())
             if strict:
-                assert pack_keys <= known_middleware_names_set, known_middleware_names_set - pack_keys  # unknown middleware (typo ?)
+                assert pack_keys <= known_middleware_names_set, (
+                    known_middleware_names_set - pack_keys
+                )  # unknown middleware (typo ?)
             assert pack_keys <= compatible_middleware_names_set, (
-            pack_keys, compatible_middleware_names_set, self.ACCESS,
-            known_middleware_names_set)  # middleware can't be used with that kind of ability ACCESS
+                pack_keys,
+                compatible_middleware_names_set,
+                self.ACCESS,
+                known_middleware_names_set,
+            )  # middleware can't be used with that kind of ability ACCESS
 
     def get_all_middleware_settings(self, middleware_class):
         """
         Returns a dict action_name => middleware settings) for that specific middleware_class.
-        
-        User-specific overrides are also returned, with keys "action_name.username" and values 
+
+        User-specific overrides are also returned, with keys "action_name.username" and values
         already "complete" (merged with base settings).
         """
         action_settings_dicts = {}
@@ -85,18 +94,19 @@ class AbstractActionMiddleware:
             if middleware_class.__name__ in tree:
                 action_settings_dicts[action_name] = tree[middleware_class.__name__]
 
-        #print("----action_settings_dicts AA --->", middleware_class.__name__, action_settings_dicts)
+        # print("----action_settings_dicts AA --->", middleware_class.__name__, action_settings_dicts)
 
         for user_id, private_data in list(self.all_private_data.items()):
             for action_name, tree in list(private_data.get("middlewares", {}).items()):
                 if middleware_class.__name__ in tree and "settings_overrides" in tree[middleware_class.__name__]:
                     user_specific_settings = {}  # NEW container, copy.copy() has bugs with persistent mappings and their ID
-                    user_specific_settings.update(action_settings_dicts[
-                                                      action_name])  # MUST exist - no user-specific overrides without a base content!
+                    user_specific_settings.update(
+                        action_settings_dicts[action_name]
+                    )  # MUST exist - no user-specific overrides without a base content!
                     user_specific_settings.update(tree[middleware_class.__name__]["settings_overrides"])  # OVERRIDES
                     action_settings_dicts[action_name + "." + user_id] = user_specific_settings
 
-        #print("----action_settings_dicts BB --->", middleware_class.__name__, action_settings_dicts)
+        # print("----action_settings_dicts BB --->", middleware_class.__name__, action_settings_dicts)
 
         return action_settings_dicts
 
@@ -106,12 +116,12 @@ class AbstractActionMiddleware:
         assert not ensure_active or self.user.is_character
         middleware_settings = {}  # NEW container
         middleware_settings.update(self.settings["middlewares"][action_name][middleware_class.__name__])
-        #print(">-------222222--", self.user.is_character, self.user.username, middleware_settings)
+        # print(">-------222222--", self.user.is_character, self.user.username, middleware_settings)
         if self.user.is_character:
             try:
-                private_data = self.get_private_middleware_data(action_name=action_name,
-                                                                middleware_class=middleware_class,
-                                                                create_if_unexisting=False)
+                private_data = self.get_private_middleware_data(
+                    action_name=action_name, middleware_class=middleware_class, create_if_unexisting=False
+                )
                 overrides = private_data.get("settings_overrides", {})
                 middleware_settings.update(overrides)
             except LookupError:
@@ -119,7 +129,8 @@ class AbstractActionMiddleware:
         if ensure_active and not middleware_settings["is_active"]:
             # most of the time we we should not deal with inactive middlewares
             raise RuntimeError(
-                _("Inactive middleware lookup in get_middleware_settings() of %s") % self.__class__.__name__)
+                _("Inactive middleware lookup in get_middleware_settings() of %s") % self.__class__.__name__
+            )
         return middleware_settings
 
     def get_all_private_middleware_data(self, middleware_class, filter_by_action_name=None):
@@ -127,7 +138,7 @@ class AbstractActionMiddleware:
         Returns a list of private middleware data dicts (those that have already
         been lazy-initialized, actually), for a specific middleware type, and
         for all "users" of that ability.
-        
+
         Use *filter_by_action_name* to restrict the result to a specific action name, too.
         """
         assert middleware_class
@@ -150,19 +161,21 @@ class AbstractActionMiddleware:
         return middleware_data[action_name][middleware_class.__name__]
 
     def has_action_middlewares_configured(self, action_name):
-        return (action_name in self.settings["middlewares"])  # middlewware could be disabled though!
+        return action_name in self.settings["middlewares"]  # middlewware could be disabled though!
 
     def is_action_middleware_activated(self, action_name, middleware_class):
         """
-        We assume a middleware is activated if it has an entry in middleware settings 
+        We assume a middleware is activated if it has an entry in middleware settings
         for that action AND its is_active flag set to True.
         """
         assert action_name
-        res = (self.user.is_character and
-               action_name in self.settings["middlewares"] and
-               middleware_class.__name__ in self.settings["middlewares"][action_name] and
-               self.settings["middlewares"][action_name][middleware_class.__name__]["is_active"])
-        #print("is_action_middleware_activated", action_name, middleware_class, res, "---------", self.settings) # FIXME REMOVE
+        res = (
+            self.user.is_character
+            and action_name in self.settings["middlewares"]
+            and middleware_class.__name__ in self.settings["middlewares"][action_name]
+            and self.settings["middlewares"][action_name][middleware_class.__name__]["is_active"]
+        )
+        # print("is_action_middleware_activated", action_name, middleware_class, res, "---------", self.settings) # FIXME REMOVE
         return res
 
     def _lazy_setup_private_action_middleware_data(self, action_name):
@@ -174,10 +187,11 @@ class AbstractActionMiddleware:
     def _process_action_through_middlewares(self, action_name, method, params):
         """
         The chain of middleware processing ends here, by normal execution of the
-        proper *method* callable (possibly a flattened version of thge original callback) 
+        proper *method* callable (possibly a flattened version of thge original callback)
         with the dict of arguments *params*.
         """
-        if __debug__: self.notify_event("TOP_LEVEL_PROCESS_ACTION_THROUGH_MIDDLEWARES")
+        if __debug__:
+            self.notify_event("TOP_LEVEL_PROCESS_ACTION_THROUGH_MIDDLEWARES")
         assert action_name
         return method(**params)
 
@@ -204,10 +218,12 @@ class AbstractActionMiddleware:
         BEWARE - overrides AbstractGameView stuffs!
         """
         res = super().get_game_actions_explanations()
-        for (action_name, action_data) in sorted(
-                self.GAME_ACTIONS.items()):  # sorted by IDENTIFIER order at the moment....
+        for action_name, action_data in sorted(
+            self.GAME_ACTIONS.items()
+        ):  # sorted by IDENTIFIER order at the moment....
             explanations = self.get_middleware_data_explanations(
-                action_name=action_name)  # atm, we assume that ALWAYS at least 1 middelware class is merged into hierarchy...
+                action_name=action_name
+            )  # atm, we assume that ALWAYS at least 1 middelware class is merged into hierarchy...
             if explanations:  # empty if no middlewares activated for that action_name
                 res.append((action_data["title"], explanations))
         return res
@@ -218,7 +234,7 @@ class AbstractActionMiddleware:
     @readonly_method
     def get_game_form_extra_params(self, action_name):
         """
-        Useful to auto-add utility controls in forms, 
+        Useful to auto-add utility controls in forms,
         like for money/gems payments.
         """
         assert isinstance(action_name, str)
@@ -230,19 +246,19 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
     """
     Mix-in class that manages the purchase of items/services
     by characters, in an ability.
-    
+
     If payement by gem is activated, then the concerned action callable
     must accept a *use_gems* argument (list of gem values) in input.
-    
+
     settings:
-    
+
         money_price: 115 (None if forbidden)
         gems_price: 234 (None if forbidden)
-        
+
     private_data:
-        
+
         <nothing>
-        
+
     """
 
     COMPATIBLE_ACCESSES = (UserAccess.character,)
@@ -258,7 +274,6 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
         super()._check_action_middleware_data_sanity(strict=strict)
 
         for _action_name_, settings in list(self.get_all_middleware_settings(CostlyActionMiddleware).items()):
-
             for setting in "money_price gems_price".split():
                 if settings[setting] is not None:  # None means "impossible to buy this way"
                     utilities.check_is_positive_int(settings[setting], non_zero=True)
@@ -272,7 +287,6 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
         other_instructions = super()._get_middleware_data_explanations(action_name)
 
         if self.is_action_middleware_activated(action_name, CostlyActionMiddleware):
-
             res = []
             middleware_settings = self.get_middleware_settings(action_name, CostlyActionMiddleware)
 
@@ -297,12 +311,12 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
     def _process_action_through_middlewares(self, action_name, method, params):
 
         if self.is_action_middleware_activated(action_name, CostlyActionMiddleware):
-
             middleware_settings = self.get_middleware_settings(action_name, CostlyActionMiddleware)
 
             if not middleware_settings["gems_price"] and not middleware_settings["money_price"]:
-                self.logger.critical("Nasty costly action middleware misconfiguration for %s/%s", action_name,
-                                     method.__name__)
+                self.logger.critical(
+                    "Nasty costly action middleware misconfiguration for %s/%s", action_name, method.__name__
+                )
                 pass  # too bad misconfiguration, we let full action to that ability...
             else:
                 use_gems = params.get("use_gems", ())
@@ -311,22 +325,27 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                 if middleware_settings["gems_price"] and "use_gems" not in params:
                     self.logger.critical(
                         "Action %s was configured to be payable by gems, but no input field is available for this : %r",
-                        action_name, params)
+                        action_name,
+                        params,
+                    )
                 if not middleware_settings["gems_price"] and use_gems:
                     self.logger.critical(
                         "Action %s was configured to be NOT payable by gems, but gems were sent via input field",
-                        action_name)
+                        action_name,
+                    )
                     use_gems = ()
 
                 if use_gems or not middleware_settings["money_price"]:
                     gems_price = middleware_settings["gems_price"]
                     self._pay_with_gems(gems_price, use_gems)
-                    self.log_game_event(gettext_noop(
-                        "A payment of %(cost)s¤ was issued with gems %(gems_list)s for service '%(service)s'"),
-                                        PersistentMapping(cost=gems_price, service=action_name,
-                                                          gems_list=str(use_gems)),
-                                        url=None,
-                                        visible_by=[self.user.username])
+                    self.log_game_event(
+                        gettext_noop(
+                            "A payment of %(cost)s¤ was issued with gems %(gems_list)s for service '%(service)s'"
+                        ),
+                        PersistentMapping(cost=gems_price, service=action_name, gems_list=str(use_gems)),
+                        url=None,
+                        visible_by=[self.user.username],
+                    )
 
                 else:
                     money_price = middleware_settings["money_price"]
@@ -336,34 +355,38 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                         gettext_noop("A payment of %(cost)s¤ was issued with money, for service '%(service)s'"),
                         PersistentMapping(cost=money_price, service=action_name),
                         url=None,
-                        visible_by=[self.user.username])
+                        visible_by=[self.user.username],
+                    )
 
-        return super()._process_action_through_middlewares(action_name=action_name,
-                                                                                       method=method, params=params)
+        return super()._process_action_through_middlewares(action_name=action_name, method=method, params=params)
 
     def _pay_with_gems(self, gems_price, gems_list):
         assert gems_price
         gems_values = [i[0] for i in gems_list] if gems_list else []
 
         provided_gems_value = sum(gems_values) if gems_values else 0  # gems_list could be empty!!
-        if (provided_gems_value < gems_price):
+        if provided_gems_value < gems_price:
             raise NormalUsageError(
-                _("You need at least %(gems_price)s kashes of gems to buy this asset") % SDICT(gems_price=gems_price))
+                _("You need at least %(gems_price)s kashes of gems to buy this asset") % SDICT(gems_price=gems_price)
+            )
 
         min_gem_value = min(gems_values) if gems_values else 0  # necessarily non-empty here
         if (provided_gems_value - gems_price) >= min_gem_value:
-            raise NormalUsageError(_("You provided too many gems for the value of that asset, please top off") % SDICT(
-                gems_price=gems_price))
+            raise NormalUsageError(
+                _("You provided too many gems for the value of that asset, please top off")
+                % SDICT(gems_price=gems_price)
+            )
 
         self.debit_character_gems(gems_choices=gems_list)
 
     def _pay_with_money(self, character_properties, money_price):
         assert money_price
-        #print("PAYING WITH", money_price)
+        # print("PAYING WITH", money_price)
 
         if character_properties["account"] < money_price:
             raise NormalUsageError(
-                _("You need at least %(price)s kashes in money to buy this asset") % SDICT(price=money_price))
+                _("You need at least %(price)s kashes in money to buy this asset") % SDICT(price=money_price)
+            )
 
         character_properties["account"] -= money_price
         self.data["global_parameters"]["bank_account"] += money_price
@@ -373,7 +396,6 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
         extra_params = super()._get_game_form_extra_params(action_name=action_name)
 
         if self.is_action_middleware_activated(action_name, CostlyActionMiddleware):
-
             middleware_settings = self.get_middleware_settings(action_name, CostlyActionMiddleware)
 
             if middleware_settings["money_price"] is not None:
@@ -393,14 +415,14 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
     on a global or per-player basis.
 
     settings::
-    
+
         max_per_character: 3 (None if no limit is set)
         max_per_game: 6 (None if no limit is set)
-        
+
     private_data::
-        
+
         private_usage_count: 3
-        
+
     """
 
     COMPATIBLE_ACCESSES = (UserAccess.character,)
@@ -408,9 +430,9 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
     def _lazy_setup_private_action_middleware_data(self, action_name):
         super()._lazy_setup_private_action_middleware_data(action_name)
         if self.is_action_middleware_activated(action_name, CountLimitedActionMiddleware):
-
-            data = self.get_private_middleware_data(action_name, CountLimitedActionMiddleware,
-                                                    create_if_unexisting=True)
+            data = self.get_private_middleware_data(
+                action_name, CountLimitedActionMiddleware, create_if_unexisting=True
+            )
             if not data:
                 data.setdefault("private_usage_count", 0)
 
@@ -419,14 +441,15 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
 
         settings = self.settings
         for action_name, settings in list(self.get_all_middleware_settings(CountLimitedActionMiddleware).items()):
-
-            assert settings["max_per_character"] is not None or settings[
-                                                                    "max_per_game"] is not None  # else misconfiguration
+            assert (
+                settings["max_per_character"] is not None or settings["max_per_game"] is not None
+            )  # else misconfiguration
 
             if settings["max_per_character"] is not None:
                 utilities.check_is_positive_int(settings["max_per_character"], non_zero=True)
-                for data in self.get_all_private_middleware_data(CountLimitedActionMiddleware,
-                                                                 filter_by_action_name=action_name):
+                for data in self.get_all_private_middleware_data(
+                    CountLimitedActionMiddleware, filter_by_action_name=action_name
+                ):
                     assert data["private_usage_count"] <= settings["max_per_character"]
 
             if settings["max_per_game"] is not None:
@@ -440,7 +463,6 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
         other_instructions = super()._get_middleware_data_explanations(action_name)
 
         if self.is_action_middleware_activated(action_name, CountLimitedActionMiddleware):
-
             res = []
             middleware_settings = self.get_middleware_settings(action_name, CountLimitedActionMiddleware)
 
@@ -453,8 +475,9 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
 
             # in ANY case
             try:
-                private_data = self.get_private_middleware_data(action_name, CountLimitedActionMiddleware,
-                                                                create_if_unexisting=False)  # important
+                private_data = self.get_private_middleware_data(
+                    action_name, CountLimitedActionMiddleware, create_if_unexisting=False
+                )  # important
                 units_consumed = private_data["private_usage_count"]
             except LookupError:  # user has never used that action
                 units_consumed = 0
@@ -469,38 +492,37 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
         assert False
 
     def _get_global_usage_count(self, action_name):
-        data_dicts = self.get_all_private_middleware_data(middleware_class=CountLimitedActionMiddleware,
-                                                          filter_by_action_name=action_name)
+        data_dicts = self.get_all_private_middleware_data(
+            middleware_class=CountLimitedActionMiddleware, filter_by_action_name=action_name
+        )
         global_usage_count = sum(data["private_usage_count"] for data in data_dicts)
         return global_usage_count
 
     def _process_action_through_middlewares(self, action_name, method, params):
 
         if self.is_action_middleware_activated(action_name, CountLimitedActionMiddleware):
-
             middleware_settings = self.get_middleware_settings(action_name, CountLimitedActionMiddleware)
-            private_data = self.get_private_middleware_data(action_name,
-                                                            CountLimitedActionMiddleware)  # MUST EXIST HERE
+            private_data = self.get_private_middleware_data(
+                action_name, CountLimitedActionMiddleware
+            )  # MUST EXIST HERE
 
             if middleware_settings["max_per_game"]:  # 0 <-> None
                 if self._get_global_usage_count(action_name) >= middleware_settings["max_per_game"]:
                     raise NormalUsageError(
-                        _("The global quota (%(max_per_game)s uses) for that asset has been exceeded") % SDICT(
-                            max_per_game=middleware_settings["max_per_game"]))
+                        _("The global quota (%(max_per_game)s uses) for that asset has been exceeded")
+                        % SDICT(max_per_game=middleware_settings["max_per_game"])
+                    )
 
             if middleware_settings["max_per_character"]:  # 0 <-> None
                 if private_data["private_usage_count"] >= middleware_settings["max_per_character"]:
                     raise NormalUsageError(
-                        _("You have exceeded your quota (%(max_per_character)s uses) for that asset") % SDICT(
-                            max_per_character=middleware_settings["max_per_character"]))
+                        _("You have exceeded your quota (%(max_per_character)s uses) for that asset")
+                        % SDICT(max_per_character=middleware_settings["max_per_character"])
+                    )
 
             private_data["private_usage_count"] += 1  # important
 
-        return super()._process_action_through_middlewares(action_name=action_name,
-                                                                                             method=method,
-                                                                                             params=params)
-
-
+        return super()._process_action_through_middlewares(action_name=action_name, method=method, params=params)
 
         # No need for def _get_game_form_extra_params(self, action_name) here ATM #
 
@@ -511,14 +533,14 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
     Mix-in class that limits the use of an action per period of time.
 
     settings::
-    
+
         waiting_period_mn: 3 (None if no limit is set)
         max_uses_per_period: 2
-        
+
     private_data::
-        
+
         last_use_times: array of datetimes
-        
+
     """
 
     COMPATIBLE_ACCESSES = (UserAccess.character,)
@@ -526,7 +548,6 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
     def _lazy_setup_private_action_middleware_data(self, action_name):
         super()._lazy_setup_private_action_middleware_data(action_name)
         if self.is_action_middleware_activated(action_name, TimeLimitedActionMiddleware):
-
             data = self.get_private_middleware_data(action_name, TimeLimitedActionMiddleware, create_if_unexisting=True)
             if not data:
                 data.setdefault("last_use_times", PersistentList())
@@ -538,13 +559,13 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         now = get_utc_now()
 
         for action_name, settings in list(self.get_all_middleware_settings(TimeLimitedActionMiddleware).items()):
-
             # all these settings must be > 0 !!
             utilities.check_is_positive_float(settings["waiting_period_mn"], non_zero=True)  # beware, RELATIVE delay
             utilities.check_is_positive_float(settings["max_uses_per_period"], non_zero=True)
 
-            for data in self.get_all_private_middleware_data(TimeLimitedActionMiddleware,
-                                                             filter_by_action_name=action_name):
+            for data in self.get_all_private_middleware_data(
+                TimeLimitedActionMiddleware, filter_by_action_name=action_name
+            ):
                 last_uses = data["last_use_times"]
                 utilities.check_is_list(last_uses)
                 assert len(last_uses) <= settings["max_uses_per_period"]  # must be ensured even if setting changes!
@@ -560,24 +581,28 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         other_instructions = super()._get_middleware_data_explanations(action_name)
 
         if self.is_action_middleware_activated(action_name, TimeLimitedActionMiddleware):
-
             res = []
             middleware_settings = self.get_middleware_settings(action_name, TimeLimitedActionMiddleware)
 
-            actual_delay_mn = int(self.compute_effective_delay_s(middleware_settings[
-                                                                     "waiting_period_mn"] or 0) / 60)  # floor division, 0 is a redundant security for misconfiguration
+            actual_delay_mn = int(
+                self.compute_effective_delay_s(middleware_settings["waiting_period_mn"] or 0) / 60
+            )  # floor division, 0 is a redundant security for misconfiguration
             max_uses_per_period = middleware_settings["max_uses_per_period"] or 0  # 0 for misconfiguration protection
             res.append(
-                _("This action can be performed %(max_uses_per_period)s time(s) every %(actual_delay_mn)s minutes.") %
-                SDICT(max_uses_per_period=max_uses_per_period, actual_delay_mn=actual_delay_mn))
+                _("This action can be performed %(max_uses_per_period)s time(s) every %(actual_delay_mn)s minutes.")
+                % SDICT(max_uses_per_period=max_uses_per_period, actual_delay_mn=actual_delay_mn)
+            )
 
-            if middleware_settings["waiting_period_mn"] and middleware_settings[
-                "max_uses_per_period"]:  # in case of misconfiguration
+            if (
+                middleware_settings["waiting_period_mn"] and middleware_settings["max_uses_per_period"]
+            ):  # in case of misconfiguration
                 try:
-                    private_data = self.get_private_middleware_data(action_name, TimeLimitedActionMiddleware,
-                                                                    create_if_unexisting=False)  # important
-                    blocking_times = self._compute_purged_old_use_times(middleware_settings=middleware_settings,
-                                                                        last_use_times=private_data["last_use_times"])
+                    private_data = self.get_private_middleware_data(
+                        action_name, TimeLimitedActionMiddleware, create_if_unexisting=False
+                    )  # important
+                    blocking_times = self._compute_purged_old_use_times(
+                        middleware_settings=middleware_settings, last_use_times=private_data["last_use_times"]
+                    )
                 except LookupError:  # user has never used that action
                     blocking_times = ()
             else:
@@ -598,25 +623,26 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         Returns a copied list, with non-outdated last use dates.
         """
         threshold = self.compute_effective_remote_datetime(
-            delay_mn=-middleware_settings["waiting_period_mn"])  # FLEXIBLE TIME, but in the past here
+            delay_mn=-middleware_settings["waiting_period_mn"]
+        )  # FLEXIBLE TIME, but in the past here
         purged_old_use_times = [dt for dt in last_use_times if dt > threshold]
         return PersistentList(purged_old_use_times)
-        #res = bool(len(purged_old_use_times) < len(last_use_times))
+        # res = bool(len(purged_old_use_times) < len(last_use_times))
         ##private_data["last_use_times"] = PersistentList(purged_old_use_times)
-        #return res
+        # return res
 
     def _process_action_through_middlewares(self, action_name, method, params):
 
         if self.is_action_middleware_activated(action_name, TimeLimitedActionMiddleware):
-
             middleware_settings = self.get_middleware_settings(action_name, TimeLimitedActionMiddleware)
             private_data = self.get_private_middleware_data(action_name, TimeLimitedActionMiddleware)  # MUST EXIST
 
-            if middleware_settings["waiting_period_mn"] and middleware_settings[
-                "max_uses_per_period"]:  # in case of misconfiguration
-
+            if (
+                middleware_settings["waiting_period_mn"] and middleware_settings["max_uses_per_period"]
+            ):  # in case of misconfiguration
                 private_data["last_use_times"] = self._compute_purged_old_use_times(
-                    middleware_settings=middleware_settings, last_use_times=private_data["last_use_times"])
+                    middleware_settings=middleware_settings, last_use_times=private_data["last_use_times"]
+                )
 
                 last_use_times = private_data["last_use_times"]
                 now = get_utc_now()  # to debug
@@ -625,10 +651,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
 
             private_data["last_use_times"].append(get_utc_now())  # updated in any case
 
-        return super()._process_action_through_middlewares(action_name=action_name,
-                                                                                            method=method,
-                                                                                            params=params)
-
+        return super()._process_action_through_middlewares(action_name=action_name, method=method, params=params)
 
         # No need for def _get_game_form_extra_params(self, action_name) here ATM #
 

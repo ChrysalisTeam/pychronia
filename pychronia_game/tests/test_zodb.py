@@ -39,8 +39,8 @@ def delete_container(db, name):
     conn.close()
 
 
+HUGE_DATABASE_NAME = "huge_database.fs"
 
-HUGE_DATABASE_NAME = 'huge_database.fs'
 
 def _get_huge_db_root():
     storage = FileStorage.FileStorage(HUGE_DATABASE_NAME)
@@ -77,7 +77,7 @@ def ___test_huge_db_ghosting_system():
         size.
 
     Playing with this test shows that:
-    
+
     - contants of persistent lists and mappings are really only loaded when accessed (eg. when lookup is done on them..)
     - non persistent types (list(), dict()) are badly treated, and remain in memory even when committed to file
     """
@@ -92,8 +92,10 @@ def ___test_huge_db_ghosting_system():
 
     db, connection, root = _get_huge_db_root()
 
-    root["data"] = PersistentList(PersistentMapping({"toto": "tata"*random.randint(5000, 6000)}) for i in range(20000))
-    root["data"][0] = PersistentMapping({"toto": "tata"*5000000})  # HUGE first element
+    root["data"] = PersistentList(
+        PersistentMapping({"toto": "tata" * random.randint(5000, 6000)}) for i in range(20000)
+    )
+    root["data"][0] = PersistentMapping({"toto": "tata" * 5000000})  # HUGE first element
 
     print("We have a HUGE database filled with transient data now!")
     time.sleep(5)
@@ -141,7 +143,6 @@ def ___test_huge_db_ghosting_system():
     time.sleep(15)
 
 
-
 class TestZODB(TestCase):
     def setUp(self):
         self.db = DB(None)
@@ -180,7 +181,7 @@ class TestZODB(TestCase):
         conn = self.conn
         root = conn.root
 
-        #pprint(dir(conn))
+        # pprint(dir(conn))
 
         s1 = conn.savepoint()
 
@@ -239,9 +240,9 @@ class TestZODB(TestCase):
         """
         Here we realize that conflict errors occur only occur when concurrent modifications
         on a particular container (with specific oid) occur concurrently. Updates can still
-        be lost if a branch of the object tree is disconnected from the root while one of 
+        be lost if a branch of the object tree is disconnected from the root while one of
         its leaves gets updated.
-        
+
         Similarly, readCurrent() only protects a specific container of the object tree,
         which can still be disconnected from the root by a transaction, while its content
         is updated by another transaction.
@@ -297,7 +298,6 @@ class TestZODB(TestCase):
 
         # with readCurrent() and container update - ReadConflictError raised! #
 
-
         root.origin = PersistentList([17])
         transaction.commit()
 
@@ -346,7 +346,7 @@ class TestZODB(TestCase):
         self.assertTrue(isinstance(d.copy(), PersistentMapping))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         unittest.main()
     except SystemExit:

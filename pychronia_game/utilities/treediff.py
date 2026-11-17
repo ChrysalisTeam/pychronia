@@ -36,8 +36,9 @@ def freeze_tree(tree):
         elif isinstance(tree, collections.abc.MutableSequence):  # for LISTS
             return tuple(my_sorted(freeze_tree(v) for v in tree))  # we could optimize out call h
         else:
-            return tuple(my_sorted((k, freeze_tree(v)) for (k, v) in
-                                   tree.__dict__items()))  # for random objects, we consider the __dict__ only
+            return tuple(
+                my_sorted((k, freeze_tree(v)) for (k, v) in tree.__dict__items())
+            )  # for random objects, we consider the __dict__ only
 
 
 def _recurse_tree_diff(a, b, current_paths, final_opcodes):
@@ -115,7 +116,7 @@ def apply_tree_diff(root, opcodes):
             raise ValueError("Operation on root object can be nothing but a 'replace'")
         return opcodes[0][2]
 
-    for (op, paths, value) in opcodes:
+    for op, paths, value in opcodes:
         assert paths
         leaf = _extract_object(root, paths[:-1])
         _apply_operation(op, leaf, paths[-1], value)
@@ -130,7 +131,6 @@ if __name__ == "__main__":
     opcodes = generate_tree_diff(2, True)
     assert apply_tree_diff(2, opcodes) == True
 
-
     class TestClass:
         def __init__(self, **kwargs):
             self.__dict__.update(kwargs)
@@ -138,50 +138,38 @@ if __name__ == "__main__":
         def __eq__(self, other):
             return self.__class__ == other.__class__ and self.__dict__ == other.__dict__
 
+    a = dict(cat=True, dog=[22, 33], bird=None, stuffs=TestClass(obj="hello"), missing={1, 2, 3})
 
-    a = dict(cat=True,
-             dog=[22, 33],
-             bird=None,
-             stuffs=TestClass(obj="hello"),
-             missing={1, 2, 3})
-
-    b = dict(cat=True,
-             dog=[11, 33, 99],
-             bird=False,
-             stuffs=TestClass(obj="hello", objbis=77),
-             added=122.11)
+    b = dict(cat=True, dog=[11, 33, 99], bird=False, stuffs=TestClass(obj="hello", objbis=77), added=122.11)
 
     opcodes = generate_tree_diff(a, b)
-    #for code in opcodes: print code
+    # for code in opcodes: print code
 
     assert opcodes == [
-        ('replace', ['bird'], False),
-        ('replace', ['dog', 0], 11),
-        ('add', ['dog', 2], 99),
-        ('delete', ['missing'], None),
-        ('replace', ['stuffs', 'obj'], 'hello'),
-        ('add', ['stuffs', 'objbis'], 77),
-        ('add', ['added'], 122.11),
+        ("replace", ["bird"], False),
+        ("replace", ["dog", 0], 11),
+        ("add", ["dog", 2], 99),
+        ("delete", ["missing"], None),
+        ("replace", ["stuffs", "obj"], "hello"),
+        ("add", ["stuffs", "objbis"], 77),
+        ("add", ["added"], 122.11),
     ]
 
     new_b = apply_tree_diff(a, opcodes)
     assert new_b == b
 
-    a = [{1: 76,
-          (1, 2): False,
-          "key": {"yesh", "huu"}},
-         None,
-         TestClass(kkk=1.23, ml=1233),
-         222,
-         [111, 981], ]
+    a = [
+        {1: 76, (1, 2): False, "key": {"yesh", "huu"}},
+        None,
+        TestClass(kkk=1.23, ml=1233),
+        222,
+        [111, 981],
+    ]
 
-    b = [dict(A23=322,
-              key={233: 23.12}),
-         None,
-         [1, 2]]
+    b = [dict(A23=322, key={233: 23.12}), None, [1, 2]]
 
     opcodes = generate_tree_diff(a, b)
-    #for code in opcodes: print code
+    # for code in opcodes: print code
     assert len(opcodes) > 3 < 10
 
     new_b = apply_tree_diff(a, opcodes)
@@ -189,16 +177,14 @@ if __name__ == "__main__":
 
     # we test freeze_tree()
 
-    initial = dict(a=3,
-                   b=[[True, "hi", [8.6]]],
-                   c={1, 2, datetime(2000, 10, 7)},
-                   d=TestClass(k=None, m=22)
-                   )
+    initial = dict(a=3, b=[[True, "hi", [8.6]]], c={1, 2, datetime(2000, 10, 7)}, d=TestClass(k=None, m=22))
     final = freeze_tree(initial)
 
-    assert final == (('a', 3),
-                     ('b', (('hi', (8.6,), True),)),
-                     ('c', (1, 2, datetime(2000, 10, 7))),
-                     ('d', TestClass(k=None, m=22)))
+    assert final == (
+        ("a", 3),
+        ("b", (("hi", (8.6,), True),)),
+        ("c", (1, 2, datetime(2000, 10, 7))),
+        ("d", TestClass(k=None, m=22)),
+    )
 
     print(">> EVERYTHING OK <<")

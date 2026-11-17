@@ -34,12 +34,25 @@ def apply_baseline_tweaks(dm):
 
     dm.update_permissions(BOOSTED_PLAYER, PersistentList(dm.PERMISSIONS_REGISTRY))
 
-    msg1_id = dm.post_message(sender_email=_email(PLAIN_PLAYER), recipient_emails=[_email(BOOSTED_PLAYER)],
-                              subject="Hello", body="Hi, how are you?")
-    dm.post_message(sender_email=_email(BOOSTED_PLAYER), recipient_emails=[_email(PLAIN_PLAYER)],
-                    subject="Re: Hello", body="I'm fine, thanks!", parent_id=msg1_id)
-    dm.post_message(sender_email=_email(BOOSTED_PLAYER), recipient_emails=[EXTERNAL_CONTACT_EMAIL],
-                    subject="External note", body="Reaching out to an external contact.")
+    msg1_id = dm.post_message(
+        sender_email=_email(PLAIN_PLAYER),
+        recipient_emails=[_email(BOOSTED_PLAYER)],
+        subject="Hello",
+        body="Hi, how are you?",
+    )
+    dm.post_message(
+        sender_email=_email(BOOSTED_PLAYER),
+        recipient_emails=[_email(PLAIN_PLAYER)],
+        subject="Re: Hello",
+        body="I'm fine, thanks!",
+        parent_id=msg1_id,
+    )
+    dm.post_message(
+        sender_email=_email(BOOSTED_PLAYER),
+        recipient_emails=[EXTERNAL_CONTACT_EMAIL],
+        subject="External note",
+        body="Reaching out to an external contact.",
+    )
     dm.set_dispatched_message_state_flags(username=BOOSTED_PLAYER, msg_id=msg1_id, has_archived=True)
 
     dm.set_wiretapping_targets(PLAYER_WITH_SECRET_QUESTION, [BOOSTED_PLAYER])

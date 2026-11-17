@@ -4,32 +4,36 @@ import json
 from pychronia_game.common import *
 from django.core.exceptions import ValidationError
 
-GAMEMASTER_HINTS_FIELD = lambda: forms.CharField(label=gettext_lazy("Hints for Game Master"),
-                                                 widget=forms.Textarea(attrs={'rows': '2', 'cols': '40'}),
-                                                 required=False)
+GAMEMASTER_HINTS_FIELD = lambda: forms.CharField(
+    label=gettext_lazy("Hints for Game Master"),
+    widget=forms.Textarea(attrs={"rows": "2", "cols": "40"}),
+    required=False,
+)
 
 
 class UninstantiableFormError(Exception):
     """
-    Exception to be raised by a form constructor when 
+    Exception to be raised by a form constructor when
     the instance would be meaningless (eg. no data to choose from).
     """
+
     pass
 
 
 def autostrip_form_charfields(cls):
     """
     Marks all CharField entries of that form class as "auto-stripping", BEFORE validation.
-    
+
     Does NOT work with dynamically created fields though.
     """
     fields = [(key, value) for key, value in cls.base_fields.items() if isinstance(value, forms.CharField)]
     for field_name, field_object in fields:
+
         def get_clean_func(original_clean):
             return lambda value: original_clean(value and value.strip())
 
-        clean_func = get_clean_func(getattr(field_object, 'clean'))
-        setattr(field_object, 'clean', clean_func)  # we set it on FIELD, not FORM
+        clean_func = get_clean_func(getattr(field_object, "clean"))
+        setattr(field_object, "clean", clean_func)  # we set it on FIELD, not FORM
     return cls
 
 
@@ -37,9 +41,10 @@ class SimpleForm(forms.Form):
     """
     Simple form class with cosmetic tweaks and string stripping.
     """
+
     required_css_class = "required"
 
-    AUTOCOMPLETION_DISABLING_ATTRS = {'style': '-webkit-text-security: disc', 'autocomplete': 'off'}
+    AUTOCOMPLETION_DISABLING_ATTRS = {"style": "-webkit-text-security: disc", "autocomplete": "off"}
 
     def clean(self):
         """
@@ -68,14 +73,16 @@ class BaseAbstractGameForm(SimpleForm):
         """
 
         kwargs.setdefault("prefix", None)  # NO prefix, all forms must submit the same data names
-        kwargs.setdefault("auto_id",
-                          "id_default_%s")  # in multi-form case, this one will be used for unique "bound" form
+        kwargs.setdefault(
+            "auto_id", "id_default_%s"
+        )  # in multi-form case, this one will be used for unique "bound" form
         # no explicit label_suffix: Django's default, the translated ":", gives the French " :" spacing
 
         super().__init__(**kwargs)
 
-        self.fields[self.__class__._ability_field_name] = forms.CharField(initial=self._get_dotted_class_name(),
-                                                                          widget=forms.HiddenInput)  # appended at the end
+        self.fields[self.__class__._ability_field_name] = forms.CharField(
+            initial=self._get_dotted_class_name(), widget=forms.HiddenInput
+        )  # appended at the end
         self.target_url = ""  # by default we stay on the same page when submitting
 
         self._datamanager = datamanager
@@ -124,33 +131,34 @@ class GemPayementFormMixin(GemHandlingFormUtils):
         super().__init__(datamanager, *args, **kwargs)
 
         if datamanager.is_character():
-
             _gems = datamanager.get_character_properties()["gems"]
-            _gems_choices = list(zip(self._encode_gems(_gems),
-                                [self._gem_display(gem) for gem in _gems]))  # gem is (value, origin) here
+            _gems_choices = list(
+                zip(self._encode_gems(_gems), [self._gem_display(gem) for gem in _gems])
+            )  # gem is (value, origin) here
             _gems_choices.sort(key=lambda x: x[1])  # sort by labels
 
             if payment_by_money:
                 if payment_by_gems and _gems_choices:
-                    self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False,
-                                                                       required=False)
+                    self.fields["pay_with_money"] = forms.BooleanField(
+                        label=_("Pay with money"), initial=False, required=False
+                    )
                 else:
-                    self.fields["pay_with_money"] = forms.BooleanField(initial=True, widget=forms.HiddenInput,
-                                                                       required=True)
+                    self.fields["pay_with_money"] = forms.BooleanField(
+                        initial=True, widget=forms.HiddenInput, required=True
+                    )
 
                 assert "pay_with_money" in self.fields
 
             if payment_by_gems:
-
                 if _gems_choices:
-                    self.fields["gems_list"] = forms.MultipleChoiceField(required=False,
-                                                                         label=_("Or pay with gems"),
-                                                                         choices=_gems_choices,
-                                                                         widget=forms.SelectMultiple(
-                                                                             attrs={"class": "multichecklist"}))
+                    self.fields["gems_list"] = forms.MultipleChoiceField(
+                        required=False,
+                        label=_("Or pay with gems"),
+                        choices=_gems_choices,
+                        widget=forms.SelectMultiple(attrs={"class": "multichecklist"}),
+                    )
                 else:
-                    self.fields["gems_list"] = forms.MultipleChoiceField(required=False,
-                                                                         widget=forms.HiddenInput)
+                    self.fields["gems_list"] = forms.MultipleChoiceField(required=False, widget=forms.HiddenInput)
 
                 assert "gems_list" in self.fields
 
@@ -158,7 +166,7 @@ class GemPayementFormMixin(GemHandlingFormUtils):
 
         parameters = super().get_normalized_values()
 
-        #print(">>>>>>>>> get_normalized_values", self.__class__.__name__, parameters)
+        # print(">>>>>>>>> get_normalized_values", self.__class__.__name__, parameters)
 
         if "gems_list" in parameters:
             try:
@@ -171,8 +179,9 @@ class GemPayementFormMixin(GemHandlingFormUtils):
         if "pay_with_money" in parameters:
             if "use_gems" in parameters:
                 # only if we have a choice between several means of payment
-                if ((parameters["pay_with_money"] and parameters["use_gems"]) or
-                        not (parameters["pay_with_money"] or parameters["use_gems"])):
+                if (parameters["pay_with_money"] and parameters["use_gems"]) or not (
+                    parameters["pay_with_money"] or parameters["use_gems"]
+                ):
                     raise NormalUsageError(_("You must choose between money and gems, for payment."))
             del parameters["pay_with_money"]
 
@@ -187,8 +196,9 @@ assert issubclass(AbstractGameForm, forms.Form)
 
 
 class DataTableForm(AbstractGameForm):
-    previous_identifier = forms.CharField(label=gettext_lazy("Initial identifier"), widget=forms.HiddenInput(),
-                                          required=False)
+    previous_identifier = forms.CharField(
+        label=gettext_lazy("Initial identifier"), widget=forms.HiddenInput(), required=False
+    )
     identifier = forms.CharField(label=gettext_lazy("Identifier"), required=True)
 
     BAD_ID_MSG = gettext_lazy("Identifier must contain no space")
@@ -205,16 +215,16 @@ class DataTableForm(AbstractGameForm):
             assert isinstance(undeletable_identifiers, set), undeletable_identifiers
             if initial["identifier"] in undeletable_identifiers:
                 # not very secure, but DataTable protections will take care of hacking attempts
-                self.fields['identifier'].widget.attrs['readonly'] = True
+                self.fields["identifier"].widget.attrs["readonly"] = True
 
     def clean_previous_identifier(self):
-        data = self.cleaned_data['previous_identifier']
+        data = self.cleaned_data["previous_identifier"]
         if " " in data:
             raise ValidationError(self.BAD_ID_MSG)
         return data
 
     def clean_identifier(self):
-        data = self.cleaned_data['identifier']
+        data = self.cleaned_data["identifier"]
         if " " in data:
             raise ValidationError(self.BAD_ID_MSG)
         return data

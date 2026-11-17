@@ -3,8 +3,7 @@ import logging
 import setup_pychronia_env
 
 import pychronia_game.models  # initializes everything
-from pychronia_game.datamanager.datamanager_administrator import get_all_instances_metadata, \
-    retrieve_game_instance
+from pychronia_game.datamanager.datamanager_administrator import get_all_instances_metadata, retrieve_game_instance
 from django.conf import settings
 from smtplib import SMTPException
 from django.core.mail import send_mail
@@ -25,7 +24,6 @@ Le Portail Anthropia
 
 def execute():
     for idx, metadata in enumerate(get_all_instances_metadata(), start=1):
-
         successes = 0
         errors = 0
 
@@ -38,20 +36,22 @@ def execute():
         assert metadata["status"] == "active"
 
         try:
-
             dm = retrieve_game_instance(instance_id)
 
             all_notifications = dm.get_characters_external_notifications()
             master_email = dm.get_global_parameter("master_real_email")
 
             if all_notifications:
-                logging.info("Starting notification of novelties, by emails, for players of game instance '%s'",
-                             instance_id)
+                logging.info(
+                    "Starting notification of novelties, by emails, for players of game instance '%s'", instance_id
+                )
 
             for pack in all_notifications:
                 username, real_email = pack["username"], pack["real_email"]
-                signal_new_radio_messages, signal_new_text_messages = pack["signal_new_radio_messages"], pack[
-                    "signal_new_text_messages"]
+                signal_new_radio_messages, signal_new_text_messages = (
+                    pack["signal_new_radio_messages"],
+                    pack["signal_new_text_messages"],
+                )
 
                 novelties = ""
                 if signal_new_radio_messages:
@@ -63,20 +63,22 @@ def execute():
                     continue  # no news for the player
 
                 assert novelties
-                content_dict = dict(username=username,
-                                    novelties=novelties)
+                content_dict = dict(username=username, novelties=novelties)
                 message = TEMPLATE % content_dict
 
-                params = dict(subject=SUBJECT,
-                              message=message,
-                              from_email=settings.SERVER_EMAIL,
-                              recipient_list=[real_email] + ([master_email] if master_email else []),
-                              fail_silently=False)
+                params = dict(
+                    subject=SUBJECT,
+                    message=message,
+                    from_email=settings.SERVER_EMAIL,
+                    recipient_list=[real_email] + ([master_email] if master_email else []),
+                    fail_silently=False,
+                )
 
                 try:
                     logging.info(
                         """Sending novelty notification from '%(from_email)s' to %(recipient_list)r : "%(subject)s"\n%(message)s""",
-                        params)
+                        params,
+                    )
                     send_mail(**params)
                 except (SMTPException, OSError):
                     logging.error("Couldn't send external notification email to %s", real_email, exc_info=True)
@@ -86,8 +88,11 @@ def execute():
                     successes += 1
 
         except Exception:
-            logging.critical("Pathological error during external notifications processing on game instance '%s'",
-                             instance_id, exc_info=True)
+            logging.critical(
+                "Pathological error during external notifications processing on game instance '%s'",
+                instance_id,
+                exc_info=True,
+            )
 
     return (idx, successes, errors)
 

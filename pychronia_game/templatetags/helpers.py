@@ -1,9 +1,18 @@
 import re, logging, random, json
 
-from pychronia_game.utilities import (mediaplayers, autolinker,
-                                      rst_directives, is_absolute_url)  # important to register RST extensions
-from pychronia_game.common import exception_swallower, game_file_url as real_game_file_url, determine_asset_url, \
-    game_view_url, utc_to_local
+from pychronia_game.utilities import (
+    mediaplayers,
+    autolinker,
+    rst_directives,
+    is_absolute_url,
+)  # important to register RST extensions
+from pychronia_game.common import (
+    exception_swallower,
+    game_file_url as real_game_file_url,
+    determine_asset_url,
+    game_view_url,
+    utc_to_local,
+)
 
 import django.template
 from django.template.defaulttags import url as default_url_tag
@@ -33,11 +42,11 @@ def _try_generating_thumbnail_url(rel_path, alias=None):
     Falls back to original fail url if thumbnail generation fails, or if no alias is provided.
     """
     if alias:
-        #print(">>>>>>>>> WE _try_generating_thumbnail_url", rel_path, "alias=", alias)
+        # print(">>>>>>>>> WE _try_generating_thumbnail_url", rel_path, "alias=", alias)
         try:
             thumb = get_game_thumbnailer(rel_path)[alias]  # we enforce the GAME_FILES storage here!
             res = thumb.url
-            #print(">>>>>>>>> _try_generating_thumbnail_url GAVE", res)
+            # print(">>>>>>>>> _try_generating_thumbnail_url GAVE", res)
             return res
         except Exception as e:
             logging.warning("Error generating game_file_img %s (alias=%s): %r", rel_path, alias, e)
@@ -65,7 +74,7 @@ def game_view_url_tag(parser, token):
     """
     Only works if a "game_instance_id" and "game_username" template variables are available (use request processors for that).
     """
-    #print("PARSING IN GAMLEURL", token.contents, "\n")
+    # print("PARSING IN GAMLEURL", token.contents, "\n")
     redirector = False
     content = token.contents
 
@@ -76,8 +85,10 @@ def game_view_url_tag(parser, token):
     sep = " as "
     parts = content.rsplit(sep, 1)  # beware of alternate form of url tag
     from pychronia_game.authentication import TEMP_URL_USERNAME  # FIXME - move that to a better place
+
     new_content = parts[0] + " game_instance_id=game_instance_id game_username=%s" % (
-    "game_username" if not redirector else "'%s'" % TEMP_URL_USERNAME)
+        "game_username" if not redirector else "'%s'" % TEMP_URL_USERNAME
+    )
     if len(parts) > 1:
         assert len(parts) == 2
         new_content += sep + parts[1]
@@ -136,6 +147,7 @@ def make_color_readable_on_parchment(color):
     are returned unchanged.
     """
     from PIL import ImageColor
+
     try:
         rgb = ImageColor.getrgb(color)[:3]
     except (ValueError, AttributeError):
@@ -167,7 +179,7 @@ def usercolor(context, username_or_email):
     """
     color = None
     with exception_swallower():
-        request = context.get('request')
+        request = context.get("request")
         if "@" in username_or_email:
             username = request.datamanager.get_character_or_none_from_email(username_or_email)
         else:
@@ -180,7 +192,8 @@ def _generate_game_file_links(rst_content, datamanager):
     """
     Generates file urls ; tag must be in the form [ GAME_FILE_URL "images/emblems/auction_logo_rounded.png" ]
     """
-    if __debug__: datamanager.notify_event("GENERATE_GAME_FILE_LINKS")
+    if __debug__:
+        datamanager.notify_event("GENERATE_GAME_FILE_LINKS")
     regex = r"""\[\s*GAME_FILE_URL\s*('|")?(?P<path>.+?)('|")?\s*]"""
 
     def _replacer(match_obj):
@@ -195,7 +208,8 @@ def _generate_game_image_thumbnails(rst_content, datamanager):
     """
     Generates urls of thumbnails ; tag must be in the form [ GAME_THUMBNAIL_URL "images/emblems/auction_logo_rounded.png" "default" ]
     """
-    if __debug__: datamanager.notify_event("GENERATE_GAME_IMAGE_THUMBNAILS")
+    if __debug__:
+        datamanager.notify_event("GENERATE_GAME_IMAGE_THUMBNAILS")
     regex = r"""\[\s*GAME_THUMBNAIL_URL\s*('|")(?P<path>.+?)('|")\s*('|")(?P<alias>.+)('|")\s*]"""
 
     def _replacer(match_obj):
@@ -211,9 +225,11 @@ def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
     """
     Replaces identified keywords by links to corresponding encyclopedia pages.
     """
-    if __debug__: datamanager.notify_event("GENERATE_ENCYCLOPEDIA_LINKS")
-    keywords_mapping = datamanager.get_encyclopedia_keywords_mapping(excluded_link=excluded_link,
-                                                                     only_primary_keywords=True)
+    if __debug__:
+        datamanager.notify_event("GENERATE_ENCYCLOPEDIA_LINKS")
+    keywords_mapping = datamanager.get_encyclopedia_keywords_mapping(
+        excluded_link=excluded_link, only_primary_keywords=True
+    )
 
     def encyclopedia_link_attr_generator(match):
         matched_str = match.group(0)
@@ -226,8 +242,9 @@ def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
     regex = autolinker.join_regular_expressions_as_disjunction(list(keywords_mapping.keys()), as_words=True)
     ##print(">>>>>>>> REGEX", repr(regex))
     if regex:
-        html_res = autolinker.generate_links(html_snippet, regex=regex,
-                                             link_attr_generator=encyclopedia_link_attr_generator)
+        html_res = autolinker.generate_links(
+            html_snippet, regex=regex, link_attr_generator=encyclopedia_link_attr_generator
+        )
     else:
         html_res = html_snippet  # no changes
     return html_res
@@ -240,7 +257,8 @@ def _generate_messaging_links(html_snippet, datamanager):
 
     ATM we also generate links for current user, but it's not a problem.
     """
-    if __debug__: datamanager.notify_event("GENERATE_MESSAGING_LINKS")
+    if __debug__:
+        datamanager.notify_event("GENERATE_MESSAGING_LINKS")
 
     def email_link_attr_generator(match):
         matched_str = match.group(0)
@@ -259,7 +277,8 @@ def _generate_site_links(html_snippet, datamanager):
 
     Escape this tag with ``verbatim text`` form, if it's first processed by restructuredtext, else smart-quotes will break this GAME_PAGE_LINK tag.
     """
-    if __debug__: datamanager.notify_event("GENERATE_SITE_LINKS")
+    if __debug__:
+        datamanager.notify_event("GENERATE_SITE_LINKS")
 
     def site_link_attr_generator(match):
         matched_str = match.group("view")
@@ -284,17 +303,16 @@ DOCUTILS_RENDERER_SETTINGS_DEFAULTS = {
     "doctitle_xform": False,
     # we also disable the promotion of lone subsection title to a subtitle:
     "sectsubtitle_xform": False,
-    'file_insertion_enabled': False,  # SECURITY MEASURE (file hacking)
-    'raw_enabled': False,  # SECURITY MEASURE (script tag)
-    'report_level': 2,  # report warnings and above by default, in advanced_restructuredtext()
+    "file_insertion_enabled": False,  # SECURITY MEASURE (file hacking)
+    "raw_enabled": False,  # SECURITY MEASURE (script tag)
+    "report_level": 2,  # report warnings and above by default, in advanced_restructuredtext()
 }
 
 
-def advanced_restructuredtext(value,
-                              initial_header_level=None,
-                              report_level=None,
-                              warning_stream=None):  # sys.stderr by default
-    '''
+def advanced_restructuredtext(
+    value, initial_header_level=None, report_level=None, warning_stream=None
+):  # sys.stderr by default
+    """
     *value* is the text to parse as restructuredtext.
 
     initial-header-level
@@ -306,23 +324,28 @@ def advanced_restructuredtext(value,
         Report system messages at or higher than <level> -
         "info" or "1", "warning"/"2" (default), "error"/"3",
         "severe"/"4", "none"/"5" (ONLY INTEGERS WORK ATM).
-    '''
+    """
     from django import template
     from django.conf import settings
     from django.utils.encoding import smart_str, force_str
+
     assert initial_header_level is None or isinstance(initial_header_level, int)
-    assert report_level is None or isinstance(report_level, int)  ### NO, TOO RECENT or report_level in "info warning error severe none".split()
+    assert report_level is None or isinstance(
+        report_level, int
+    )  ### NO, TOO RECENT or report_level in "info warning error severe none".split()
     try:
         from docutils.core import publish_parts
     except ImportError:
         if settings.DEBUG:
             raise template.TemplateSyntaxError(
-                "Error in 'restructuredtext' filter: The Python docutils library isn't installed.")
+                "Error in 'restructuredtext' filter: The Python docutils library isn't installed."
+            )
         return force_str(value)
     else:
         docutils_settings = DOCUTILS_RENDERER_SETTINGS_DEFAULTS.copy()
-        _docutils_overrides = getattr(settings, "CMSPLUGIN_RST_SETTINGS_OVERRIDES",
-                                      {}).copy()  # VERY IMPORTANT - copy it!!!
+        _docutils_overrides = getattr(
+            settings, "CMSPLUGIN_RST_SETTINGS_OVERRIDES", {}
+        ).copy()  # VERY IMPORTANT - copy it!!!
         docutils_settings.update(_docutils_overrides)
         if initial_header_level is not None:
             docutils_settings.update(initial_header_level=initial_header_level)
@@ -332,13 +355,14 @@ def advanced_restructuredtext(value,
         if warning_stream:
             docutils_settings.update(warning_stream=warning_stream)
 
-        #print(">><<", docutils_settings, value, file=sys.stderr)
+        # print(">><<", docutils_settings, value, file=sys.stderr)
         parts = publish_parts(source=smart_str(value), writer_name="html4css1", settings_overrides=docutils_settings)
         return mark_safe(force_str(parts["html_body"]))
 
 
-def format_enriched_text(datamanager, content, initial_header_level=None, report_level=None, excluded_link=None,
-                         text_format=None):
+def format_enriched_text(
+    datamanager, content, initial_header_level=None, report_level=None, excluded_link=None, text_format=None
+):
     """
     Converts RST content to HTML and adds encyclopedia links.
 
@@ -346,7 +370,7 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
     """
     assert isinstance(content, str)
 
-    #print(">>>format_enriched_text", content[:30], "----", excluded_link)
+    # print(">>>format_enriched_text", content[:30], "----", excluded_link)
 
     # we leave RestructuredRext as the DEFAULT format for game contents
     text_format = text_format or datamanager.AVAILABLE_TEXT_FORMATS.rst
@@ -364,7 +388,7 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
         assert text_format in (None, datamanager.AVAILABLE_TEXT_FORMATS.raw)
         html = linebreaks(content)  # only adds <p> and <br> tags
 
-    #print(">>>format_enriched_text>>>>>", html)
+    # print(">>>format_enriched_text>>>>>", html)
     with exception_swallower():
         html = _generate_encyclopedia_links(html, datamanager, excluded_link=excluded_link)
     with exception_swallower():
@@ -399,23 +423,29 @@ def rich_text(context, content, initial_header_level=None, report_level=None, ex
 
     Note that "excluded_link" is the ID of the excluded article.
     """
-    request = context.get('request')
+    request = context.get("request")
 
     # BEWARE - by default we DO NOT display RST syntax errors!
     report_level = report_level if report_level is not None else 5
 
-    extra_params = dict(initial_header_level=initial_header_level,
-                        report_level=report_level,
-                        excluded_link=excluded_link,
-                        text_format=text_format )
+    extra_params = dict(
+        initial_header_level=initial_header_level,
+        report_level=report_level,
+        excluded_link=excluded_link,
+        text_format=text_format,
+    )
 
     # NOOOO too slow: content_hash = hashlib.md5(content.encode("ascii", "replace")).hexdigest()[:30]
     content_hash = abs(hash(content))
 
     # IMPORTANT : datamanager.username may change site links and the likes, in the future!
     fragment_cache_key = "%s_%s_%s_%s" % (
-    content_hash, len(content), request.datamanager.username, "_".join(str(x[1]) for x in sorted(extra_params.items())))
-    #print("Using rich_text fragment_cache_key:", fragment_cache_key)
+        content_hash,
+        len(content),
+        request.datamanager.username,
+        "_".join(str(x[1]) for x in sorted(extra_params.items())),
+    )
+    # print("Using rich_text fragment_cache_key:", fragment_cache_key)
 
     # TODO - use get_or_set() when using Django>1.9
     # BEWARE - because of this caching, new encyclopedia links will take some time to appear in rich texts
@@ -426,26 +456,30 @@ def rich_text(context, content, initial_header_level=None, report_level=None, ex
 
     content_id = str(random.randint(1, 10000000000))
 
-    html = render_to_string('utilities/rich_text.html', {'content_id': content_id,
-                                                         'source': content,
-                                                         'result': result,
-                                                         'display_admin_tips': request.datamanager.should_display_admin_tips()})
+    html = render_to_string(
+        "utilities/rich_text.html",
+        {
+            "content_id": content_id,
+            "source": content,
+            "result": result,
+            "display_admin_tips": request.datamanager.should_display_admin_tips(),
+        },
+    )
     return html
 
 
 @register.simple_tag
-def fontawesome_icon(icon, large=True, fixed=False, spin=False, li=False,
-                     rotate=False, border=False, color=False):
+def fontawesome_icon(icon, large=True, fixed=False, spin=False, li=False, rotate=False, border=False, color=False):
     res = '<i class="{prefix} {prefix}-{icon}{large}{fixed}{spin}{li}{rotate}{border}"{color}></i>'.format(
-        prefix='fa',
+        prefix="fa",
         icon=icon,
-        large=' fa-lg' if large is True else '',
-        fixed=' fa-fw' if fixed else '',
-        spin=' fa-spin' if spin else '',
-        li=' fa-li' if li else '',
-        rotate=' fa-rotate-%s' % str(rotate) if rotate else '',
-        border=' fa-border' if border else '',
-        color='style="color:%s;"' % color if color else ''
+        large=" fa-lg" if large is True else "",
+        fixed=" fa-fw" if fixed else "",
+        spin=" fa-spin" if spin else "",
+        li=" fa-li" if li else "",
+        rotate=" fa-rotate-%s" % str(rotate) if rotate else "",
+        border=" fa-border" if border else "",
+        color='style="color:%s;"' % color if color else "",
     )
 
     return mark_safe(res)
@@ -476,8 +510,9 @@ def static_page(context, article_name, initial_header_level=None):
 
 
 def _do_corrupt_string(value):
-    return ''.join(['&#%s;<span class="obfusk">%s</span>' % (ord(char), random.randint(10, 100)) for char in
-                    value])  # html entities
+    return "".join(
+        ['&#%s;<span class="obfusk">%s</span>' % (ord(char), random.randint(10, 100)) for char in value]
+    )  # html entities
 
 
 @stringfilter
@@ -485,7 +520,7 @@ def corrupt_string(value):
     return mark_safe(_do_corrupt_string(value))
 
 
-register.filter('corrupt_string', corrupt_string)
+register.filter("corrupt_string", corrupt_string)
 
 ''' ???
 def threefirstletters(value):
@@ -508,7 +543,7 @@ def list_sum(value):
     return sum(value, value[0].__class__())
 
 
-register.filter('list_sum', list_sum)
+register.filter("list_sum", list_sum)
 
 
 def dict_get(value, arg):
@@ -525,7 +560,7 @@ def dict_get(value, arg):
         return ""  # value evaluating to false
 
 
-register.filter('dict_get', dict_get)
+register.filter("dict_get", dict_get)
 
 
 def matrix_extract_column(value, offset):
@@ -536,7 +571,7 @@ def matrix_extract_column(value, offset):
     return [val[offset] for val in value]
 
 
-register.filter('matrix_extract_column', matrix_extract_column)
+register.filter("matrix_extract_column", matrix_extract_column)
 
 
 def list_append_to_each(value, suffix):
@@ -546,14 +581,16 @@ def list_append_to_each(value, suffix):
     return [str(val) + suffix for val in value]
 
 
-register.filter('list_append_to_each', list_append_to_each)
+register.filter("list_append_to_each", list_append_to_each)
 
-register.filter('utctolocal', utc_to_local)
+register.filter("utctolocal", utc_to_local)
 
 
 def _determine_asset_url(properties):
     return determine_asset_url(properties)
-register.filter('determine_asset_url', _determine_asset_url)
+
+
+register.filter("determine_asset_url", _determine_asset_url)
 
 
 def mediaplayer(properties, autostart="false"):
@@ -566,8 +603,10 @@ def mediaplayer(properties, autostart="false"):
     except:
         logging.error("mediaplayer filter failed", exc_info=True)
         return mark_safe("<a href=" + fileurl + ">" + fileurl + "</a>")
+
+
 mediaplayer.is_safe = True
-register.filter('mediaplayer', mediaplayer)
+register.filter("mediaplayer", mediaplayer)
 
 
 def has_permission(user, permission):
@@ -575,21 +614,25 @@ def has_permission(user, permission):
         return True
     else:
         return False
-register.filter('has_permission', has_permission)
+
+
+register.filter("has_permission", has_permission)
 
 
 def split(var, sep):
     return var.split(sep)
-register.filter('split', split)
+
+
+register.filter("split", split)
 
 
 def jsonify(object):
     if isinstance(object, QuerySet):
-        return serialize('json', object)
+        return serialize("json", object)
     return mark_safe(json.dumps(object))
 
 
-register.filter('jsonify', jsonify)
+register.filter("jsonify", jsonify)
 
 
 def has_unread_msg(ctx_msgs_list):
@@ -601,7 +644,7 @@ def has_unread_msg(ctx_msgs_list):
     return res
 
 
-register.filter('has_unread_msg', has_unread_msg)
+register.filter("has_unread_msg", has_unread_msg)
 
 
 def has_starred_msg(ctx_msgs_list):
@@ -613,7 +656,7 @@ def has_starred_msg(ctx_msgs_list):
     return res
 
 
-register.filter('has_starred_msg', has_starred_msg)
+register.filter("has_starred_msg", has_starred_msg)
 
 """
 def preformat(value):

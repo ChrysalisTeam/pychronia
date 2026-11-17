@@ -7,9 +7,13 @@ class ChessChallengeAbility(AbstractAbility):
     TITLE = gettext_lazy("Chess Challenge")
     NAME = "chess_challenge"
 
-    GAME_ACTIONS = dict(notify_chess_player_victory=dict(title=gettext_lazy("Notify victory of a chess player"),
-                                                         form_class=None,
-                                                         callback="notify_chess_player_victory"))
+    GAME_ACTIONS = dict(
+        notify_chess_player_victory=dict(
+            title=gettext_lazy("Notify victory of a chess player"),
+            form_class=None,
+            callback="notify_chess_player_victory",
+        )
+    )
 
     TEMPLATE = "abilities/chess_challenge.html"
 
@@ -29,7 +33,7 @@ class ChessChallengeAbility(AbstractAbility):
 
     def get_template_vars(self, previous_form_data=None):
         return {
-            'page_title': _("Chess Challenge"),
+            "page_title": _("Chess Challenge"),
         }
 
     @transaction_watcher
@@ -37,6 +41,8 @@ class ChessChallengeAbility(AbstractAbility):
         if self.is_master():
             self.user.add_message(_("Master, your chess victory has well been detected and ignored by the server."))
         else:
-            self.log_game_event(gettext_noop("Chess AI has been defeated by user '%(winner)s'."),
-                                PersistentMapping(winner=self.user.username),
-                                visible_by=None)  #only for gamemaster
+            self.log_game_event(
+                gettext_noop("Chess AI has been defeated by user '%(winner)s'."),
+                PersistentMapping(winner=self.user.username),
+                visible_by=None,
+            )  # only for gamemaster

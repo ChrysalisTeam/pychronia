@@ -9,9 +9,12 @@ import threading
 assert logging
 
 AllBases = tuple(reversed(datamanager_modules.MODULES_REGISTRY))  # latest classes must be first in hierarchy
-GameDataManager = type('GameDataManager', AllBases, {})
+GameDataManager = type("GameDataManager", AllBases, {})
 assert GameDataManager.__mro__[-3:] == (
-BaseDataManager, utilities.TechnicalEventsMixin, object)  # IMPORTANT - all modules must be BEFORE BaseDataManager
+    BaseDataManager,
+    utilities.TechnicalEventsMixin,
+    object,
+)  # IMPORTANT - all modules must be BEFORE BaseDataManager
 
 PROCESS_LOCK = threading.Lock()
 ZODB_INSTANCE = None
@@ -19,9 +22,11 @@ GAME_INSTANCES_MOUNT_POINT = "game_instances"
 
 GAME_STATUSES = Enum(("active", "terminated", "aborted"))
 
-GAME_INSTANCES_BACKUPS_ABSPATH = (os.path.join(config.GAME_FILES_ROOT, config.GAME_BACKUPS_PATH)
-                                  if not os.path.isabs(config.GAME_BACKUPS_PATH)
-                                  else config.GAME_BACKUPS_PATH)
+GAME_INSTANCES_BACKUPS_ABSPATH = (
+    os.path.join(config.GAME_FILES_ROOT, config.GAME_BACKUPS_PATH)
+    if not os.path.isabs(config.GAME_BACKUPS_PATH)
+    else config.GAME_BACKUPS_PATH
+)
 
 _undefined = object()
 
@@ -42,8 +47,9 @@ def _ensure_zodb_is_open():
                     local_copy.close()  # do NOT target global var ZODB_INSTANCE
                     time.sleep(0.5)  # to help daemon threads stop cleanly, just in case
                 except Exception as e:
-                    print("Problem when closing ZODB instance: %e" % e,
-                          file=sys.stderr)  # logging might already have disappeared
+                    print(
+                        "Problem when closing ZODB instance: %e" % e, file=sys.stderr
+                    )  # logging might already have disappeared
 
 
 def _get_zodb_connection():
@@ -73,6 +79,7 @@ def check_zodb_structure():
 
 
 if __debug__ and config.DEBUG and config.ZODB_RESET_ALLOWED:
+
     @zodb_transaction
     def reset_zodb_structure():
         root = _get_zodb_connection().root()
@@ -88,31 +95,35 @@ def _create_metadata_record(game_instance_id, creator_login, creator_email, game
     if creator_email is not None:
         utilities.check_is_email(creator_email)
     utcnow = get_utc_now()
-    game_metadata = PersistentMapping(instance_id=game_instance_id,
-                                      creator_login=creator_login,
-                                      creator_email=creator_email,
-                                      game_language=game_language,  # also stored in game global parameters
-                                      game_scenario=game_scenario,  # also stored in game global parameters
-                                      creation_time=utcnow,
-                                      accesses_count=0,
-                                      last_access_time=utcnow,
-                                      last_status_change_time=utcnow,
-                                      status=GAME_STATUSES.active,
-                                      maintenance_until=None)  # None or datetime here
+    game_metadata = PersistentMapping(
+        instance_id=game_instance_id,
+        creator_login=creator_login,
+        creator_email=creator_email,
+        game_language=game_language,  # also stored in game global parameters
+        game_scenario=game_scenario,  # also stored in game global parameters
+        creation_time=utcnow,
+        accesses_count=0,
+        last_access_time=utcnow,
+        last_status_change_time=utcnow,
+        status=GAME_STATUSES.active,
+        maintenance_until=None,
+    )  # None or datetime here
     return game_metadata
 
 
 @zodb_transaction
-def create_game_instance(game_instance_id,
-                         creator_login,
-                         creator_email=None,
-                         game_language=None,
-                         game_scenario=None,
-                         skip_initializations=False,
-                         skip_randomizations=False,
-                         skip_coherence_check=False,
-                         yaml_fixture=None,
-                         strict=True):
+def create_game_instance(
+    game_instance_id,
+    creator_login,
+    creator_email=None,
+    game_language=None,
+    game_scenario=None,
+    skip_initializations=False,
+    skip_randomizations=False,
+    skip_coherence_check=False,
+    yaml_fixture=None,
+    strict=True,
+):
     """
     Returns nothing. Raises UsageError if already existing game id.
 
@@ -136,28 +147,30 @@ def create_game_instance(game_instance_id,
         raise AbnormalUsageError(_("Already existing instance"))
 
     try:
-
-        game_metadata = _create_metadata_record(game_instance_id=game_instance_id,
-                                                creator_login=creator_login,
-                                                creator_email=creator_email,
-                                                game_language=game_language,
-                                                game_scenario=game_scenario)
+        game_metadata = _create_metadata_record(
+            game_instance_id=game_instance_id,
+            creator_login=creator_login,
+            creator_email=creator_email,
+            game_language=game_language,
+            game_scenario=game_scenario,
+        )
         game_data = PersistentMapping()
-        game_root = PersistentMapping(metadata=game_metadata,
-                                      data=game_data)
+        game_root = PersistentMapping(metadata=game_metadata, data=game_data)
 
-        dm = GameDataManager(game_instance_id=game_instance_id,
-                             game_root=game_data,
-                             request=None)  # no user messages possible here
+        dm = GameDataManager(
+            game_instance_id=game_instance_id, game_root=game_data, request=None
+        )  # no user messages possible here
 
         assert not dm.is_initialized
-        dm.reset_game_data(strict=strict,
-                           game_language=game_language,
-                           game_scenario=game_scenario,
-                           skip_randomizations=skip_randomizations,
-                           skip_initializations=skip_initializations,
-                           skip_coherence_check=skip_coherence_check,
-                           yaml_fixture=yaml_fixture)
+        dm.reset_game_data(
+            strict=strict,
+            game_language=game_language,
+            game_scenario=game_scenario,
+            skip_randomizations=skip_randomizations,
+            skip_initializations=skip_initializations,
+            skip_coherence_check=skip_coherence_check,
+            yaml_fixture=yaml_fixture,
+        )
         assert dm.is_initialized
 
         game_instances[game_instance_id] = game_root  # NOW only we link data to ZODB
@@ -220,9 +233,9 @@ def delete_game_instance(game_instance_id):
 @zodb_transaction
 def _fetch_available_game_data(game_instance_id, metadata_checker, update_timestamp):
     """
-    The callable metadata_checker, if provided, is called with a copy of instance metadata, 
+    The callable metadata_checker, if provided, is called with a copy of instance metadata,
     and may raise errors or return false to forbid creation of datamanager instance.
-    
+
     Parameter "update_timestamp" is a boolean.
     """
 
@@ -248,7 +261,7 @@ def _fetch_available_game_data(game_instance_id, metadata_checker, update_timest
 
 
 def _game_is_maintenance(game_metadata):
-    return (game_metadata["maintenance_until"] and game_metadata["maintenance_until"] > get_utc_now())
+    return game_metadata["maintenance_until"] and game_metadata["maintenance_until"] > get_utc_now()
 
 
 def check_game_not_in_maintenance(game_instance_id, game_metadata):
@@ -264,17 +277,16 @@ def check_game_is_in_maintenance(game_instance_id, game_metadata):
 
 
 # NO transaction management here!
-def retrieve_game_instance(game_instance_id, request=None, metadata_checker=check_game_not_in_maintenance,
-                           update_timestamp=False):
+def retrieve_game_instance(
+    game_instance_id, request=None, metadata_checker=check_game_not_in_maintenance, update_timestamp=False
+):
     """
     If metadata_checker is None, checks on instance availability are skipped.
     """
-    game_data = _fetch_available_game_data(game_instance_id=game_instance_id,
-                                           metadata_checker=metadata_checker,
-                                           update_timestamp=update_timestamp)
-    dm = GameDataManager(game_instance_id=game_instance_id,
-                         game_root=game_data,
-                         request=request)
+    game_data = _fetch_available_game_data(
+        game_instance_id=game_instance_id, metadata_checker=metadata_checker, update_timestamp=update_timestamp
+    )
+    dm = GameDataManager(game_instance_id=game_instance_id, game_root=game_data, request=request)
     return dm
 
 
@@ -291,8 +303,10 @@ def change_game_instance_status(game_instance_id, new_status=None, maintenance_u
 
     if new_status:
         if new_status not in GAME_STATUSES:
-            raise AbnormalUsageError(_("Wrong new game status %(status)s for %(instance_id)r") % dict(status=new_status,
-                                                                                                      instance_id=game_instance_id))
+            raise AbnormalUsageError(
+                _("Wrong new game status %(status)s for %(instance_id)r")
+                % dict(status=new_status, instance_id=game_instance_id)
+            )
         game_metadata["status"] = new_status
 
     if maintenance_until is not _undefined:
@@ -308,8 +322,9 @@ def get_all_instances_metadata():
     Returns a list of copies of metadata dicts.
     """
     instances = iter(_get_game_instances_mapping().values())
-    res = sorted((inst["metadata"].copy() for inst in instances), key=lambda x: x["creation_time"],
-                 reverse=True)  # metadata contains instance id too
+    res = sorted(
+        (inst["metadata"].copy() for inst in instances), key=lambda x: x["creation_time"], reverse=True
+    )  # metadata contains instance id too
     return res
 
 
@@ -350,12 +365,13 @@ def backup_game_instance_data(game_instance_id, comment=None):
     if not game_root:
         raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
 
-    yaml_str = utilities.dump_data_tree_to_yaml(game_root["data"],
-                                                      convert_types=True,  # should be output in UTF8
-                                                      default_style="|")  # will output very long lines
+    yaml_str = utilities.dump_data_tree_to_yaml(
+        game_root["data"],
+        convert_types=True,  # should be output in UTF8
+        default_style="|",
+    )  # will output very long lines
 
-    basename = "backup_" + game_instance_id + "_" + get_utc_now().strftime(
-        "%Y%m%d_%H%M%S") + "_" + comment + ".yaml"
+    basename = "backup_" + game_instance_id + "_" + get_utc_now().strftime("%Y%m%d_%H%M%S") + "_" + comment + ".yaml"
     wanted_folder = _ensure_instance_backup_folder(game_instance_id)
     final_file_path = os.path.join(wanted_folder, basename)
 

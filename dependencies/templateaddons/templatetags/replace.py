@@ -10,17 +10,17 @@ register = template.Library()
 
 
 class ReplaceNode(template.Node):
-    def __init__(self, source, search='', replacement='', use_regexp=True):
+    def __init__(self, source, search="", replacement="", use_regexp=True):
         self.nodelist = source
         self.search = search
         self.replacement = replacement
         self.use_regexp = use_regexp
-    
+
     def render(self, context):
         search = parse_tag_argument(self.search, context)
         replacement = parse_tag_argument(self.replacement, context)
         use_regexp = parse_tag_argument(self.use_regexp, context)
-        
+
         source = self.nodelist.render(context)
         if not search:
             output = source
@@ -29,26 +29,27 @@ class ReplaceNode(template.Node):
                 search = re.escape(search)
             pattern = re.compile(search, re.DOTALL | re.UNICODE)
             output = re.sub(pattern, replacement, source)
-        
+
         return output
 
 
 def replace_tag(parser, token):
     default_arguments = {}
-    default_arguments['search'] = ''
-    default_arguments['replacement'] = ''
-    default_arguments['use_regexp'] = True
+    default_arguments["search"] = ""
+    default_arguments["replacement"] = ""
+    default_arguments["use_regexp"] = True
     arguments = decode_tag_arguments(token, default_arguments)
-    
-    source = parser.parse(('endreplace',))
+
+    source = parser.parse(("endreplace",))
     parser.delete_first_token()
-    
+
     return ReplaceNode(source, **arguments)
 
-register.tag('replace', replace_tag)
+
+register.tag("replace", replace_tag)
 
 
-@register.filter(name='escape_regexp')
+@register.filter(name="escape_regexp")
 @stringfilter
 def escape_regexp(value):
     return re.escape(value)

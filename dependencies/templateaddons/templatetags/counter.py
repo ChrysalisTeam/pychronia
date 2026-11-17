@@ -16,25 +16,24 @@ class Counter:
 
 
 class CounterNode(template.Node):
-    def __init__(self, name='"default"', start=0, step=1, ascending=True, 
-                 silent=False, assign=False):
+    def __init__(self, name='"default"', start=0, step=1, ascending=True, silent=False, assign=False):
         self.name = name
         self.start = start
         self.step = step
         self.ascending = ascending
         self.silent = silent
         self.assign = assign
-    
+
     def render(self, context):
         # global context initialization
         if TEMPLATEADDONS_COUNTERS_VARIABLE not in context:
             context[TEMPLATEADDONS_COUNTERS_VARIABLE] = {}
         counters = context[TEMPLATEADDONS_COUNTERS_VARIABLE]
-        
+
         name = parse_tag_argument(self.name, context)
         silent = parse_tag_argument(self.silent, context)
         assign = parse_tag_argument(self.assign, context)
-        
+
         if name not in counters:
             start = parse_tag_argument(self.start, context)
             step = parse_tag_argument(self.step, context)
@@ -45,29 +44,30 @@ class CounterNode(template.Node):
                 counters[name].value += counters[name].step
             else:
                 counters[name].value -= counters[name].step
-        
+
         context[TEMPLATEADDONS_COUNTERS_VARIABLE] = counters
-        
+
         if assign:
             context[assign] = counters[name].value
-        
+
         if self.silent:
-            return ''
+            return ""
         else:
-            return '%d' % counters[name].value
+            return "%d" % counters[name].value
 
 
 def counter(parser, token):
     default_arguments = {}
-    default_arguments['name'] = '"default"'
-    default_arguments['start'] = 0
-    default_arguments['step'] = 1
-    default_arguments['ascending'] = True
-    default_arguments['silent'] = False
-    default_arguments['assign'] = '""'
-    
+    default_arguments["name"] = '"default"'
+    default_arguments["start"] = 0
+    default_arguments["step"] = 1
+    default_arguments["ascending"] = True
+    default_arguments["silent"] = False
+    default_arguments["assign"] = '""'
+
     arguments = decode_tag_arguments(token, default_arguments)
-    
+
     return CounterNode(**arguments)
 
-register.tag('counter', counter)
+
+register.tag("counter", counter)

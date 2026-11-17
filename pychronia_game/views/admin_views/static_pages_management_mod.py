@@ -11,21 +11,26 @@ from django import forms
 class StaticPageForm(DataTableForm):
     title = forms.CharField(label=gettext_lazy("Title"), required=False)
 
-    categories = Select2TagsField(label=gettext_lazy("Categories"), required=False,
-                                  choice_tags=sorted({StaticPages.CONTENT_CATEGORY, StaticPages.HELP_CATEGORY,
-                                                          Encyclopedia.ENCYCLOPEDIA_CATEGORY}))
+    categories = Select2TagsField(
+        label=gettext_lazy("Categories"),
+        required=False,
+        choice_tags=sorted(
+            {StaticPages.CONTENT_CATEGORY, StaticPages.HELP_CATEGORY, Encyclopedia.ENCYCLOPEDIA_CATEGORY}
+        ),
+    )
 
     keywords = Select2TagsField(label=gettext_lazy("Keywords"), required=False)
 
     clue_code = forms.CharField(label=gettext_lazy("Clue code (lowercase slug)"), required=False)
 
-    content = forms.CharField(label=gettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols': '40'}),
-                              required=True)
+    content = forms.CharField(
+        label=gettext_lazy("Content"), widget=forms.Textarea(attrs={"rows": "8", "cols": "40"}), required=True
+    )
 
     gamemaster_hints = GAMEMASTER_HINTS_FIELD()
 
     def clean_clue_code(self):
-        data = self.cleaned_data['clue_code']
+        data = self.cleaned_data["clue_code"]
         if " " in data or "\n" in data or data.lower() != data:
             raise ValidationError(_("Clue code must be a lowercase spaceless slug"))
         return data
@@ -39,12 +44,10 @@ class StaticPagesManagement(AbstractDataTableManagement):
     TITLE = gettext_lazy("Edit Static Pages")
     NAME = "static_pages_management"
 
-    GAME_ACTIONS = dict(submit_item=dict(title=gettext_lazy("Submit a static page"),
-                                         form_class=StaticPageForm,
-                                         callback="submit_item"),
-                        delete_item=dict(title=gettext_lazy("Delete a static page"),
-                                         form_class=None,
-                                         callback="delete_item"))
+    GAME_ACTIONS = dict(
+        submit_item=dict(title=gettext_lazy("Submit a static page"), form_class=StaticPageForm, callback="submit_item"),
+        delete_item=dict(title=gettext_lazy("Delete a static page"), form_class=None, callback="delete_item"),
+    )
 
     TEMPLATE = "administration/static_pages_management.html"
 
@@ -52,7 +55,7 @@ class StaticPagesManagement(AbstractDataTableManagement):
         return self.datamanager.static_pages
 
 
-''' USELESS
+""" USELESS
 
     def _________process_html_post_data(self):
         assert not utilities.is_ajax_request(self.request)
@@ -106,4 +109,4 @@ class StaticPagesManagement(AbstractDataTableManagement):
          #                                        hide_on_success=False,
          #                                         previous_form_data=None)
         return dict(form=form)
-'''
+"""

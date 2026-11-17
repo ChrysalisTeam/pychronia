@@ -91,7 +91,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         dm_logger_adapter = DynamicDatamanagerLoggerAdapter()
 
-        self._inner_logger = logging.getLogger("pychronia_game")  #FIXME
+        self._inner_logger = logging.getLogger("pychronia_game")  # FIXME
         self.logger = logging.LoggerAdapter(self._inner_logger, dm_logger_adapter)
 
         self._request = weakref.ref(request) if request else None  # if None, user notifications won't work
@@ -126,21 +126,25 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         if self.data is not None:
             # we close the ZODB connection attached to our data root
-            assert not self.connection or not self.connection._registered_objects  # else problem, pending changes created by views!
+            assert (
+                not self.connection or not self.connection._registered_objects
+            )  # else problem, pending changes created by views!
             self.data = None
         if self.connection:
             self.connection.close()
             self.connection = None
 
     @transaction_watcher(always_writable=True)  # might operate on broken data
-    def reset_game_data(self,
-                        yaml_fixture=None,  # may be a persistent mapping, or yaml files/dirs
-                        game_language=None,  # language of game CONTENT, defaults to the current one if any
-                        game_scenario=None,  # key of GAME_SCENARIOS, defaults to the current one if any
-                        skip_randomizations=False,  # randomize some values in dm.data
-                        skip_initializations=False,  # used when an already-initialized fixture is used
-                        skip_coherence_check=False,
-                        strict=False):
+    def reset_game_data(
+        self,
+        yaml_fixture=None,  # may be a persistent mapping, or yaml files/dirs
+        game_language=None,  # language of game CONTENT, defaults to the current one if any
+        game_scenario=None,  # key of GAME_SCENARIOS, defaults to the current one if any
+        skip_randomizations=False,  # randomize some values in dm.data
+        skip_initializations=False,  # used when an already-initialized fixture is used
+        skip_coherence_check=False,
+        strict=False,
+    ):
         """
         This method might raise exceptions, and leave the datamanager uninitialized.
         """
@@ -152,14 +156,12 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         _previous_global_parameters = (self.data.get("global_parameters") if self.data else None) or {}
 
         if not game_language:
-            game_language = (_previous_global_parameters.get("game_language") or
-                             config.GAME_DEFAULT_LANGUAGE)
+            game_language = _previous_global_parameters.get("game_language") or config.GAME_DEFAULT_LANGUAGE
         if game_language not in config.GAME_LANGUAGES:
             raise AbnormalUsageError(_("Unknown game language %r") % game_language)
 
         if not game_scenario:
-            game_scenario = (_previous_global_parameters.get("game_scenario") or
-                             utilities.get_default_game_scenario())
+            game_scenario = _previous_global_parameters.get("game_scenario") or utilities.get_default_game_scenario()
         game_scenarios = utilities.get_game_scenarios()
         if game_scenario not in game_scenarios:
             raise AbnormalUsageError(_("Unknown game scenario %r") % game_scenario)
@@ -168,9 +170,12 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         if not yaml_fixture:
             yaml_fixture = scenario_data_path  # might be a list of files/dirs
 
-        self.logger.info("Resetting game data for instance '%s' with fixture '%s'",
-                         self.game_instance_id, yaml_fixture if isinstance(yaml_fixture, str) else "<data-tree>")
-        #print "RESETTING DATABASE !"
+        self.logger.info(
+            "Resetting game data for instance '%s' with fixture '%s'",
+            self.game_instance_id,
+            yaml_fixture if isinstance(yaml_fixture, str) else "<data-tree>",
+        )
+        # print "RESETTING DATABASE !"
 
         # ZODB reset - warning, we must replace content of dictionary "data",
         # not rebind the attribute "data", else we lose ZODB support
@@ -217,8 +222,8 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
     def _load_initial_data(self, **kwargs):
         """
-        Overrides of this method can use standard python objects, 
-        as everything will be converted to ZODB types before committing, 
+        Overrides of this method can use standard python objects,
+        as everything will be converted to ZODB types before committing,
         anyway.
         """
         self.notify_event("BASE_LOAD_INITIAL_DATA_CALLED")
@@ -296,7 +301,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
     def process_periodic_tasks(self, **kwargs):
         """
         Each core module performs its periodic tasks, and appends to the common report.
-        
+
         Note that none of these tasks should rely on current user, which could be anything...
         """
         assert self.is_game_writable()
@@ -319,9 +324,11 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
                 del data_tree[key]
         """
 
-        string = utilities.dump_data_tree_to_yaml(data_tree,
-                                                  default_style=">",  # prevents too long lines and double "'" quotes
-                                                  **kwargs)
+        string = utilities.dump_data_tree_to_yaml(
+            data_tree,
+            default_style=">",  # prevents too long lines and double "'" quotes
+            **kwargs,
+        )
 
         return string
 

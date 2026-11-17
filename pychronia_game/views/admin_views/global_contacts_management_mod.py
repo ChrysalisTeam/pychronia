@@ -7,8 +7,9 @@ from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 class GlobalContactForm(DataTableForm):
     avatar = forms.CharField(label=gettext_lazy("Avatar (url or local file)"), required=False)
 
-    description = forms.CharField(label=gettext_lazy("Description"),
-                                  widget=forms.Textarea(attrs={'rows': '2', 'cols': '40'}), required=False)
+    description = forms.CharField(
+        label=gettext_lazy("Description"), widget=forms.Textarea(attrs={"rows": "2", "cols": "40"}), required=False
+    )
 
     # NOT YET SETUP is_public = forms.BooleanField(label=gettext_lazy("Public contact"), required=False, initial=True) # public by default
 
@@ -44,12 +45,10 @@ class GlobalContactsManagement(AbstractDataTableManagement):
     TITLE = gettext_lazy("Edit Email Contacts")
     NAME = "global_contacts_management"
 
-    GAME_ACTIONS = dict(submit_item=dict(title=gettext_lazy("Submit a contact"),
-                                         form_class=GlobalContactForm,
-                                         callback="submit_item"),
-                        delete_item=dict(title=gettext_lazy("Delete a contact"),
-                                         form_class=None,
-                                         callback="delete_item"))
+    GAME_ACTIONS = dict(
+        submit_item=dict(title=gettext_lazy("Submit a contact"), form_class=GlobalContactForm, callback="submit_item"),
+        delete_item=dict(title=gettext_lazy("Delete a contact"), form_class=None, callback="delete_item"),
+    )
 
     TEMPLATE = "administration/global_contacts_management.html"
 

@@ -5,18 +5,21 @@ from django.utils.translation import gettext_lazy
 from django.core.exceptions import ValidationError
 
 
-class Select2TagsWidget(Select2Mixin,
-                        MultipleSelect2HiddenInput):  ##SpecialHiddenInput): ###forms.HiddenInput): ###MultipleSelect2HiddenInput):
-
-    input_type = 'text'  # additional security...
+class Select2TagsWidget(
+    Select2Mixin, MultipleSelect2HiddenInput
+):  ##SpecialHiddenInput): ###forms.HiddenInput): ###MultipleSelect2HiddenInput):
+    input_type = "text"  # additional security...
 
     def init_options(self):
         self.options.update(
-            {"closeOnSelect": True,  # maximumSelectionSize buggy when not closeOnSelect, so we workaround...
-             "maximumSelectionSize": -1,  # overridden by form field
-             "separator": '*START*django_select2.MULTISEPARATOR*END*',
-             "tokenSeparators": [",", ";"],  # spaces are NOT separators
-             "tags": []})  # overridden by field
+            {
+                "closeOnSelect": True,  # maximumSelectionSize buggy when not closeOnSelect, so we workaround...
+                "maximumSelectionSize": -1,  # overridden by form field
+                "separator": "*START*django_select2.MULTISEPARATOR*END*",
+                "tokenSeparators": [",", ";"],  # spaces are NOT separators
+                "tags": [],
+            }
+        )  # overridden by field
 
     def set_choice_tags(self, tags):
         self.options["tags"] = tags
@@ -25,17 +28,17 @@ class Select2TagsWidget(Select2Mixin,
         self.options["maximumSelectionSize"] = size
 
     def render_inner_js_code(self, id_, *args):
-        fieldset_id = re.sub(r'-\d+-', '_', id_).replace('-', '_')
-        if '__prefix__' in id_:
-            return ''
+        fieldset_id = re.sub(r"-\d+-", "_", id_).replace("-", "_")
+        if "__prefix__" in id_:
+            return ""
         else:
-            js = '''
+            js = """
                   window.django_select2.%s = function (selector, fieldID) {
                     var hashedSelector = "#" + selector;
                     $(hashedSelector).data("field_id", fieldID);
-                  ''' % (fieldset_id)
+                  """ % (fieldset_id)
             js += super().render_inner_js_code(id_, *args)
-            js += '};'
+            js += "};"
             js += 'django_select2.%s("%s", "%s");' % (fieldset_id, id_, id_)
             return js
 
@@ -44,7 +47,7 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
     widget = Select2TagsWidget
 
     default_error_messages = {
-        'too_many': gettext_lazy('Too many values sent.'),
+        "too_many": gettext_lazy("Too many values sent."),
     }
 
     def __init__(self, **kwargs):
@@ -52,10 +55,10 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
         choice_tags = kwargs.pop("choice_tags", [])  # done first
         max_selection_size = kwargs.pop("max_selection_size", -1)  # done first
 
-        if kwargs.get('widget', None) is None:
+        if kwargs.get("widget", None) is None:
             # we override the nasty behaviour of HeavySelect2MultipleChoiceField mixins
-            #who expect data_view to be sent to widget
-            kwargs['widget'] = self.widget()
+            # who expect data_view to be sent to widget
+            kwargs["widget"] = self.widget()
 
         super().__init__(**kwargs)
 
@@ -83,7 +86,7 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
         super().validate(value)
         if value and self.max_selection_size > 0:
             if len(value) > self.max_selection_size:
-                raise ValidationError(self.error_messages['too_many'])
+                raise ValidationError(self.error_messages["too_many"])
 
     def _get_choice_tags(self):
         return self._choice_tags
@@ -106,7 +109,7 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
     max_selection_size = property(_get_max_selection_size, _set_max_selection_size)
 
 
-'''
+"""
 class MultipleTagField(forms.Field):
 
     def prepare_value(self, value):
@@ -126,4 +129,4 @@ class MultipleTagField(forms.Field):
         # Always return the full collection of cleaned data.
         return cleaned_data
 
-'''
+"""

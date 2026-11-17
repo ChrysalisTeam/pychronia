@@ -9,12 +9,11 @@ def ___disabled_broken_ai_test():
 
     BRAIN_FILE = os.path.join(DIRECTORY, "botbrain.brn")
 
-    kernelfile = None  #BRAIN_FILE
+    kernelfile = None  # BRAIN_FILE
 
     aimlfiles = []
     aimlfiles += glob.glob(os.path.join(DIRECTORY, "common_aiml", "*", "*.aiml"))
-    #aimlfiles += glob.glob(os.path.join(DIRECTORY, "handpicked_aiml", "*.aiml"))
-
+    # aimlfiles += glob.glob(os.path.join(DIRECTORY, "handpicked_aiml", "*.aiml"))
 
     # TO DUMP AIML FILES EXCEPT DJINN-SPECIFIC ONES
     kernel = aimllib.Kernel()

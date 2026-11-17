@@ -30,7 +30,8 @@ NAVIGABLE_ENTRY_IDS = _inventory.NAVIGABLE_ENTRY_IDS
 @pytest.mark.parametrize("entry", NAVIGABLE_ENTRIES, ids=NAVIGABLE_ENTRY_IDS)
 def test_superuser_impersonating_master_reaches_allowed_pages(entry, superuser_page, base_url, game):
     expected_available = _inventory.expect_available_for_page_visit(
-        entry, MASTER_LOGIN, game, owns_sample_item=True)  # master/superuser sees every item
+        entry, MASTER_LOGIN, game, owns_sample_item=True
+    )  # master/superuser sees every item
 
     for sample in entry.sample_paths(game):
         url = _inventory.url_for(base_url, GAME_ID, MASTER_LOGIN, sample)
@@ -45,7 +46,8 @@ def test_superuser_impersonating_master_reaches_allowed_pages(entry, superuser_p
 @pytest.mark.parametrize("entry", NAVIGABLE_ENTRIES, ids=NAVIGABLE_ENTRY_IDS)
 def test_superuser_impersonating_boosted_player_reaches_allowed_pages(entry, superuser_page, base_url, game):
     expected_available = _inventory.expect_available_for_page_visit(
-        entry, BOOSTED_PLAYER, game, owns_sample_item=True)  # guy1 owns "sacred_chest", per apply_baseline_tweaks
+        entry, BOOSTED_PLAYER, game, owns_sample_item=True
+    )  # guy1 owns "sacred_chest", per apply_baseline_tweaks
 
     for sample in entry.sample_paths(game):
         url = _inventory.url_for(base_url, GAME_ID, BOOSTED_PLAYER, sample)

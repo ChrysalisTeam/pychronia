@@ -6,22 +6,32 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "pychronia_game.tests.transient_mode_sett
 import setup_pychronia_env  # only AFTER setting this DJANGO_SETTINGS_MODULE
 
 from pychronia_game.common import *
-from pychronia_game.datamanager.datamanager_administrator import create_game_instance, \
-    retrieve_game_instance, game_instance_exists, reset_zodb_structure
+from pychronia_game.datamanager.datamanager_administrator import (
+    create_game_instance,
+    retrieve_game_instance,
+    game_instance_exists,
+    reset_zodb_structure,
+)
 import pychronia_game.datamanager as dm_module
 from pychronia_game.datamanager import *
 from pychronia_game.datamanager.datamanager_modules import *
-from pychronia_game.authentication import (try_authenticating_with_credentials, try_authenticating_with_session,
-                                           logout_session,
-                                           SESSION_TICKET_KEY_TEMPLATE, IMPERSONATION_TARGET_POST_VARIABLE,
-                                           IMPERSONATION_WRITABILITY_POST_VARIABLE, UNIVERSAL_URL_USERNAME)
+from pychronia_game.authentication import (
+    try_authenticating_with_credentials,
+    try_authenticating_with_session,
+    logout_session,
+    SESSION_TICKET_KEY_TEMPLATE,
+    IMPERSONATION_TARGET_POST_VARIABLE,
+    IMPERSONATION_WRITABILITY_POST_VARIABLE,
+    UNIVERSAL_URL_USERNAME,
+)
 import pychronia_game.middlewares
 import pychronia_game.views
 from pychronia_game.datamanager.abstract_game_view import AbstractGameView, register_view
+
 # we want django-specific checker methods
 # do NOT use the django.test.TestCase version, with SQL session management
-#from django.utils.unittest.case import TestCase
-#from django.test.testcases import TransactionTestCase as TestCase
+# from django.utils.unittest.case import TestCase
+# from django.test.testcases import TransactionTestCase as TestCase
 from django.test import TransactionTestCase
 from django.test.client import Client, RequestFactory
 import django.utils.translation
@@ -42,12 +52,14 @@ def neutral_url_reverse(view, **more_kwargs):
 
 # dummy objects for delayed processing
 
+
 def dummyfunc(*args, **kwargs):
     assert args
     assert kwargs
 
 
 # trackers to eventually ensure every module is well tested
+
 
 def for_datamanager_base(func):
     return func
@@ -79,7 +91,7 @@ ROOT_GAME_URL = "/%s" % TEST_GAME_INSTANCE_ID
 ### FIXME  with game_view_url(view, datamanager=dm)
 HOME_URL = neutral_url_reverse(pychronia_game.views.homepage)
 
-AJAX_HEADERS = dict(HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+AJAX_HEADERS = dict(HTTP_X_REQUESTED_WITH="XMLHttpRequest")
 
 SESSION_TICKET_KEY = SESSION_TICKET_KEY_TEMPLATE % TEST_GAME_INSTANCE_ID
 
@@ -103,18 +115,19 @@ class RequestMock(RequestFactory):
 
         # we mimick django authentication middleware
         from django.contrib.auth.models import AnonymousUser
+
         request.user = AnonymousUser()  # default
 
         # we mimick messages middleware
         from django.contrib.messages.storage import default_storage
+
         request._messages = default_storage(request)
 
         # we mimick ZODB middleware
-        datamanager = retrieve_game_instance(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                             request=request,
-                                             update_timestamp=False)
+        datamanager = retrieve_game_instance(
+            game_instance_id=TEST_GAME_INSTANCE_ID, request=request, update_timestamp=False
+        )
         request.datamanager = datamanager  # for template tags and the likes
-
 
         return request
 
@@ -157,7 +170,9 @@ class AutoCheckingDM:
                     raise
                 finally:
                     if real_dm.connection:  # i.e not for close() method
-                        assert not real_dm.connection._registered_objects, real_dm.connection._registered_objects  # AFTER
+                        assert not real_dm.connection._registered_objects, (
+                            real_dm.connection._registered_objects
+                        )  # AFTER
                 return res
 
             return _checked_method
@@ -178,24 +193,23 @@ def temp_datamanager(game_instance_id, request=None):
 
 
 class BaseGameTestCase(TransactionTestCase):  # one day, use pytest-django module to make it cleaner
-
     """
-    WARNING - when directly modifying "self.dm.data" content, 
+    WARNING - when directly modifying "self.dm.data" content,
     don't forget to commit() after that !!
     """
 
     SHARED_DM_INITIAL_DATA_TREE = None  # optimization, duplicated for each testcase
 
     def __call__(self, *args, **kwds):
-        #self._reset_django_db()
-        #print("USING CONF", config.DATABASES, config.INSTALLED_APPS)
+        # self._reset_django_db()
+        # print("USING CONF", config.DATABASES, config.INSTALLED_APPS)
         ##return super(BaseGameTestCase, self).__call__(*args, **kwds)
         self._reset_django_db(really=True)
-        return unittest.TestCase.run(self, *args,
-                                     **kwds)  # we bypass test setups from django's TestCase, to use py.test instead
+        return unittest.TestCase.run(
+            self, *args, **kwds
+        )  # we bypass test setups from django's TestCase, to use py.test instead
 
     def setUp(self):
-
 
         assert settings.DEBUG == True
 
@@ -211,13 +225,15 @@ class BaseGameTestCase(TransactionTestCase):  # one day, use pytest-django modul
             skip_initializations = True
 
         # FIXME - very heavy with loading + checking, we should do it only once and copy/paste dm.data tree.
-        create_game_instance(game_instance_id=TEST_GAME_INSTANCE_ID,
-                             creator_login="test_creator",
-                             game_language="en",  # unit tests check English UI strings
-                             skip_randomizations=True,  # handy to test stuffs
-                             skip_initializations=skip_initializations,
-                             skip_coherence_check=True,
-                             yaml_fixture=yaml_fixture)
+        create_game_instance(
+            game_instance_id=TEST_GAME_INSTANCE_ID,
+            creator_login="test_creator",
+            game_language="en",  # unit tests check English UI strings
+            skip_randomizations=True,  # handy to test stuffs
+            skip_initializations=skip_initializations,
+            skip_coherence_check=True,
+            yaml_fixture=yaml_fixture,
+        )
 
         if not BaseGameTestCase.SHARED_DM_INITIAL_DATA_TREE:
             # we cache the FIRST datamanager data, for reuse
@@ -225,7 +241,6 @@ class BaseGameTestCase(TransactionTestCase):  # one day, use pytest-django modul
             BaseGameTestCase.SHARED_DM_INITIAL_DATA_TREE = copy.deepcopy(initial_dm.data)
 
         try:
-
             test_http_host = "localhost:80"
 
             self.client = DJANGO_TEST_CLIENT
@@ -236,8 +251,10 @@ class BaseGameTestCase(TransactionTestCase):  # one day, use pytest-django modul
             # this request is empty, not gone through middlewares!
             assert request.datamanager
             assert request.session
-            assert request.session is not self.client.session, \
-                (request.session, self.client.session) # generated on demand
+            assert request.session is not self.client.session, (
+                request.session,
+                self.client.session,
+            )  # generated on demand
             assert request.user.is_anonymous
             self.request = request
 
@@ -249,16 +266,17 @@ class BaseGameTestCase(TransactionTestCase):  # one day, use pytest-django modul
             self.dm.clear_all_event_stats()
             if not skip_initializations:
                 self.dm.check_database_coherence()  # thus, only done for the first testcase
-                assert self.dm.get_event_count(
-                    "BASE_CHECK_DB_COHERENCE_PUBLIC_CALLED") == 1  # no bypassing because of wrong override
+                assert (
+                    self.dm.get_event_count("BASE_CHECK_DB_COHERENCE_PUBLIC_CALLED") == 1
+                )  # no bypassing because of wrong override
 
             self.dm.set_game_state(True)
             self.dm.set_activated_game_views(list(self.dm.get_activable_views().keys()))  # QUICK ACCESS FIXTURE
 
             self.dm.clear_all_event_stats()
 
-            #self.default_player = self.dm.get_character_usernames()[0]
-            #self._set_user(self.TEST_LOGIN)
+            # self.default_player = self.dm.get_character_usernames()[0]
+            # self._set_user(self.TEST_LOGIN)
 
             self.initial_msg_sent_length = len(self.dm.get_all_dispatched_messages())
             self.initial_msg_queue_length = len(self.dm.get_all_queued_messages())
@@ -274,7 +292,6 @@ class BaseGameTestCase(TransactionTestCase):  # one day, use pytest-django modul
             self.tearDown(check=False)  # cleanup of connection
             raise
 
-
     def tearDown(self, check=True):
         if hasattr(self, "dm"):
             if check:
@@ -284,7 +301,7 @@ class BaseGameTestCase(TransactionTestCase):  # one day, use pytest-django modul
 
     def _set_user(self, username, **kwargs):
         """
-        Here *username* might be "master" or None, too. 
+        Here *username* might be "master" or None, too.
         """
         self.dm._set_user(username, **kwargs)
 
@@ -297,7 +314,7 @@ class BaseGameTestCase(TransactionTestCase):  # one day, use pytest-django modul
         if not really:
             return  # PASCAL HACK TODO BEWARE
         from django.core import management
-        management.call_command('migrate', verbosity=1, interactive=False)
-        management.call_command('flush', verbosity=0,
-                                interactive=False)  # we try to empty tables, if already created
+
+        management.call_command("migrate", verbosity=1, interactive=False)
+        management.call_command("flush", verbosity=0, interactive=False)  # we try to empty tables, if already created
         config.INSTALLED_APPS[:] = ORIGINAL_CONFIG_INSTALLED_APPS[:]  # SOUTH might nastily monkey patch settings...

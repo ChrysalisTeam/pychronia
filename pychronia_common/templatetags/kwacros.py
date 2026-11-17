@@ -89,7 +89,7 @@ class DefineMacroNode(template.Node):
 
     def render(self, context):
         ## empty string - {% macro %} tag does no output
-        return ''
+        return ""
 
 
 @register.tag(name="kwacro")
@@ -98,12 +98,11 @@ def do_macro(parser, token):
         args = token.split_contents()
         macro_name, args = args[1], args[2:]
     except IndexError:
-        m = ("'%s' tag requires at least one argument (macro name)"
-             % token.contents.split()[0])
+        m = "'%s' tag requires at least one argument (macro name)" % token.contents.split()[0]
         raise template.TemplateSyntaxError(m)
     # TODO: could do some validations here,
     # for now, "blow your head clean off"
-    nodelist = parser.parse(('endkwacro',))
+    nodelist = parser.parse(("endkwacro",))
     parser.delete_first_token()
 
     ## Metadata of each macro are stored in a new attribute
@@ -117,7 +116,7 @@ def do_macro(parser, token):
 class LoadMacrosNode(template.Node):
     def render(self, context):
         ## empty string - {% loadmacros %} tag does no output
-        return ''
+        return ""
 
 
 @register.tag(name="loadkwacros")
@@ -125,13 +124,12 @@ def do_loadmacros(parser, token):
     try:
         tag_name, filename = token.split_contents()
     except IndexError:
-        m = ("'%s' tag requires at least one argument (macro name)"
-             % token.contents.split()[0])
+        m = "'%s' tag requires at least one argument (macro name)" % token.contents.split()[0]
         raise template.TemplateSyntaxError(m)
     if filename[0] in ('"', "'") and filename[-1] == filename[0]:
         filename = filename[1:-1]
     t = get_template(filename)
-    #print(repr(t), vars(t))
+    # print(repr(t), vars(t))
     if hasattr(t.template, "nodelist"):  # it's a DJANGO-kind template
         macros = t.template.nodelist.get_nodes_by_type(DefineMacroNode)
         ## Metadata of each macro are stored in a new attribute
@@ -162,9 +160,7 @@ class UseMacroNode(template.Node):
             if name in self.fe_kwargs:
                 context[name] = self.fe_kwargs[name].resolve(context)
             else:
-                context[name] = FilterExpression(default,
-                                                 self.macro.parser
-                                                 ).resolve(context)
+                context[name] = FilterExpression(default, self.macro.parser).resolve(context)
 
         return self.macro.nodelist.render(context)
 
@@ -175,8 +171,7 @@ def do_usemacro(parser, token):
         args = token.split_contents()
         macro_name, values = args[1], args[2:]
     except IndexError:
-        m = ("'%s' tag requires at least one argument (macro name)"
-             % token.contents.split()[0])
+        m = "'%s' tag requires at least one argument (macro name)" % token.contents.split()[0]
         raise template.TemplateSyntaxError(m)
     try:
         macro = parser._macros[macro_name]

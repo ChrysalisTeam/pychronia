@@ -13,13 +13,15 @@ from django import forms as django_forms
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Static World Map"))
-def view_world_map_static(request, template_name='information/world_map_static.html'):
-    return render(request,
-                  template_name,
-                  {
-                      'world_map_image': request.datamanager.get_global_parameter("world_map_image"),
-                      'world_map_image_bw': request.datamanager.get_global_parameter("world_map_image_bw"),
-                  })
+def view_world_map_static(request, template_name="information/world_map_static.html"):
+    return render(
+        request,
+        template_name,
+        {
+            "world_map_image": request.datamanager.get_global_parameter("world_map_image"),
+            "world_map_image_bw": request.datamanager.get_global_parameter("world_map_image_bw"),
+        },
+    )
 
 
 @register_view
@@ -37,9 +39,7 @@ class DynamicWorldMapView(AbstractGameView):
         all_locations = self.datamanager.get_locations()
         world_map = self.datamanager.get_global_parameter("world_map_image")
         summary_fallback = ""  ##_("No description")
-        return dict(all_locations=all_locations,
-                    world_map_image=world_map,
-                    summary_fallback=summary_fallback)
+        return dict(all_locations=all_locations, world_map_image=world_map, summary_fallback=summary_fallback)
 
 
 view_world_map_dynamic = DynamicWorldMapView.as_view
@@ -65,7 +65,7 @@ class StaticPageView(AbstractGameView):
         page_id = self.kwargs.get("page_id")
 
         if not page_id or page_id not in self.datamanager.static_pages:
-            #print(">>>>", page_id, list(self.datamanager.static_pages.keys()))
+            # print(">>>>", page_id, list(self.datamanager.static_pages.keys()))
             raise Http404  # unexisting static page
 
         entry = self.datamanager.static_pages[page_id]
@@ -99,12 +99,13 @@ class HiddenClueView(AbstractGameView):
         clue_content = ""
         if clue_category and clue_code:
             try:
-                clue_content = self.datamanager.get_hidden_clue_content(clue_category=clue_category, clue_code=clue_code)
+                clue_content = self.datamanager.get_hidden_clue_content(
+                    clue_category=clue_category, clue_code=clue_code
+                )
             except NormalUsageError as exc:
                 self.datamanager.user.add_warning(str(exc))  # Should have proper information!
 
-        return dict(clue_content=clue_content,
-                    clue_form=HiddenClueForm())
+        return dict(clue_content=clue_content, clue_form=HiddenClueForm())
 
     def _process_html_post_data(self):
         """We bypass normal form processing, here."""
@@ -129,9 +130,12 @@ class EncyclopediaView(AbstractGameView):
 
     # Place here dashboard forms that don't have their own containing view! #
     ADMIN_ACTIONS = dict(
-        set_encyclopedia_index_visibility=dict(title=gettext_lazy("Set encyclopedia index visibility"),
-                                               form_class=EnyclopediaIndexVisibilityForm,
-                                               callback="set_encyclopedia_index_visibility"))
+        set_encyclopedia_index_visibility=dict(
+            title=gettext_lazy("Set encyclopedia index visibility"),
+            form_class=EnyclopediaIndexVisibilityForm,
+            callback="set_encyclopedia_index_visibility",
+        )
+    )
 
     TEMPLATE = "information/encyclopedia.html"
 
@@ -143,10 +147,12 @@ class EncyclopediaView(AbstractGameView):
         """index_article_ids might be None"""
         _pages = self.datamanager.static_pages
         index_article_ids = index_article_ids or []
-        articles_index = [(index_article_id, _pages[index_article_id].get("title")) for index_article_id in
-                          index_article_ids]
-        articles_index.sort(key=lambda x: x[
-            1])  # sort by title (even is some might be None, resulting in 'identifier' to be shown instead)
+        articles_index = [
+            (index_article_id, _pages[index_article_id].get("title")) for index_article_id in index_article_ids
+        ]
+        articles_index.sort(
+            key=lambda x: x[1]
+        )  # sort by title (even is some might be None, resulting in 'identifier' to be shown instead)
         return articles_index
 
     def _process_standard_request(self, request, current_article_id=None):
@@ -165,7 +171,7 @@ class EncyclopediaView(AbstractGameView):
             assert all(isinstance(i, str) for i in ids_list)
             if dm.is_character() and dm.is_game_writable():  # not for master or anonymous!!
                 dm.update_character_known_article_ids(article_ids=ids_list)
-                #print ("Really IN _conditionally_update_known_article_ids", ids_list, self.datamanager.user.username)
+                # print ("Really IN _conditionally_update_known_article_ids", ids_list, self.datamanager.user.username)
 
         search_string = None
         search_results_ids = None
@@ -178,21 +184,27 @@ class EncyclopediaView(AbstractGameView):
             else:
                 _conditionally_update_known_article_ids([current_article_id])
         else:
-            search_string = utilities.get_request_param(request,
-                "search")  # needn't appear in browser history, but GET needed for encyclopedia links
+            search_string = utilities.get_request_param(
+                request, "search"
+            )  # needn't appear in browser history, but GET needed for encyclopedia links
             if search_string:
                 search_results_ids = dm.get_encyclopedia_matches(search_string)
                 if not search_results_ids:
                     dm.user.add_error(
-                        _("Sorry, no matching encyclopedia article has been found for '%s'") % search_string)
+                        _("Sorry, no matching encyclopedia article has been found for '%s'") % search_string
+                    )
                 else:
                     assert not isinstance(search_results_ids, str)  # already a list
                     _conditionally_update_known_article_ids(search_results_ids)
                     if len(search_results_ids) == 1:
                         dm.user.add_message(_("Your search has led to a single article, below."))
-                        return HttpResponseRedirect(redirect_to=game_view_url("pychronia_game.views.view_encyclopedia",
-                                                                              datamanager=dm,
-                                                                              current_article_id=search_results_ids[0]))
+                        return HttpResponseRedirect(
+                            redirect_to=game_view_url(
+                                "pychronia_game.views.view_encyclopedia",
+                                datamanager=dm,
+                                current_article_id=search_results_ids[0],
+                            )
+                        )
 
         # NOW only retrieve article ids, since known article ids have been updated if necessary
         index_article_ids = None
@@ -207,16 +219,18 @@ class EncyclopediaView(AbstractGameView):
 
         search_results = self._generate_articles_index(search_results_ids)
 
-        return TemplateResponse(request=request,
-                                template=self.TEMPLATE,
-                                context={
-                                    'page_title': _("Pangea Encyclopedia"),
-                                    'articles_index': articles_index,
-                                    'current_article_id': current_article_id,
-                                    'entry': entry,
-                                    'search_string': search_string,
-                                    'search_results': search_results
-                                })
+        return TemplateResponse(
+            request=request,
+            template=self.TEMPLATE,
+            context={
+                "page_title": _("Pangea Encyclopedia"),
+                "articles_index": articles_index,
+                "current_article_id": current_article_id,
+                "entry": entry,
+                "search_string": search_string,
+                "search_results": search_results,
+            },
+        )
 
     def set_encyclopedia_index_visibility(self, is_index_visible):
         assert is_index_visible in (True, False)
@@ -241,8 +255,9 @@ def _decode_audio_id(encoded_audio_id):
 
 # we don't put any security there, at worst a pirate might play with this and prevent playing
 # some audio notifications, but it's neither critical nor discreet
-@register_view(access=UserAccess.anonymous, requires_global_permission=False,
-               title=gettext_lazy("Ajax Audio Message Finished"))
+@register_view(
+    access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Ajax Audio Message Finished")
+)
 def ajax_notify_audio_message_finished(request, requires_global_permission=False):
     try:
         audio_id = _decode_audio_id(request.GET.get("audio_id", None))
@@ -256,8 +271,9 @@ def ajax_notify_audio_message_finished(request, requires_global_permission=False
 
 
 # we don't put any security there either
-@register_view(access=UserAccess.anonymous, requires_global_permission=False,
-               title=gettext_lazy("Ajax Next Audio Message"))
+@register_view(
+    access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Ajax Next Audio Message")
+)
 def ajax_get_next_audio_message(request):
     radio_is_on = request.datamanager.get_global_parameter("radio_is_on")
 
@@ -266,8 +282,9 @@ def ajax_get_next_audio_message(request):
     if radio_is_on:
         audio_id = request.datamanager.get_next_audio_message()
         if audio_id:
-            fileurl = determine_asset_url(request.datamanager.get_audio_message_properties(audio_id),
-                                          absolute=False)  # same-origin url for the HTML5 player
+            fileurl = determine_asset_url(
+                request.datamanager.get_audio_message_properties(audio_id), absolute=False
+            )  # same-origin url for the HTML5 player
             next_audio_id = _encode_audio_id(audio_id)
 
     response = json.dumps([next_audio_id, fileurl or None])
@@ -275,27 +292,27 @@ def ajax_get_next_audio_message(request):
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Pangea Webradio"))
-def personal_webradio_page(request, template_name='information/web_radio_page.html'):
+def personal_webradio_page(request, template_name="information/web_radio_page.html"):
     dm = request.datamanager
     current_playlist = dm.get_all_next_audio_messages()
     current_audio_messages = [dm.get_audio_message_properties(audio_id) for audio_id in current_playlist]
 
-    return render(request,
-                  template_name,
-                  {
-                      'page_title': _("Pangea Webradio"),
-                      'playlist': current_audio_messages,
-                  })
+    return render(
+        request,
+        template_name,
+        {
+            "page_title": _("Pangea Webradio"),
+            "playlist": current_audio_messages,
+        },
+    )
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Webradio Popup"))
-def personal_webradio_popup(request, template_name='information/web_radio_popup.html'):
-    return render(request,
-                  template_name)
+def personal_webradio_popup(request, template_name="information/web_radio_popup.html"):
+    return render(request, template_name)
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False,
-               title=gettext_lazy("Ajax Radio Playlist"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Ajax Radio Playlist"))
 def ajax_get_radio_playlist(request):
     """
     Current playlist of the personal webradio (popup and page), periodically polled by the player.
@@ -321,7 +338,7 @@ def ajax_get_radio_playlist(request):
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Radio Station"))
-def public_webradio(request, template_name='information/web_radio_public.html'):
+def public_webradio(request, template_name="information/web_radio_public.html"):
     access_authorized = False
 
     if request.method == "POST":
@@ -339,23 +356,17 @@ def public_webradio(request, template_name='information/web_radio_public.html'):
 
     assert (form and not access_authorized) or (not form and access_authorized)
 
-    return render(request,
-                  template_name,
-                  {
-                      'page_title': _("Radio Station"),
-                      'access_authorized': access_authorized,
-                      'form': form
-                  })
+    return render(
+        request, template_name, {"page_title": _("Radio Station"), "access_authorized": access_authorized, "form": form}
+    )
 
 
 @register_view(access=UserAccess.authenticated, requires_global_permission=False, title=gettext_lazy("Personal Files"))
-def personal_folder(request, template_name='information/personal_folder.html'):
+def personal_folder(request, template_name="information/personal_folder.html"):
     user = request.datamanager.user
 
     try:
-
-        personal_files = request.datamanager.get_personal_files(
-            absolute_urls=True)
+        personal_files = request.datamanager.get_personal_files(absolute_urls=True)
 
     except OSError:
         personal_files = []
@@ -366,37 +377,40 @@ def personal_folder(request, template_name='information/personal_folder.html'):
     if not files_to_display:
         user.add_message = _("You currently don't have any files in your personal folder.")
 
-    return render(request,
-                  template_name,
-                  {
-                      "page_title": _("Personal Folder"),
-                      "files": files_to_display,
-                      "display_maintenance_notice": True,  # upload disabled notification
-                  })
+    return render(
+        request,
+        template_name,
+        {
+            "page_title": _("Personal Folder"),
+            "files": files_to_display,
+            "display_maintenance_notice": True,  # upload disabled notification
+        },
+    )
 
 
 # This page is meant for inclusion in pages offering all the required css/js files !
 @register_view(access=UserAccess.authenticated, requires_global_permission=False, title=gettext_lazy("View Media"))
-def view_media(request, template_name='utilities/view_media.html'):
+def view_media(request, template_name="utilities/view_media.html"):
     fileurl = utilities.get_request_param(request, "url", None)
-    autostart = (utilities.get_request_param(request, "autostart", "false") == "true")
+    autostart = utilities.get_request_param(request, "autostart", "false") == "true"
 
     if fileurl:
         media_player = mediaplayers.build_proper_viewer(fileurl, autostart=autostart)
     else:
         media_player = "<p>" + _("You must provide a valid media url.") + "</p>"
 
-    return render(request,
-                  template_name,
-                  {
-                      'media_player': media_player
-                  })
+    return render(request, template_name, {"media_player": media_player})
 
 
-@register_view(access=UserAccess.authenticated, requires_global_permission=False,
-               title=gettext_lazy("Encrypted Folder"))
-def encrypted_folder(request, folder, entry_template_name="information/encrypted_folder.html",
-                     display_template_name='information/personal_folder.html'):
+@register_view(
+    access=UserAccess.authenticated, requires_global_permission=False, title=gettext_lazy("Encrypted Folder")
+)
+def encrypted_folder(
+    request,
+    folder,
+    entry_template_name="information/encrypted_folder.html",
+    display_template_name="information/personal_folder.html",
+):
     if not request.datamanager.encrypted_folder_exists(folder):
         raise Http404
 
@@ -416,14 +430,11 @@ def encrypted_folder(request, folder, entry_template_name="information/encrypted
         form = forms.CleartextPasswordForm()
 
     if form:
-        return render(request,
-                      entry_template_name,
-                      {
-                          "page_title": _("Encrypted archive '%s'") % folder,
-                          "password_form": form,
-                          "folder": folder
-                      })
-
+        return render(
+            request,
+            entry_template_name,
+            {"page_title": _("Encrypted archive '%s'") % folder, "password_form": form, "folder": folder},
+        )
 
     else:  # necessarily, we've managed to decrypt the folder
         assert files is not None
@@ -432,29 +443,26 @@ def encrypted_folder(request, folder, entry_template_name="information/encrypted
         if not files_to_display:
             user.add_message = _("No files were found in the folder.")
 
-        return render(request,
-                      display_template_name,
-                      {
-                          "page_title": _("Decrypted archive"),
-                          "files": files_to_display,
-                          "display_maintenance_notice": False,  # upload disabled notification
-                      })
+        return render(
+            request,
+            display_template_name,
+            {
+                "page_title": _("Decrypted archive"),
+                "files": files_to_display,
+                "display_maintenance_notice": False,  # upload disabled notification
+            },
+        )
 
 
-
-@register_view(access=UserAccess.anonymous, requires_global_permission=False,
-               title=gettext_lazy("Forbidden Area Entrance"))
+@register_view(
+    access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Forbidden Area Entrance")
+)
 def enigma_runes_puzzle(request, template_name="information/enigma_runes_puzzle.html"):
-    return render(request,
-                  template_name,
-                  {})
+    return render(request, template_name, {})
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False,
-               title=gettext_lazy("Song of Treasure Mill"))
+@register_view(
+    access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Song of Treasure Mill")
+)
 def enigma_runes_cards(request, template_name="information/enigma_runes_cards.html"):
-    return render(request,
-                  template_name,
-                  {})
-
-
+    return render(request, template_name, {})

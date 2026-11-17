@@ -1,6 +1,6 @@
 import pytz
 
-GAME_LOCAL_TZ = pytz.timezone('Europe/Paris')  # for now...
+GAME_LOCAL_TZ = pytz.timezone("Europe/Paris")  # for now...
 
 GAME_FILES_URL = "/files/"  # must end with /
 GAME_FILES_ROOT = None  # MUST be overridden

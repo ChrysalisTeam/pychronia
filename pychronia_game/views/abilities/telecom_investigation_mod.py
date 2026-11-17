@@ -1,8 +1,7 @@
 from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility
 from pychronia_game.datamanager.abstract_game_view import register_view
-from pychronia_game.datamanager.datamanager_tools import readonly_method, \
-    transaction_watcher
+from pychronia_game.datamanager.datamanager_tools import readonly_method, transaction_watcher
 from pychronia_game.forms import OtherKnownCharactersForm
 from django.utils import formats as django_formats
 from django.template.loader import render_to_string
@@ -13,9 +12,13 @@ class TelecomInvestigationAbility(AbstractPartnershipAbility):
     TITLE = gettext_lazy("Telecom Investigation")
     NAME = "telecom_investigation"
 
-    GAME_ACTIONS = dict(investigation_form=dict(title=gettext_lazy("Process Telecom Investigation"),
-                                                form_class=OtherKnownCharactersForm,
-                                                callback="process_telecom_investigation"))
+    GAME_ACTIONS = dict(
+        investigation_form=dict(
+            title=gettext_lazy("Process Telecom Investigation"),
+            form_class=OtherKnownCharactersForm,
+            callback="process_telecom_investigation",
+        )
+    )
 
     TEMPLATE = "abilities/telecom_investigation.html"
 
@@ -34,11 +37,11 @@ class TelecomInvestigationAbility(AbstractPartnershipAbility):
         pass  # nothing to do
 
     def get_template_vars(self, previous_form_data=None):
-        investigation_form = self._instantiate_game_form(new_action_name="investigation_form",
-                                                         hide_on_success=False,
-                                                         previous_form_data=previous_form_data)
+        investigation_form = self._instantiate_game_form(
+            new_action_name="investigation_form", hide_on_success=False, previous_form_data=previous_form_data
+        )
         return {
-            'page_title': _("Telecom Investigation"),
+            "page_title": _("Telecom Investigation"),
             "investigation_form": investigation_form,
         }
 
@@ -62,11 +65,13 @@ class TelecomInvestigationAbility(AbstractPartnershipAbility):
                 participants.update(message["recipient_emails"])
             participants = sorted(participants)
 
-            context = {"subject": subject,
-                       "messages_count": messages_count,
-                       "participants": ", ".join(participants),
-                       "first_message_date": django_formats.date_format(first_message_date, "SHORT_DATE_FORMAT"),
-                       "last_message_date": django_formats.date_format(last_message_date, "SHORT_DATE_FORMAT")}
+            context = {
+                "subject": subject,
+                "messages_count": messages_count,
+                "participants": ", ".join(participants),
+                "first_message_date": django_formats.date_format(first_message_date, "SHORT_DATE_FORMAT"),
+                "last_message_date": django_formats.date_format(last_message_date, "SHORT_DATE_FORMAT"),
+            }
             context_list.append(context)
 
         return context_list
@@ -90,24 +95,24 @@ class TelecomInvestigationAbility(AbstractPartnershipAbility):
             # request e-mail
             subject = _("Telecom Investigation Request - %(target_name)s") % dict(target_name=target_official_name)
             body = _("Please look for anything you can find about this person.")
-            request_msg_data = dict(subject=subject,
-                                    body=body)
+            request_msg_data = dict(subject=subject, body=body)
 
             # response e-mail
-            subject = _('Telecom Investigation Results - %(target_name)s') % dict(target_name=target_official_name)
+            subject = _("Telecom Investigation Results - %(target_name)s") % dict(target_name=target_official_name)
             _context_list = self.extract_conversation_summary(target_username)
             body = self.format_conversation_summary(_context_list)
-            response_msg_data = dict(subject=subject,
-                                     body=body,
-                                     attachment=None)
+            response_msg_data = dict(subject=subject, body=body, attachment=None)
             del subject, body
 
-        best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
-                                                                   response_msg_data=response_msg_data)
+        best_msg_id = self._process_standard_exchange_with_partner(
+            request_msg_data=request_msg_data, response_msg_data=response_msg_data
+        )
 
-        self.log_game_event(gettext_noop("Telecom investigation launched on target '%(target_name)s'."),
-                            PersistentMapping(target_name=target_official_name),
-                            url=self.get_message_viewer_url_or_none(best_msg_id),
-                            visible_by=[self.username])
+        self.log_game_event(
+            gettext_noop("Telecom investigation launched on target '%(target_name)s'."),
+            PersistentMapping(target_name=target_official_name),
+            url=self.get_message_viewer_url_or_none(best_msg_id),
+            visible_by=[self.username],
+        )
 
         return _("Telecom investigation is in process, you will receive an e-mail with the intercepted messages soon!")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 
-import setup_pychronia_env   # NOW ONLY
+import setup_pychronia_env  # NOW ONLY
 
 from pychronia_game import utilities
 from pychronia_game.datamanager import GameDataManager, PersistentMapping
@@ -18,22 +18,26 @@ def execute(output_file, game_language=None, game_scenario=None):
 
     print(">> Generating transient game data manager instance")
 
-    dm = GameDataManager(game_instance_id="temp_dumper_instance",
-                         game_root=PersistentMapping(),
-                         request=None)  # no user messages possible here
+    dm = GameDataManager(
+        game_instance_id="temp_dumper_instance", game_root=PersistentMapping(), request=None
+    )  # no user messages possible here
 
     assert not dm.is_initialized
-    dm.reset_game_data(strict=False,
-                       game_language=game_language,
-                       game_scenario=game_scenario,
-                       skip_randomizations=True,
-                       skip_initializations=False,
-                       skip_coherence_check=False,
-                       yaml_fixture=False)
+    dm.reset_game_data(
+        strict=False,
+        game_language=game_language,
+        game_scenario=game_scenario,
+        skip_randomizations=True,
+        skip_initializations=False,
+        skip_coherence_check=False,
+        yaml_fixture=False,
+    )
 
-    yaml_str = utilities.dump_data_tree_to_yaml(dm.data,
-                                                convert_types=True,  # should be output in UTF8
-                                                default_style="|")  # will output very long lines
+    yaml_str = utilities.dump_data_tree_to_yaml(
+        dm.data,
+        convert_types=True,  # should be output in UTF8
+        default_style="|",
+    )  # will output very long lines
 
     print(">> Dumping whole initial data to file %r" % output_file)
 

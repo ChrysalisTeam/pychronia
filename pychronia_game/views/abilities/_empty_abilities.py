@@ -36,9 +36,9 @@ class GeoipLocationAbility(EmptyAbilityMixin, AbstractAbility):
     REQUIRES_GLOBAL_PERMISSION = True
 
 
-class BusinessEscrowAbility(EmptyAbilityMixin,
-                            AbstractGameView):  # actually a simple GAMEVIEW at the moment, without captcha
-
+class BusinessEscrowAbility(
+    EmptyAbilityMixin, AbstractGameView
+):  # actually a simple GAMEVIEW at the moment, without captcha
     TITLE = gettext_lazy("Business Escrow")
     NAME = "business_escrow"
 
@@ -47,9 +47,9 @@ class BusinessEscrowAbility(EmptyAbilityMixin,
     REQUIRES_GLOBAL_PERMISSION = True
 
 
-class BlackMarketAbility(EmptyAbilityMixin,
-                         AbstractCaptchaProtectedView):  # actually a simple GAMEVIEW at the moment, but captcha-protected
-
+class BlackMarketAbility(
+    EmptyAbilityMixin, AbstractCaptchaProtectedView
+):  # actually a simple GAMEVIEW at the moment, but captcha-protected
     TITLE = gettext_lazy("Black Market")
     NAME = "black_market"
 

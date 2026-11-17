@@ -78,8 +78,9 @@ def test_compose_message_then_see_it_in_conversations(player_page, base_url):
     recipient_email = _configs._email(_configs.PLAYER_WITH_SECRET_QUESTION)  # guy3@pangea.com
     subject = "E2E interaction test subject"
 
-    player_page.goto("%s/%s/%s/messages/compose/?recipient=%s" % (
-        base_url, GAME_ID, _configs.BOOSTED_PLAYER, recipient_email))
+    player_page.goto(
+        "%s/%s/%s/messages/compose/?recipient=%s" % (base_url, GAME_ID, _configs.BOOSTED_PLAYER, recipient_email)
+    )
     player_page.fill("#id_default_subject", subject)
     player_page.fill("#id_default_body", "E2E interaction test body.")
     player_page.click('input[name="send_message"]')
@@ -107,7 +108,8 @@ def test_superuser_toggles_pause_and_player_sees_readonly_notice(superuser_page,
     _pages.goto_as(superuser_page, base_url, GAME_ID, _configs.MASTER_LOGIN, "ability/admin_dashboard/")
 
     pause_form = superuser_page.locator(
-        'form:has(input[name="target_form_id"][value="admin_dashboard.set_game_pause_state"])')
+        'form:has(input[name="target_form_id"][value="admin_dashboard.set_game_pause_state"])'
+    )
     pause_form.locator("#id_default_is_paused").check()
     pause_form.locator('input[type="submit"]').click()
     superuser_page.wait_for_load_state("networkidle")
@@ -116,8 +118,9 @@ def test_superuser_toggles_pause_and_player_sees_readonly_notice(superuser_page,
     assert superuser_page.locator("#id_default_is_paused").is_checked()
 
     # act/assert: an ordinary player immediately sees the read-only notice, with no POST needed
-    _pages.login_as_player(page, base_url, GAME_ID, _configs.PLAIN_PLAYER,
-                           _configs.PLAYER_CREDENTIALS[_configs.PLAIN_PLAYER])
+    _pages.login_as_player(
+        page, base_url, GAME_ID, _configs.PLAIN_PLAYER, _configs.PLAYER_CREDENTIALS[_configs.PLAIN_PLAYER]
+    )
     page.goto("%s/%s/%s/" % (base_url, GAME_ID, _configs.PLAIN_PLAYER))
     assert "Website currently in read-only mode" in page.content()
 
@@ -126,8 +129,9 @@ def test_logout_then_authenticated_page_redirects_to_login(page, base_url):
     # Uses a throwaway login (not the shared `player_page` fixture): that fixture's
     # storage_state is session-scoped and reused by every other test, so logging it
     # out here would invalidate guy1's session for the rest of the suite.
-    _pages.login_as_player(page, base_url, GAME_ID, _configs.BOOSTED_PLAYER,
-                           _configs.PLAYER_CREDENTIALS[_configs.BOOSTED_PLAYER])
+    _pages.login_as_player(
+        page, base_url, GAME_ID, _configs.BOOSTED_PLAYER, _configs.PLAYER_CREDENTIALS[_configs.BOOSTED_PLAYER]
+    )
     _pages.logout(page, base_url, GAME_ID)
 
     assert "guest/login" in page.url

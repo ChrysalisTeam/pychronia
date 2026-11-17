@@ -5,9 +5,11 @@ import sys, os, logging
 root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))  # CHRYSALIS/ root dir
 sys.path.insert(0, root)
 sys.path.insert(0, os.path.join(root, "dependencies"))
-#print ">>>>>>>", sys.path
+# print ">>>>>>>", sys.path
 
-os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = "pychronia_game.tests.persistent_mode_settings"  # with DB not in temp dir
+os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = (
+    "pychronia_game.tests.persistent_mode_settings"  # with DB not in temp dir
+)
 
 import setup_pychronia_env
 
@@ -21,17 +23,20 @@ call_command('my_command', 'foo', bar='baz')
 
 # Quick setup of logging
 logging.basicConfig()
-logging.getLogger('').setLevel(logging.INFO)
+logging.getLogger("").setLevel(logging.INFO)
 
 if __name__ == "__main__":
-
     arguments = [arg.lower() for arg in sys.argv]
 
     if any(help_key in arguments for help_key in ("help", "-h", "--help")):
         print("Usage: python %s [reset_django|reset_zodb|pack_file|runserver]" % sys.argv[0])
-        print("- reset_zodb: reset ZODB databases (game data) to their initial state; see sources for how to use the 'use_fixture' subcommand")
+        print(
+            "- reset_zodb: reset ZODB databases (game data) to their initial state; see sources for how to use the 'use_fixture' subcommand"
+        )
         print("- reset_django: reset django databases (authentication sessions) to their initial state")
-        print("- pack_file: cleans and compresses ZODB file, in case it gets too heavy (test server must not be running)")
+        print(
+            "- pack_file: cleans and compresses ZODB file, in case it gets too heavy (test server must not be running)"
+        )
         print("- runserver: run local django dev server, against persistent databases")
         sys.exit(1)
 
@@ -51,11 +56,13 @@ if __name__ == "__main__":
             skip_initializations = False
             skip_randomizations = False
             yaml_fixture = None
-        create_game_instance(game_instance_id="DEMO",
-                             creator_login="ze_creator",
-                             skip_initializations=skip_initializations,
-                             yaml_fixture=yaml_fixture,
-                             skip_randomizations=skip_randomizations)
+        create_game_instance(
+            game_instance_id="DEMO",
+            creator_login="ze_creator",
+            skip_initializations=skip_initializations,
+            yaml_fixture=yaml_fixture,
+            skip_randomizations=skip_randomizations,
+        )
 
     elif "reset_django" in arguments:
         if not settings.DEBUG:
@@ -64,7 +71,6 @@ if __name__ == "__main__":
         execute_from_command_line()
         sys.argv[1:] = ("flush --noinput --settings=%s" % settings_module).split()
         execute_from_command_line()
-
 
     elif "pack_file" in arguments:
         from pychronia_game import utilities
@@ -76,5 +82,6 @@ if __name__ == "__main__":
 
     else:
         sys.argv[1:] = (
-        "runserver 127.0.0.1:8000 --settings=%s" % settings_module).split()  # beware, with auto-reload this is applied twice...
+            "runserver 127.0.0.1:8000 --settings=%s" % settings_module
+        ).split()  # beware, with auto-reload this is applied twice...
         execute_from_command_line()

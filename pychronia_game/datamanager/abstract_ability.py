@@ -22,8 +22,9 @@ class AbilityMetaclass(GameViewMetaclass, type):
 
 # we us this syntax, because we can't dynamically assign a tuple of bases in a normal "class" definition
 AbstractAbilityBases = tuple(reversed(ACTION_MIDDLEWARES)) + (
-AbstractGameView,)  # middlewares FIRST, so that they can override game view stuffs...
-AbstractAbilityBasesAdapter = AbilityMetaclass('AbstractAbilityBasesAdapter', AbstractAbilityBases, {})
+    AbstractGameView,
+)  # middlewares FIRST, so that they can override game view stuffs...
+AbstractAbilityBasesAdapter = AbilityMetaclass("AbstractAbilityBasesAdapter", AbstractAbilityBases, {})
 
 """
 print(">>>>>>>>>", AbstractAbilityBases)
@@ -48,22 +49,22 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         return self  # TRICK - abilities behaves as extensions of the datamanager!!
 
     # can't be a classmethod anymore because we need action middleware settings
-    def _common_instantiate_form(self,
-                                 new_action_name,
-                                 form_options=None,
-                                 **kwargs):
+    def _common_instantiate_form(self, new_action_name, form_options=None, **kwargs):
         final_form_options = self.get_game_form_extra_params(action_name=new_action_name)
         if form_options:
             final_form_options.update(form_options)
         del form_options
-        return super()._common_instantiate_form(new_action_name=new_action_name,
-                                                                     form_options=final_form_options,
-                                                                     **kwargs)
+        return super()._common_instantiate_form(
+            new_action_name=new_action_name, form_options=final_form_options, **kwargs
+        )
 
     def _execute_game_action_with_middlewares(self, action_name, method, *args, **kwargs):
         assert "_test_" in action_name or method.__name__ == self.GAME_ACTIONS[action_name]["callback"], (
-        action_name, method)  # only in tests it could be false
-        if __debug__: self.notify_event("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES")
+            action_name,
+            method,
+        )  # only in tests it could be false
+        if __debug__:
+            self.notify_event("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES")
 
         # we transform the callback method so that it only expects keyword arguments (easier to deal with, in middleware chain)
         flattened_method = rsdecorator.flatten_function_signature(method)
@@ -75,12 +76,12 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         assert self.is_in_writing_transaction()
         if not self.has_action_middlewares_configured(action_name=action_name):
             # slight optimization, we bypass all the middlewares chain
-            return super()._execute_game_action_callback(action_name=action_name,
-                                                                              unfiltered_params=unfiltered_params)
+            return super()._execute_game_action_callback(action_name=action_name, unfiltered_params=unfiltered_params)
         else:
             callback_name = self.GAME_ACTIONS[action_name]["callback"]
-            (callback, relevant_args) = self._resolve_callback_callargs(callback_name=callback_name,
-                                                                        unfiltered_params=unfiltered_params)
+            (callback, relevant_args) = self._resolve_callback_callargs(
+                callback_name=callback_name, unfiltered_params=unfiltered_params
+            )
             return self._execute_game_action_with_middlewares(action_name=action_name, method=callback, **relevant_args)
 
     def _process_standard_request(self, request, *args, **kwargs):
@@ -162,7 +163,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
     @transaction_watcher(always_writable=True)  # lazy setup is authorized anytime
     def perform_lazy_initializations(self):
         private_key = self._get_private_key()
-        #print ("@@@@@@@@@@", self.ability_data)
+        # print ("@@@@@@@@@@", self.ability_data)
         if private_key not in self.ability_data["data"]:
             self.logger.warning("Setting up private data for '%s'", private_key)
             private_data = self.ability_data["data"].setdefault(private_key, PersistentMapping())
@@ -237,13 +238,15 @@ class AbstractPartnershipAbility(AbstractAbility):
         Returns the new message ID.
         """
 
-        msg_id = self.post_message(sender_email=self.get_character_email(),
-                                   recipient_emails=[self.dedicated_email],
-                                   subject=subject,
-                                   body=body,
-                                   attachment=None,
-                                   date_or_delay_mn=None,  # immediate
-                                   parent_id=None)
+        msg_id = self.post_message(
+            sender_email=self.get_character_email(),
+            recipient_emails=[self.dedicated_email],
+            subject=subject,
+            body=body,
+            attachment=None,
+            date_or_delay_mn=None,  # immediate
+            parent_id=None,
+        )
         if mark_as_read_by_master:
             self.set_dispatched_message_state_flags(username=self.master_login, msg_id=msg_id, has_read=True)
 
@@ -257,13 +260,15 @@ class AbstractPartnershipAbility(AbstractAbility):
 
         assert parent_id == self._last_request_msg_id  # ATM always true
 
-        msg_id = self.post_message(sender_email=self.dedicated_email,
-                                   recipient_emails=[self.get_character_email()],
-                                   subject=subject,
-                                   body=body,
-                                   attachment=attachment,
-                                   date_or_delay_mn=self.auto_answer_delay_mn,
-                                   parent_id=parent_id)
+        msg_id = self.post_message(
+            sender_email=self.dedicated_email,
+            recipient_emails=[self.get_character_email()],
+            subject=subject,
+            body=body,
+            attachment=attachment,
+            date_or_delay_mn=self.auto_answer_delay_mn,
+            parent_id=parent_id,
+        )
         return msg_id
 
     def _send_processing_result_to_master(self, parent_id, subject, body, attachment=None):
@@ -275,22 +280,24 @@ class AbstractPartnershipAbility(AbstractAbility):
 
         recipient = self.get_character_email()
         warning_msg = _(
-            "*Below is the output of the automated ability processing, for recipient %(recipient)s. Please review it, modify it, and mail it manually to the user, with a proper delay.*") % SDICT(recipient=recipient)
+            "*Below is the output of the automated ability processing, for recipient %(recipient)s. Please review it, modify it, and mail it manually to the user, with a proper delay.*"
+        ) % SDICT(recipient=recipient)
 
         body_prefix = warning_msg + "\n\n-------\n\n"
 
-        msg_id = self.post_message(sender_email=self.dedicated_email,
-                                   recipient_emails=[self.dedicated_email],
-                                   subject=subject,
-                                   body=body_prefix + body,
-                                   attachment=attachment,
-                                   date_or_delay_mn=0,  # IMPORTANT, dispatched NOW
-                                   parent_id=parent_id)
+        msg_id = self.post_message(
+            sender_email=self.dedicated_email,
+            recipient_emails=[self.dedicated_email],
+            subject=subject,
+            body=body_prefix + body,
+            attachment=attachment,
+            date_or_delay_mn=0,  # IMPORTANT, dispatched NOW
+            parent_id=parent_id,
+        )
 
-        self.set_dispatched_message_state_flags(username=self.master_login,
-                                                msg_id=msg_id,
-                                                has_starred=True,
-                                                has_read=False)
+        self.set_dispatched_message_state_flags(
+            username=self.master_login, msg_id=msg_id, has_starred=True, has_read=False
+        )
         return msg_id
 
     def _process_standard_exchange_with_partner(self, request_msg_data, response_msg_data=None):
@@ -301,31 +308,34 @@ class AbstractPartnershipAbility(AbstractAbility):
 
         auto_response_disabled = self.get_global_parameter("disable_automated_ability_responses")
 
-        request_msg_id = self._send_processing_request(subject=request_msg_data["subject"],
-                                                       body=request_msg_data["body"],
-                                                       mark_as_read_by_master=bool(response_msg_data))
+        request_msg_id = self._send_processing_request(
+            subject=request_msg_data["subject"],
+            body=request_msg_data["body"],
+            mark_as_read_by_master=bool(response_msg_data),
+        )
         assert self.get_dispatched_message_by_id(request_msg_id)  # immediately sent
 
         response_msg_id = None
 
         if not response_msg_data:
             # we use the request message to warn game master about action required
-            self.set_dispatched_message_state_flags(username=self.master_login,
-                                                    msg_id=request_msg_id,
-                                                    has_starred=True)
+            self.set_dispatched_message_state_flags(username=self.master_login, msg_id=request_msg_id, has_starred=True)
         else:
             # only send response message to player if it's allowed by game settings
-            processor_func = (self._send_processing_result_to_master
-                                if auto_response_disabled else
-                              self._send_back_processing_result)
+            processor_func = (
+                self._send_processing_result_to_master if auto_response_disabled else self._send_back_processing_result
+            )
 
-            response_msg_id = processor_func(parent_id=request_msg_id,
-                                                subject=response_msg_data["subject"],
-                                                body=response_msg_data["body"],
-                                                attachment=response_msg_data["attachment"])
+            response_msg_id = processor_func(
+                parent_id=request_msg_id,
+                subject=response_msg_data["subject"],
+                body=response_msg_data["body"],
+                attachment=response_msg_data["attachment"],
+            )
         return response_msg_id
 
-'''
+
+"""
     def _instantiate_game_form(self,
                           new_action_name, 
                           hide_on_success=False,
@@ -338,7 +348,7 @@ class AbstractPartnershipAbility(AbstractAbility):
                                                               previous_form_data=previous_form_data,
                                                               initial_data=initial_data,
                                                               form_initializer=form_initializer) 
-       '''
+       """
 
 '''
     def _check_permissions(self):
@@ -428,7 +438,7 @@ class AbstractPartnershipAbility(AbstractAbility):
         record["max_items"] += num_more
 '''
 
-'''
+"""
     Abilities may be bought, used, and their maximum number changed
     according to game events.
 
@@ -438,4 +448,4 @@ class AbstractPartnershipAbility(AbstractAbility):
         max_items     # limit value for (items_used+items_available)
         item_price     # how much it costs to have one more available item
         payment_types # tuple of values from ["gems", "money"]
-'''
+"""

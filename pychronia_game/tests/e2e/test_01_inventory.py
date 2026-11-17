@@ -20,8 +20,8 @@ def test_inventory_is_complete():
 
     assert len(entries) == len(inner_game_urlpatterns), (
         "Inventory entry count (%d) doesn't match inner_game_urlpatterns (%d) -- "
-        "some URL pattern isn't being picked up by _build_inventory()"
-        % (len(entries), len(inner_game_urlpatterns)))
+        "some URL pattern isn't being picked up by _build_inventory()" % (len(entries), len(inner_game_urlpatterns))
+    )
 
     for entry in entries:
         assert entry.category in _inventory.ALL_CATEGORIES, entry

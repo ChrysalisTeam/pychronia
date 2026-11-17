@@ -2,8 +2,12 @@
 
 import setup_pychronia_env
 import pychronia_game.models  # initializes everything
-from pychronia_game.datamanager.datamanager_administrator import delete_game_instance, create_game_instance, \
-    change_game_instance_status, UsageError
+from pychronia_game.datamanager.datamanager_administrator import (
+    delete_game_instance,
+    create_game_instance,
+    change_game_instance_status,
+    UsageError,
+)
 
 DEMO_NAME = "DEMO"
 

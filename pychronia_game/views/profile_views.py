@@ -8,17 +8,22 @@ from pychronia_game.utilities.select2_extensions import Select2TagsField
 
 
 class FriendshipMinDurationForm(AbstractGameForm):
-    duration_mn = django_forms.IntegerField(label=gettext_lazy("Set minimum friendship duration in minutes"),
-                                            max_value=60 * 24 * 30, min_value=0, required=True)
+    duration_mn = django_forms.IntegerField(
+        label=gettext_lazy("Set minimum friendship duration in minutes"),
+        max_value=60 * 24 * 30,
+        min_value=0,
+        required=True,
+    )
 
     def __init__(self, datamanager, *args, **kwargs):
         super().__init__(datamanager, *args, **kwargs)
-        self.fields['duration_mn'].initial = datamanager.get_global_parameter("friendship_minimum_duration_mn_abs")
+        self.fields["duration_mn"].initial = datamanager.get_global_parameter("friendship_minimum_duration_mn_abs")
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Login"),
-               always_allow_post=True)
-def login(request, template_name='profile/login.html'):
+@register_view(
+    access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Login"), always_allow_post=True
+)
+def login(request, template_name="profile/login.html"):
     form = None
     user = request.datamanager.user
     next_url = utilities.get_request_param(request, "next", "")
@@ -35,13 +40,14 @@ def login(request, template_name='profile/login.html'):
             if request.POST.get("password_forgotten", None):  # password recovery system
                 with action_failure_handler(request, success_message=None):
                     request.datamanager.get_secret_question(username)  # check that it's OK
-                    return HttpResponseRedirect(game_view_url(secret_question,
-                                                              datamanager=request.datamanager,
-                                                              concerned_username=username))
+                    return HttpResponseRedirect(
+                        game_view_url(secret_question, datamanager=request.datamanager, concerned_username=username)
+                    )
 
             else:  # normal authentication
-                with action_failure_handler(request, _(
-                        "You've been successfully logged in.")):  # message won't be seen because of redirect...
+                with action_failure_handler(
+                    request, _("You've been successfully logged in.")
+                ):  # message won't be seen because of redirect...
                     try_authenticating_with_credentials(request, username, password)
                     if next_url:
                         _target_url = next_url
@@ -54,17 +60,23 @@ def login(request, template_name='profile/login.html'):
         form = forms.AuthenticationForm()
 
     assert isinstance(next_url, str)  # not NONE, else pb when displaying it!
-    return render(request,
-                  template_name,
-                  {
-                      'page_title': _("User Authentication"),
-                      'login_form': form,
-                      'next_url': next_url,
-                  })
+    return render(
+        request,
+        template_name,
+        {
+            "page_title": _("User Authentication"),
+            "login_form": form,
+            "next_url": next_url,
+        },
+    )
 
 
-@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=gettext_lazy("Log Out"),
-               always_allow_post=True)
+@register_view(
+    access=UserAccess.authenticated,
+    requires_global_permission=False,
+    title=gettext_lazy("Log Out"),
+    always_allow_post=True,
+)
 def logout(request):
     logout_session(request)
 
@@ -74,7 +86,7 @@ def logout(request):
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=gettext_lazy("Password Recovery"))
-def secret_question(request, concerned_username, template_name='profile/secret_question.html'):
+def secret_question(request, concerned_username, template_name="profile/secret_question.html"):
     secret_question = None
     form = None
 
@@ -85,7 +97,6 @@ def secret_question(request, concerned_username, template_name='profile/secret_q
         return HttpResponseRedirect(game_view_url("pychronia_game.views.homepage", datamanager=request.datamanager))
 
     if request.method == "POST" and request.POST.get("recover", None):
-
         # WARNING - manual validation, so that secret answer is checked BEFORE email address
         secret_answer_attempt = request.POST.get("secret_answer", None)
         if secret_answer_attempt:
@@ -94,11 +105,13 @@ def secret_question(request, concerned_username, template_name='profile/secret_q
         if target_email:
             target_email = target_email.strip()
 
-        with action_failure_handler(request,
-                                    _("Your password will be emailed to your backup address as soon as possible.")):
+        with action_failure_handler(
+            request, _("Your password will be emailed to your backup address as soon as possible.")
+        ):
             try:
-                request.datamanager.process_secret_answer_attempt(concerned_username, secret_answer_attempt,
-                                                                  target_email)  # raises error on bad answer/email
+                request.datamanager.process_secret_answer_attempt(
+                    concerned_username, secret_answer_attempt, target_email
+                )  # raises error on bad answer/email
                 # success
                 secret_question = None
                 form = None
@@ -112,14 +125,16 @@ def secret_question(request, concerned_username, template_name='profile/secret_q
 
     assert (not form and not secret_question) or (form and secret_question)
 
-    return render(request,
-                  template_name,
-                  {
-                      'page_title': _("Password Recovery"),
-                      'concerned_username': concerned_username,
-                      'secret_question': secret_question,
-                      'secret_question_form': form,
-                  })
+    return render(
+        request,
+        template_name,
+        {
+            "page_title": _("Password Recovery"),
+            "concerned_username": concerned_username,
+            "secret_question": secret_question,
+            "secret_question_form": form,
+        },
+    )
 
 
 @register_view
@@ -130,37 +145,44 @@ class CharacterProfile(AbstractGameView):
     ACCESS = UserAccess.character
     REQUIRES_GLOBAL_PERMISSION = False
 
-    GAME_ACTIONS = dict(password_change_form=dict(title=gettext_lazy("Change password"),
-                                                  form_class=forms.PasswordChangeForm,
-                                                  callback="process_password_change_form"),
-                        secret_question_change_form=dict(title=gettext_lazy("Change secret question"),
-                                                         form_class=forms.SecretQuestionChangeForm,
-                                                         callback="process_secret_question_change_form"))
+    GAME_ACTIONS = dict(
+        password_change_form=dict(
+            title=gettext_lazy("Change password"),
+            form_class=forms.PasswordChangeForm,
+            callback="process_password_change_form",
+        ),
+        secret_question_change_form=dict(
+            title=gettext_lazy("Change secret question"),
+            form_class=forms.SecretQuestionChangeForm,
+            callback="process_secret_question_change_form",
+        ),
+    )
 
     def get_template_vars(self, previous_form_data=None):
         character_properties = self.datamanager.get_character_properties()
 
-        password_change_form = self._instantiate_game_form(new_action_name="password_change_form",
-                                                           hide_on_success=False,
-                                                           previous_form_data=previous_form_data)
+        password_change_form = self._instantiate_game_form(
+            new_action_name="password_change_form", hide_on_success=False, previous_form_data=previous_form_data
+        )
 
         # the current secret answer is never displayed, on purpose
         secret_question_change_form = self._instantiate_game_form(
             new_action_name="secret_question_change_form",
             hide_on_success=False,
             previous_form_data=previous_form_data,
-            initial_data=dict(secret_question=character_properties["secret_question"] or ""))
+            initial_data=dict(secret_question=character_properties["secret_question"] or ""),
+        )
 
         user_gems = [x[0] for x in character_properties["gems"]]
         user_artefacts = [value["title"] for (key, value) in list(self.datamanager.get_user_artefacts().items())]
 
         return {
-            'page_title': _("User Profile"),
-            'character_properties': character_properties,
-            'user_gems': user_gems,
-            'user_artefacts': user_artefacts,
-            'password_change_form': password_change_form,
-            'secret_question_change_form': secret_question_change_form,
+            "page_title": _("User Profile"),
+            "character_properties": character_properties,
+            "user_gems": user_gems,
+            "user_artefacts": user_artefacts,
+            "password_change_form": password_change_form,
+            "secret_question_change_form": secret_question_change_form,
         }
 
     def process_password_change_form(self, old_password, new_password1, new_password2, use_gems=()):
@@ -169,37 +191,43 @@ class CharacterProfile(AbstractGameView):
 
         if new_password1 != new_password2:
             raise AbnormalUsageError(
-                _("New passwords not matching"))  # will be logged as critical - shouldn't happen due to form checks
+                _("New passwords not matching")
+            )  # will be logged as critical - shouldn't happen due to form checks
 
-        self.datamanager.process_password_change_attempt(self.datamanager.user.username,
-                                                         old_password=old_password,
-                                                         new_password=new_password1)
+        self.datamanager.process_password_change_attempt(
+            self.datamanager.user.username, old_password=old_password, new_password=new_password1
+        )
 
-        self.datamanager.log_game_event(gettext_noop("User account password has been changed."),
-                                        url=None,
-                                        visible_by=[self.datamanager.username])
+        self.datamanager.log_game_event(
+            gettext_noop("User account password has been changed."), url=None, visible_by=[self.datamanager.username]
+        )
 
         return _("Password change successfully performed.")
 
-    def process_secret_question_change_form(self, current_password, secret_question="", secret_answer="",
-                                            use_gems=()):
+    def process_secret_question_change_form(self, current_password, secret_question="", secret_answer="", use_gems=()):
         assert current_password
         assert self.datamanager.user.is_character
 
-        self.datamanager.process_secret_question_change_attempt(self.datamanager.user.username,
-                                                                current_password=current_password,
-                                                                secret_question=secret_question,
-                                                                secret_answer=secret_answer)
+        self.datamanager.process_secret_question_change_attempt(
+            self.datamanager.user.username,
+            current_password=current_password,
+            secret_question=secret_question,
+            secret_answer=secret_answer,
+        )
 
         if secret_question:
-            self.datamanager.log_game_event(gettext_noop("User account secret question has been changed."),
-                                            url=None,
-                                            visible_by=[self.datamanager.username])
+            self.datamanager.log_game_event(
+                gettext_noop("User account secret question has been changed."),
+                url=None,
+                visible_by=[self.datamanager.username],
+            )
             return _("Secret question change successfully performed.")
         else:
-            self.datamanager.log_game_event(gettext_noop("User account secret question has been removed."),
-                                            url=None,
-                                            visible_by=[self.datamanager.username])
+            self.datamanager.log_game_event(
+                gettext_noop("User account secret question has been removed."),
+                url=None,
+                visible_by=[self.datamanager.username],
+            )
             return _("Secret question successfully removed.")
 
 
@@ -218,7 +246,7 @@ class FriendshipRequestForm(AbstractGameForm):
         self.fields[field_name].max_selection_size = 1  # IMPORTANT
 
     def clean_other_username(self):
-        data = self.cleaned_data['other_username']
+        data = self.cleaned_data["other_username"]
         assert not isinstance(data, str)
         return data[0] if data else None
 
@@ -228,22 +256,28 @@ class FriendshipManagementView(AbstractGameView):
     TITLE = gettext_lazy("Friendship Management")
     NAME = "friendship_management"
 
-    GAME_ACTIONS = dict(do_propose_friendship=dict(title=gettext_lazy("Propose friendship"),
-                                                   form_class=FriendshipRequestForm,
-                                                   callback="do_propose_friendship"),
-                        do_accept_friendship=dict(title=gettext_lazy("Accept friendship"),
-                                                  form_class=None,
-                                                  callback="do_accept_friendship"),
-                        do_cancel_proposal=dict(title=gettext_lazy("Cancel friendship proposal"),
-                                                form_class=None,
-                                                callback="do_cancel_proposal"),
-                        do_cancel_friendship=dict(title=gettext_lazy("Cancel friendship"),
-                                                  form_class=None,
-                                                  callback="do_cancel_friendship"))
+    GAME_ACTIONS = dict(
+        do_propose_friendship=dict(
+            title=gettext_lazy("Propose friendship"), form_class=FriendshipRequestForm, callback="do_propose_friendship"
+        ),
+        do_accept_friendship=dict(
+            title=gettext_lazy("Accept friendship"), form_class=None, callback="do_accept_friendship"
+        ),
+        do_cancel_proposal=dict(
+            title=gettext_lazy("Cancel friendship proposal"), form_class=None, callback="do_cancel_proposal"
+        ),
+        do_cancel_friendship=dict(
+            title=gettext_lazy("Cancel friendship"), form_class=None, callback="do_cancel_friendship"
+        ),
+    )
 
-    ADMIN_ACTIONS = dict(set_friendship_minimum_duration=dict(title=gettext_lazy("Set minimum friendship duration"),
-                                                              form_class=FriendshipMinDurationForm,
-                                                              callback="set_friendship_minimum_duration"), )
+    ADMIN_ACTIONS = dict(
+        set_friendship_minimum_duration=dict(
+            title=gettext_lazy("Set minimum friendship duration"),
+            form_class=FriendshipMinDurationForm,
+            callback="set_friendship_minimum_duration",
+        ),
+    )
 
     TEMPLATE = "profile/friendship_management.html"
 
@@ -259,13 +293,24 @@ class FriendshipManagementView(AbstractGameView):
     def _relation_type_to_action(self, relation_type):
         if relation_type == "proposed_to":
             return (
-            "do_cancel_proposal", _("Cancel friendship proposal."), _("You've proposed a friendship to that user."))
+                "do_cancel_proposal",
+                _("Cancel friendship proposal."),
+                _("You've proposed a friendship to that user."),
+            )
         elif relation_type == "requested_by":
-            return ("do_accept_friendship", _("Accept friendship proposal."),
-                    _("You've been proposed a friendship by that user."))
+            return (
+                "do_accept_friendship",
+                _("Accept friendship proposal."),
+                _("You've been proposed a friendship by that user."),
+            )
         elif relation_type == "recent_friend":
-            return (None, None, _(
-                "You've been friend with that user for a short time (impossible to break this friendship at the moment)."))
+            return (
+                None,
+                None,
+                _(
+                    "You've been friend with that user for a short time (impossible to break this friendship at the moment)."
+                ),
+            )
         elif relation_type == "old_friend":
             return ("do_cancel_friendship", _("Abort friendship."), _("You're friends with that user."))
         else:
@@ -276,16 +321,19 @@ class FriendshipManagementView(AbstractGameView):
 
         friendship_statuses = self.datamanager.get_other_characters_friendship_statuses()
 
-        friendship_actions = sorted([(other_username, self._relation_type_to_action(relation_type))
-                                     for (other_username, relation_type) in list(friendship_statuses.items())
-                                     if
-                                     relation_type])  # list of pairs (other_username, relation_type), ONLY when a relation of some kind exists
+        friendship_actions = sorted(
+            [
+                (other_username, self._relation_type_to_action(relation_type))
+                for (other_username, relation_type) in list(friendship_statuses.items())
+                if relation_type
+            ]
+        )  # list of pairs (other_username, relation_type), ONLY when a relation of some kind exists
 
         return {
-            'page_title': _("Friendship Management"),
-            'current_friends': self.datamanager.get_friends_for_character(),
+            "page_title": _("Friendship Management"),
+            "current_friends": self.datamanager.get_friends_for_character(),
             "friendship_actions": friendship_actions,
-            'friendship_request_form': self._instantiate_game_form(new_action_name="do_propose_friendship")
+            "friendship_request_form": self._instantiate_game_form(new_action_name="do_propose_friendship"),
         }
 
     def do_propose_friendship(self, other_username, use_gems=()):
@@ -295,8 +343,9 @@ class FriendshipManagementView(AbstractGameView):
 
         res = self.datamanager.propose_friendship(recipient=other_username)
         if res:
-            return _(
-                "You're now friend with %s, as that user concurrently proposed friendship too.") % other_username  # should be fairly rare
+            return (
+                _("You're now friend with %s, as that user concurrently proposed friendship too.") % other_username
+            )  # should be fairly rare
         else:
             return _("Your friendship proposal to %s has been recorded.") % other_username
 
@@ -305,38 +354,48 @@ class FriendshipManagementView(AbstractGameView):
         if res:
             return _("You're now friend with %s.") % other_username
         else:
-            return _(
-                "Your friendship proposal to user %s has been recorded, since he has cancelled his own friendship proposal.") % other_username  # should be fairly rare
+            return (
+                _(
+                    "Your friendship proposal to user %s has been recorded, since he has cancelled his own friendship proposal."
+                )
+                % other_username
+            )  # should be fairly rare
 
     def do_cancel_proposal(self, other_username):
 
         res = self.datamanager.terminate_friendship(
-            rejected_user=other_username)  # might raise exception if (rare) concurrent cancelation occurred
+            rejected_user=other_username
+        )  # might raise exception if (rare) concurrent cancelation occurred
         if res:
-            return _(
-                "Your friendship with %s has been properly canceled, since he had accepted it concurrently.") % other_username
+            return (
+                _("Your friendship with %s has been properly canceled, since he had accepted it concurrently.")
+                % other_username
+            )
         else:
-
             return _("Your friendship proposal to user %s has been properly canceled.") % other_username
 
     def do_cancel_friendship(self, other_username):
 
         res = self.datamanager.terminate_friendship(
-            rejected_user=other_username)  # might raise exception if (rare) concurrent cancelation occurred
+            rejected_user=other_username
+        )  # might raise exception if (rare) concurrent cancelation occurred
         if res:
             return _("Your friendship with %s has been properly canceled.") % other_username
         else:
-            return _(
-                "Your friendship proposal to user %s has been properly canceled.") % other_username  # weirdest case...
+            return (
+                _("Your friendship proposal to user %s has been properly canceled.") % other_username
+            )  # weirdest case...
 
 
 friendship_management = FriendshipManagementView.as_view
 
 
-@register_view(access=UserAccess.authenticated,
-               title=gettext_lazy("System Events"),
-               title_for_master=gettext_lazy("All Game Events"))
-def game_events(request, template_name='administration/game_events.html'):
+@register_view(
+    access=UserAccess.authenticated,
+    title=gettext_lazy("System Events"),
+    title_for_master=gettext_lazy("All Game Events"),
+)
+def game_events(request, template_name="administration/game_events.html"):
     events = request.datamanager.get_game_events()  # FILTERS by current user
 
     trans_events = []
@@ -355,21 +414,19 @@ def game_events(request, template_name='administration/game_events.html'):
 
     trans_events = list(reversed(trans_events))  # most recent first
 
-    return render(request,
-                  template_name,
-                  {
-                      'events': trans_events
-                  })
+    return render(request, template_name, {"events": trans_events})
 
 
 @register_view(access=UserAccess.character, requires_global_permission=False, title=gettext_lazy("Instructions"))
-def ___instructions(request, template_name='profile/instructions.html'):  # TODO - remove that ?????
+def ___instructions(request, template_name="profile/instructions.html"):  # TODO - remove that ?????
 
     intro_data = request.datamanager.get_game_instructions()
 
-    return render(request,
-                  template_name,
-                  {
-                      'page_title': _("Instructions"),
-                      'intro_data': intro_data,
-                  })
+    return render(
+        request,
+        template_name,
+        {
+            "page_title": _("Instructions"),
+            "intro_data": intro_data,
+        },
+    )

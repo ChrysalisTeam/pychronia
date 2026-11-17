@@ -2,8 +2,9 @@
 
 import os
 
-os.environ[
-    "DJANGO_SETTINGS_MODULE"] = settings_module = "pychronia_common.tests.persistent_mode_settings"  # with DB not in temp dir
+os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = (
+    "pychronia_common.tests.persistent_mode_settings"  # with DB not in temp dir
+)
 
 import setup_pychronia_env  # only AFTER setting this DJANGO_SETTINGS_MODULE
 

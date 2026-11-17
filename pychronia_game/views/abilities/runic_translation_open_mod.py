@@ -35,7 +35,8 @@ class OpenRunicTranslationAbility(RunicTranslationAbility):
             raise UsageError(_("The transcription submitted is empty."))
 
         item_name = self._get_closest_item_name_or_none(
-            decoding_attempt=transcription)  # will always return non-None, unless no objects are translatable
+            decoding_attempt=transcription
+        )  # will always return non-None, unless no objects are translatable
 
         if not item_name:
             raise UsageError(_("No matching runic pattern found."))
@@ -43,14 +44,16 @@ class OpenRunicTranslationAbility(RunicTranslationAbility):
         translation = self._translate_rune_message(item_name=item_name, rune_transcription=transcription)
         del item_name
 
-        result_message = dedent(_("""
+        result_message = dedent(
+            _("""
                         Below is the output of the automated translation process for the runes of the targeted object.
                         Please note that any error in the decoding of runes may lead to important errors in the translation result.
 
                         Runes transcription: "%(original)s"
 
                         Translation result: "%(translation)s"
-                      """)).strip() % SDICT(original=transcription, translation=translation)
+                      """)
+        ).strip() % SDICT(original=transcription, translation=translation)
 
         # HACKS to transmit data to TEMPLATE and FORM!
         self.transcription = transcription

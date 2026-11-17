@@ -2,13 +2,15 @@ from pychronia_game.common import *
 from django.db.utils import DatabaseError
 from pychronia_game.utilities import encryption
 
-SESSION_TICKET_KEY_TEMPLATE = 'pychronia_session_ticket_%s'
+SESSION_TICKET_KEY_TEMPLATE = "pychronia_session_ticket_%s"
 IMPERSONATION_TARGET_POST_VARIABLE = "_set_impersonation_target_"
 IMPERSONATION_WRITABILITY_POST_VARIABLE = "_set_impersonation_writability_"
 ENFORCED_SESSION_TICKET_NAME = "session_ticket"
 
 TEMP_URL_USERNAME = "redirect"  # with this as placeholder in URL, user will get redirected to proper URL without error
-UNIVERSAL_URL_USERNAME = "anyuser"  # with this as placeholder in URL, no redirection will occur, session will not be URL-backed
+UNIVERSAL_URL_USERNAME = (
+    "anyuser"  # with this as placeholder in URL, no redirection will occur, session will not be URL-backed
+)
 
 """
 Django Notes
@@ -79,14 +81,19 @@ def _lookup_enforced_session_or_none(request):
                     is_observer = bool(is_observer_str)  # should be "observer"
                     del is_observer_str
                 if enforced_instance_id != request.datamanager.game_instance_id:
-                    logging.warning("Wrong game instance id in enforced ticket: %s should contain %s instead",
-                                    login_data, request.datamanager.game_instance_id)
+                    logging.warning(
+                        "Wrong game instance id in enforced ticket: %s should contain %s instead",
+                        login_data,
+                        request.datamanager.game_instance_id,
+                    )
                 else:
-                    session_ticket = dict(game_instance_id=enforced_instance_id,
-                                          game_username=enforced_login,
-                                          impersonation_target=None,
-                                          impersonation_writability=None,
-                                          is_observer=is_observer)
+                    session_ticket = dict(
+                        game_instance_id=enforced_instance_id,
+                        game_username=enforced_login,
+                        impersonation_target=None,
+                        impersonation_writability=None,
+                        is_observer=is_observer,
+                    )
     return session_ticket
 
 
@@ -112,14 +119,17 @@ def try_authenticating_with_session(request, url_game_username=None):
 
     # BEWARE, here we distinguish between empty string (=> stop impersonation) and None (=> use current settings)
     if IMPERSONATION_TARGET_POST_VARIABLE in request.POST or IMPERSONATION_WRITABILITY_POST_VARIABLE in request.POST:
-
         # Beware here, pop() on QueryDict would return a LIST always
-        requested_impersonation_target = request.POST.get(IMPERSONATION_TARGET_POST_VARIABLE,
-                                                          None)  # beware, != "" here
-        requested_impersonation_writability = request.POST.get(IMPERSONATION_WRITABILITY_POST_VARIABLE,
-                                                               None)  # ternary value
+        requested_impersonation_target = request.POST.get(
+            IMPERSONATION_TARGET_POST_VARIABLE, None
+        )  # beware, != "" here
+        requested_impersonation_writability = request.POST.get(
+            IMPERSONATION_WRITABILITY_POST_VARIABLE, None
+        )  # ternary value
         if requested_impersonation_writability is not None:
-            requested_impersonation_writability = True if requested_impersonation_writability.strip().lower() == "true" else False
+            requested_impersonation_writability = (
+                True if requested_impersonation_writability.strip().lower() == "true" else False
+            )
 
         request.POST.clear()  # thanks to our middleware that made it mutable...
         request.method = "GET"  # dirty, isn't it ?
@@ -128,14 +138,18 @@ def try_authenticating_with_session(request, url_game_username=None):
         requested_impersonation_target = requested_impersonation_writability = None
 
     # priority to POST data, but beware of special (requested_impersonation_target=="") case
-    final_requested_impersonation_target = requested_impersonation_target if requested_impersonation_target is not None else url_game_username
+    final_requested_impersonation_target = (
+        requested_impersonation_target if requested_impersonation_target is not None else url_game_username
+    )
 
     try:
-        res = datamanager.authenticate_with_session_data(session_ticket=session_ticket,  # may be None
-                                                         requested_impersonation_target=final_requested_impersonation_target,
-                                                         requested_impersonation_writability=requested_impersonation_writability,
-                                                         django_user=request.user)  # can be anonymous
-        #print("NEW AUTHENTICATION DATA IN SESSION", res)
+        res = datamanager.authenticate_with_session_data(
+            session_ticket=session_ticket,  # may be None
+            requested_impersonation_target=final_requested_impersonation_target,
+            requested_impersonation_writability=requested_impersonation_writability,
+            django_user=request.user,
+        )  # can be anonymous
+        # print("NEW AUTHENTICATION DATA IN SESSION", res)
         request.session[instance_key] = res  # this refreshes expiry time, and ensures we properly modify session
 
     except UsageError:
@@ -150,8 +164,8 @@ def try_authenticating_with_session(request, url_game_username=None):
         request.session.save()  # force IMMEDIATE saving, to avoid lost updates between web and ajax (eg. chatroom) requests
     except DatabaseError as e:
         logging.warning(
-            "Immediate saving of django session failed (%r), it's expected during unit-tests when DB is not setup...",
-            e)
+            "Immediate saving of django session failed (%r), it's expected during unit-tests when DB is not setup...", e
+        )
 
 
 '''

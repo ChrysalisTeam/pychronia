@@ -2,14 +2,17 @@ import sys, os, tempfile, random, logging, re
 
 try:
     import PIL.Image  # that monolithic package has been exploded in several packages now
-    sys.modules['Image'] = PIL.Image  # WORKAROUND - prevents "AccessInit: hash collision: 3 for both 1 and 1"
+
+    sys.modules["Image"] = PIL.Image  # WORKAROUND - prevents "AccessInit: hash collision: 3 for both 1 and 1"
 except ImportError:
     raise
 
 try:
     import pymysql
+
     pymysql.install_as_MySQLdb()  # drop-in replacement
     import MySQLdb as Database
+
     # PyMySQL hardcodes version_info=(1, 4, 0, ...) to advertise its mysqlclient-API compatibility
     # level (unrelated to its own package version). Django 4.2 raised its hard minimum check to
     # mysqlclient>=1.4.3, which now rejects that hardcoded value even though PyMySQL's DB-API shim
@@ -20,6 +23,7 @@ except ImportError:
     raise
 
 from pychronia_common.relstorage_patches import apply_mariadb_patches
+
 apply_mariadb_patches()  # RelStorage generates MySQL-8-only SQL on MariaDB servers
 
 ##################### SETTINGS TO BE OVERRIDDEN BY DEPLOYMENT-SPECIFIC CONF FILE ####################
@@ -37,7 +41,9 @@ EMAIL_PORT = 25
 EMAIL_SUBJECT_PREFIX = ""
 EMAIL_USE_TLS = False
 
-ADMINS = MANAGERS = ()  # admins are for 50 errors, managers for 404 errors with BrokenLinkEmailsMiddleware  - format : (('John', 'john@example.com'),)
+ADMINS = (
+    MANAGERS
+) = ()  # admins are for 50 errors, managers for 404 errors with BrokenLinkEmailsMiddleware  - format : (('John', 'john@example.com'),)
 
 ROOT_URLCONF = None
 
@@ -60,19 +66,20 @@ CSRF_COOKIE_SECURE = True
 gettext = lambda s: s  # dummy placeholder for makemessages
 
 ROOT_PATH = os.path.dirname(
-    os.path.dirname(os.path.abspath(__file__)))  # base folder where pychronia packages are stored
+    os.path.dirname(os.path.abspath(__file__))
+)  # base folder where pychronia packages are stored
 
 INTERNAL_IPS = ()  # used for debug output etc.
 
-ALLOWED_HOSTS = ['*']  # should be overridden by local settings
+ALLOWED_HOSTS = ["*"]  # should be overridden by local settings
 
-SESSION_COOKIE_NAME = 'sessionid'  # DO NOT CHANGE - needed for phpbb integration
+SESSION_COOKIE_NAME = "sessionid"  # DO NOT CHANGE - needed for phpbb integration
 
-MEDIA_URL = '/media/'  # examples: "http://media.lawrence.com", "http://example.com/media/"
+MEDIA_URL = "/media/"  # examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_ROOT = os.path.join(ROOT_PATH, "media")  # for uploaded files, generated docs etc.
 
 STATIC_URL = "/static/"  #### or http://chrysalis-game.com/static/resources/ for proper mime-types
-ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'  # deprecated but required by djangocms
+ADMIN_MEDIA_PREFIX = STATIC_URL + "admin/"  # deprecated but required by djangocms
 STATIC_ROOT = os.path.join(ROOT_PATH, "static")  # where collectstatic cmd will place files
 STATICFILES_DIRS = ()
 
@@ -80,37 +87,35 @@ USE_ETAGS = False  # demandes heavy processing to compute response hashes
 
 # in templates, use DATE_FORMAT, DATETIME_FORMAT, SHORT_DATE_FORMAT or SHORT_DATETIME_FORMAT as date formats!
 USE_TZ = False  # we use naive datetimes ATM...
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 USE_I18N = True
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = "en"
 LANGUAGES = (
-    ('fr', gettext('French')),
-    ('en', gettext('English')),
+    ("fr", gettext("French")),
+    ("en", gettext("English")),
 )
 LOCALE_PATHS = ()  # in addition to application-local "locale/" dirs
 
 APPEND_SLASH = True  # so handy for mistyped urls...
 
 IGNORABLE_404_URLS = (  # ONLY SOON IN 1.5
-    re.compile(r'\.(php|cgi)$'),
+    re.compile(r"\.(php|cgi)$"),
 )
 
 # TEST_RUNNER = "" # override this to use another runner, eg. for pytest
 
 
 # List of callables that know how to import templates from various sources
-____TEMPLATE_LOADERS = (
-
-)
+____TEMPLATE_LOADERS = ()
 
 # Use Django templates using the new Django 1.8 TEMPLATES settings
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'OPTIONS': {
-            'debug': False,
-            'context_processors': [
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "OPTIONS": {
+            "debug": False,
+            "context_processors": [
                 "django.contrib.auth.context_processors.auth",
                 "django.template.context_processors.i18n",
                 "django.template.context_processors.debug",
@@ -121,26 +126,26 @@ TEMPLATES = [
                 # note that we use our own version in pychronia-game!  FIXME what ??
                 "sekizai.context_processors.sekizai",
             ],
-            'loaders': [
-                'django.template.loaders.filesystem.Loader',
-                'django.template.loaders.app_directories.Loader',
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
             ],
         },
     },
 ]
 
 MIDDLEWARE = (
-    'django.middleware.security.SecurityMiddleware',
-    'django.middleware.gzip.GZipMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'pychronia_common.middlewares.ReverseProxyFixer',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.middleware.gzip.GZipMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "pychronia_common.middlewares.ReverseProxyFixer",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 )
 
 # both sites frame some of their own pages: game item 3D views, django CMS toolbar's admin forms
@@ -149,30 +154,27 @@ X_FRAME_OPTIONS = "SAMEORIGIN"
 
 # to be extended in specific settings #
 INSTALLED_APPS = [
-    'pychronia_common',  # common templates, tags, static files etc. BEFORE OTHER APPS for overrides!
-
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',  # only these sessions are scalable for "sharding"
-    'django.contrib.sites',
-    'django.contrib.humanize',
-    'django.contrib.staticfiles',
-    'django.contrib.messages',  # for both game and cms now
-
-    'templateaddons',  # assign and headers tags
-    'django_select2',  # advanced select box
-    'easy_thumbnails',
-
-    'sekizai',
+    "pychronia_common",  # common templates, tags, static files etc. BEFORE OTHER APPS for overrides!
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",  # only these sessions are scalable for "sharding"
+    "django.contrib.sites",
+    "django.contrib.humanize",
+    "django.contrib.staticfiles",
+    "django.contrib.messages",  # for both game and cms now
+    "templateaddons",  # assign and headers tags
+    "django_select2",  # advanced select box
+    "easy_thumbnails",
+    "sekizai",
 ]
 
-TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
 # use a basic in-process cache by default
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'pychronia-cache',
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "pychronia-cache",
     }
 }
 # cache key prefix
@@ -182,7 +184,7 @@ KEY_PREFIX = "pychronia"
 try:
     import sentry.client
 
-    INSTALLED_APPS.append('sentry.client')
+    INSTALLED_APPS.append("sentry.client")
 except ImportError:
     pass  # sentry is optional
 
@@ -190,9 +192,9 @@ except ImportError:
 
 
 ## AUTHENTICATION CONF ##
-LOGIN_REDIRECT_URL = '/'  # changed from /accounts/profile/
-LOGIN_URL = '/admin/login/'
-LOGOUT_URL = '/admin/logout/'
+LOGIN_REDIRECT_URL = "/"  # changed from /accounts/profile/
+LOGIN_URL = "/admin/login/"
+LOGOUT_URL = "/admin/logout/"
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 3
 
 ## DJANGO-SELECT2 CONF ##
@@ -219,24 +221,26 @@ CMSPLUGIN_RST_CONTENT_PREFIX = """
    
 """
 
-CMSPLUGIN_RST_SETTINGS_OVERRIDES = {"initial_header_level": 2,  # minimum "h2" when rendered to html
-                                    'smart_quotes': "alt"}
-#"'language_code': "fr" ## SEEMS BROKEN!
+CMSPLUGIN_RST_SETTINGS_OVERRIDES = {
+    "initial_header_level": 2,  # minimum "h2" when rendered to html
+    "smart_quotes": "alt",
+}
+# "'language_code': "fr" ## SEEMS BROKEN!
 
 
 ## EASY-THUMBNAILS CONF ##
 THUMBNAIL_PROCESSORS = (
-    'easy_thumbnails.processors.colorspace',
-    'easy_thumbnails.processors.autocrop',
+    "easy_thumbnails.processors.colorspace",
+    "easy_thumbnails.processors.autocrop",
     # 'easy_thumbnails.processors.scale_and_crop', # superseded by "scale_and_crop_with_subject_location"
-    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
-    'easy_thumbnails.processors.filters',
+    "filer.thumbnail_processors.scale_and_crop_with_subject_location",
+    "easy_thumbnails.processors.filters",
 )
 
 # do not change THUMBNAIL_DEFAULT_STORAGE, THUMBNAIL_MEDIA_ROOT and THUMBNAIL_MEDIA_URL, by default
 THUMBNAIL_DEBUG = False  # NOT used by custom game_file_img tag
 THUMBNAIL_QUALITY = 85
-THUMBNAIL_BASEDIR = 'thumbs'  # prefix of relative path
+THUMBNAIL_BASEDIR = "thumbs"  # prefix of relative path
 THUMBNAIL_PREFIX = ""  # prefix subdirectory of image file itself
 THUMBNAIL_EXTENSION = "jpg"
 THUMBNAIL_TRANSPARENCY_EXTENSION = "png"

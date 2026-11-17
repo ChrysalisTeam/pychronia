@@ -4,8 +4,9 @@ from pychronia_game import views
 
 
 class MenuEntry:
-    def __init__(self, request, title=None, view=None, submenus=None,
-                 view_kwargs=None, forced_visibility=None, title_suffix=None):
+    def __init__(
+        self, request, title=None, view=None, submenus=None, view_kwargs=None, forced_visibility=None, title_suffix=None
+    ):
         assert isinstance(title, str) or view, (title, view)
         assert view or submenus
         assert view or not view_kwargs
@@ -26,7 +27,8 @@ class MenuEntry:
         self.user_access = view.get_access_token(request.datamanager) if view else None
         self.forced_visibility = forced_visibility
         self.is_active = bool(
-            self.url and (self.user_access == AccessResult.available))  # doesn't rely on submenus state
+            self.url and (self.user_access == AccessResult.available)
+        )  # doesn't rely on submenus state
         self.is_novelty = not view.has_user_accessed_view(request.datamanager) if view else False
         ##print(title, "view is marked as novelty", self.is_novelty)
 
@@ -36,7 +38,8 @@ class MenuEntry:
             return self.forced_visibility
         else:
             return bool(
-                self.submenus or (self.user_access in (AccessResult.available, AccessResult.permission_required)))
+                self.submenus or (self.user_access in (AccessResult.available, AccessResult.permission_required))
+            )
 
 
 def _generate_web_menu(request, menu_entry_generator):
@@ -61,128 +64,122 @@ def _generate_web_menu(request, menu_entry_generator):
     else:
         chatroom_suffix = ""
 
-    full_menu_tree = menu_entry(_("Anthropia"), views.homepage,
-                                (
-                                    # encoding note : \xa0 <-> &nbsp <-> alt+0160;
-
-                                    menu_entry(_("Auction"), views.homepage,
-                                               (
-                                                   ###menu_entry(_(u"Home"), views.homepage),
-                                                   ###menu_entry(_(u"Opening"), views.opening),
-                                                   ###menu_entry(_(u"Instructions"), views.instructions),
-                                                   menu_entry(view=views.homepage),
-                                                   menu_entry(view=views.view_characters),
-                                                   menu_entry(view=views.view_sales),
-                                                   menu_entry(view=views.auction_items_slideshow),
-                                                   menu_entry(title_suffix=chatroom_suffix,
-                                                              view=views.chatroom),
-                                                   # menu_entry(_(u"Radio Messages"), views.personal_radio_messages_listing), # TODO INTEGRATE TO INFO PAGES ???
-                                               )),
-
-                                    menu_entry(_("Media"), views.view_encyclopedia,
-                                               (
-                                                   menu_entry(view=views.view_encyclopedia),
-
-                                                   menu_entry(view=views.personal_webradio_page),
-                                                   menu_entry(view=views.view_world_map_static),
-                                                   menu_entry(view=views.view_world_map_dynamic),
-                                                   # menu_entry(_(u"__EncryptedFolder__"), view=views.encrypted_folder, view_kwargs=dict(folder="guy2_report"), forced_visibility=(False if not user.is_master else None)), # TODO REMOVE ME
-                                                   # menu_entry(_(u"__PublicWebradio__"), view=views.public_webradio, forced_visibility=(False if not user.is_master else None)), # TODO REMOVE ME
-
-                                               )),
-
-                                    menu_entry(_("Messaging"), (
-                                    views.all_dispatched_messages if user.is_master else views.standard_conversations),
-                                               (
-                                                   menu_entry(view=views.all_dispatched_messages),  # master only
-                                                   menu_entry(view=views.all_queued_messages),  # master only
-                                                   menu_entry(title_suffix=standard_conversations_suffix,
-                                                              view=views.standard_conversations),
-                                                   # suffix is the count of unread MESSAGES
-                                                   menu_entry(view=views.intercepted_messages),
-                                                   menu_entry(view=views.all_archived_messages),
-                                                   menu_entry(view=views.messages_templates),  # master only
-                                                   menu_entry(view=views.compose_message),
-                                               )),
-
-                                    menu_entry(_("Abilities"), views.ability_introduction,
-                                               (
-                                                   menu_entry(view=views.ability_introduction),
-
-                                                   menu_entry(view=views.mercenaries_hiring),
-                                                   menu_entry(view=views.wiretapping_management),
-
-                                                   menu_entry(view=views.house_locking),
-                                                   menu_entry(view=views.house_reports),
-
-                                                   menu_entry(view=views.runic_translation),
-                                                   menu_entry(view=views.matter_analysis),
-                                                   menu_entry(view=views.chess_challenge),
-                                                   menu_entry(view=views.geoip_location),
-                                                   menu_entry(view=views.world_scan),
-
-                                                   menu_entry(view=views.artificial_intelligence),
-
-                                                   menu_entry(view=views.business_escrow),
-                                                   menu_entry(view=views.black_market),
-                                                   menu_entry(view=views.telecom_investigation),
-
-                                                   ##menu_entry(_(u"Telecom Investigation"), view=views.telecom_investigation),
-                                                   # menu_entry(_(u"Agents Hiring"), view=views.network_management),
-                                                   # menu_entry(_(u"Oracles"), view=views.contact_djinns),
-                                                   # menu_entry(_(u"Mercenary Commandos"), view=views.mercenary_commandos),
-                                                   # menu_entry(_(u"Teleportations"), view=views.teldorian_teleportations),
-                                                   # menu_entry(_(u"Zealot Attacks"), view=views.akarith_attacks),
-                                                   # menu_entry(_(u"Telecom Investigations"), view=views.telecom_investigation),
-                                                   # menu_entry(_(u"World Scans"), view=views.scanning_management),
-                                               )),
-
-                                    menu_entry(_("Admin"), views.game_events,
-                                               (
-                                                   menu_entry(view=views.game_events,
-                                                              forced_visibility=(True if user.is_master else False)),
-                                                   menu_entry(view=views.admin_dashboard),
-                                                   menu_entry(view=views.admin_information),
-
-                                                   menu_entry(view=views.manage_characters),
-                                                   menu_entry(view=views.webradio_management),
-
-                                                   menu_entry(view=views.game_items_management),
-                                                   menu_entry(view=views.static_pages_management),
-                                                   menu_entry(view=views.global_contacts_management),
-                                                   menu_entry(view=views.radio_spots_editing),
-
-                                                   menu_entry(view=views.gamemaster_manual),
-
-                                                   menu_entry(view=views.manage_databases),
-
-                                               ),
-                                               forced_visibility=(True if user.is_master else False)),
-
-                                    menu_entry(_("Profile"), (
-                                    views.character_profile if user.is_character else views.personal_folder),
-                                               (
-                                                   menu_entry(view=views.character_profile,
-                                                              forced_visibility=(True if user.is_character else False)),
-                                                   # character only
-                                                   menu_entry(view=views.friendship_management,
-                                                              forced_visibility=(True if user.is_character else False)),
-                                                   # character only
-                                                   menu_entry(view=views.personal_folder),
-                                                   menu_entry(view=views.personal_items_slideshow),
-                                                   menu_entry(view=views.game_events,
-                                                              forced_visibility=(None if user.is_character else False)),
-                                                   # might be globally invisible
-                                                   menu_entry(view=views.logout,
-                                                              forced_visibility=not user.is_impersonation),
-                                               ),
-                                               forced_visibility=(False if not user.is_authenticated else True)),
-
-                                    menu_entry(view=views.login,
-                                               forced_visibility=(
-                                               False if (user.is_authenticated or user.is_impersonation) else True)),
-
-                                ))
+    full_menu_tree = menu_entry(
+        _("Anthropia"),
+        views.homepage,
+        (
+            # encoding note : \xa0 <-> &nbsp <-> alt+0160;
+            menu_entry(
+                _("Auction"),
+                views.homepage,
+                (
+                    ###menu_entry(_(u"Home"), views.homepage),
+                    ###menu_entry(_(u"Opening"), views.opening),
+                    ###menu_entry(_(u"Instructions"), views.instructions),
+                    menu_entry(view=views.homepage),
+                    menu_entry(view=views.view_characters),
+                    menu_entry(view=views.view_sales),
+                    menu_entry(view=views.auction_items_slideshow),
+                    menu_entry(title_suffix=chatroom_suffix, view=views.chatroom),
+                    # menu_entry(_(u"Radio Messages"), views.personal_radio_messages_listing), # TODO INTEGRATE TO INFO PAGES ???
+                ),
+            ),
+            menu_entry(
+                _("Media"),
+                views.view_encyclopedia,
+                (
+                    menu_entry(view=views.view_encyclopedia),
+                    menu_entry(view=views.personal_webradio_page),
+                    menu_entry(view=views.view_world_map_static),
+                    menu_entry(view=views.view_world_map_dynamic),
+                    # menu_entry(_(u"__EncryptedFolder__"), view=views.encrypted_folder, view_kwargs=dict(folder="guy2_report"), forced_visibility=(False if not user.is_master else None)), # TODO REMOVE ME
+                    # menu_entry(_(u"__PublicWebradio__"), view=views.public_webradio, forced_visibility=(False if not user.is_master else None)), # TODO REMOVE ME
+                ),
+            ),
+            menu_entry(
+                _("Messaging"),
+                (views.all_dispatched_messages if user.is_master else views.standard_conversations),
+                (
+                    menu_entry(view=views.all_dispatched_messages),  # master only
+                    menu_entry(view=views.all_queued_messages),  # master only
+                    menu_entry(title_suffix=standard_conversations_suffix, view=views.standard_conversations),
+                    # suffix is the count of unread MESSAGES
+                    menu_entry(view=views.intercepted_messages),
+                    menu_entry(view=views.all_archived_messages),
+                    menu_entry(view=views.messages_templates),  # master only
+                    menu_entry(view=views.compose_message),
+                ),
+            ),
+            menu_entry(
+                _("Abilities"),
+                views.ability_introduction,
+                (
+                    menu_entry(view=views.ability_introduction),
+                    menu_entry(view=views.mercenaries_hiring),
+                    menu_entry(view=views.wiretapping_management),
+                    menu_entry(view=views.house_locking),
+                    menu_entry(view=views.house_reports),
+                    menu_entry(view=views.runic_translation),
+                    menu_entry(view=views.matter_analysis),
+                    menu_entry(view=views.chess_challenge),
+                    menu_entry(view=views.geoip_location),
+                    menu_entry(view=views.world_scan),
+                    menu_entry(view=views.artificial_intelligence),
+                    menu_entry(view=views.business_escrow),
+                    menu_entry(view=views.black_market),
+                    menu_entry(view=views.telecom_investigation),
+                    ##menu_entry(_(u"Telecom Investigation"), view=views.telecom_investigation),
+                    # menu_entry(_(u"Agents Hiring"), view=views.network_management),
+                    # menu_entry(_(u"Oracles"), view=views.contact_djinns),
+                    # menu_entry(_(u"Mercenary Commandos"), view=views.mercenary_commandos),
+                    # menu_entry(_(u"Teleportations"), view=views.teldorian_teleportations),
+                    # menu_entry(_(u"Zealot Attacks"), view=views.akarith_attacks),
+                    # menu_entry(_(u"Telecom Investigations"), view=views.telecom_investigation),
+                    # menu_entry(_(u"World Scans"), view=views.scanning_management),
+                ),
+            ),
+            menu_entry(
+                _("Admin"),
+                views.game_events,
+                (
+                    menu_entry(view=views.game_events, forced_visibility=(True if user.is_master else False)),
+                    menu_entry(view=views.admin_dashboard),
+                    menu_entry(view=views.admin_information),
+                    menu_entry(view=views.manage_characters),
+                    menu_entry(view=views.webradio_management),
+                    menu_entry(view=views.game_items_management),
+                    menu_entry(view=views.static_pages_management),
+                    menu_entry(view=views.global_contacts_management),
+                    menu_entry(view=views.radio_spots_editing),
+                    menu_entry(view=views.gamemaster_manual),
+                    menu_entry(view=views.manage_databases),
+                ),
+                forced_visibility=(True if user.is_master else False),
+            ),
+            menu_entry(
+                _("Profile"),
+                (views.character_profile if user.is_character else views.personal_folder),
+                (
+                    menu_entry(view=views.character_profile, forced_visibility=(True if user.is_character else False)),
+                    # character only
+                    menu_entry(
+                        view=views.friendship_management, forced_visibility=(True if user.is_character else False)
+                    ),
+                    # character only
+                    menu_entry(view=views.personal_folder),
+                    menu_entry(view=views.personal_items_slideshow),
+                    menu_entry(view=views.game_events, forced_visibility=(None if user.is_character else False)),
+                    # might be globally invisible
+                    menu_entry(view=views.logout, forced_visibility=not user.is_impersonation),
+                ),
+                forced_visibility=(False if not user.is_authenticated else True),
+            ),
+            menu_entry(
+                view=views.login,
+                forced_visibility=(False if (user.is_authenticated or user.is_impersonation) else True),
+            ),
+        ),
+    )
 
     return full_menu_tree
 
@@ -207,8 +204,10 @@ def filter_menu_tree(menu):
     """
     recursed_submenus = [filter_menu_tree(submenu) for submenu in menu.submenus]
     menu.submenus = [submenu for submenu in recursed_submenus if submenu]  # remove new 'None' entries
-    if not menu.is_visible:  # NOW only we can query the visibility state of this particular menu entry, since submenus have been updated
-        #print(">>>>>>>>>> returning none for", menu.title)
+    if (
+        not menu.is_visible
+    ):  # NOW only we can query the visibility state of this particular menu entry, since submenus have been updated
+        # print(">>>>>>>>>> returning none for", menu.title)
         return None
     return menu
 
@@ -240,7 +239,7 @@ def generate_filtered_menu(request):
     return final_menu_tree  # might be None, in incredible cases...
 
 
-'''
+"""
     potential_menus = [(_("Main"), information_entries),
                        (_("Communication"), communication_entries),
                        (_("Messaging"), messaging_entries),
@@ -281,7 +280,7 @@ def generate_filtered_menu(request):
         
     allowed_abilities = [ (ability.TITLE, reverse(abilityview, kwargs=dict(ability_name=ability.NAME) ))  for ability in GameDataManager.ABILITIES_REGISTRY if permission_check(ability)]
     menu_entries += allowed_abilities #HERE TODO - use submenu instead
-    '''
+    """
 
 """
 # HACK TO ALLOW THE PICKLING OF INSTANCE METHODS #

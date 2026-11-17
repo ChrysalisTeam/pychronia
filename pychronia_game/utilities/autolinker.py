@@ -4,8 +4,21 @@ import re, functools
 clean_parser = functools.partial(BeautifulSoup, features="html.parser")
 del BeautifulSoup
 
-SKIPPED_TAGS = ["head", "a", "textarea", "pre", "code",
-                "h1", "h2", "h3", "h4", "h5", "h6", "h7", "h8"]  # IMPORTANT - the content of these tags must stay as-is
+SKIPPED_TAGS = [
+    "head",
+    "a",
+    "textarea",
+    "pre",
+    "code",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "h7",
+    "h8",
+]  # IMPORTANT - the content of these tags must stay as-is
 
 
 def join_regular_expressions_as_disjunction(regexes, as_words=False):
@@ -35,10 +48,9 @@ def generate_links(html_snippet, regex, link_attr_generator):
             return content
 
     def insert_links(string):
-        new_string, occurences = re.subn(regex,
-                                         generate_link_str,
-                                         string,
-                                         flags=re.IGNORECASE | re.UNICODE | re.DOTALL | re.MULTILINE)
+        new_string, occurences = re.subn(
+            regex, generate_link_str, string, flags=re.IGNORECASE | re.UNICODE | re.DOTALL | re.MULTILINE
+        )
         if not occurences:
             assert string == new_string
             None
@@ -67,13 +79,13 @@ def generate_links(html_snippet, regex, link_attr_generator):
 
 
 if __name__ == "__main__":
-    #Create the soup
-    input = '''<html>
+    # Create the soup
+    input = """<html>
     <head><title>Page title one</title></head>
     <body>
     <p id="firstpara" align="center">This is one paragraph <b>one</b>.</a>
     <a href="http://aaa">This is one paragraph <b>one</b>.</a>
-    </html>'''
+    </html>"""
 
     res = generate_links(input, "one", lambda x: dict(href="TARGET", title="mytitle"))
 

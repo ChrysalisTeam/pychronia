@@ -13,8 +13,7 @@ class ProtectedGameFileSystemStorage(FileSystemStorage):
     def __init__(self):
         location = config.GAME_FILES_ROOT
         assert location.endswith(os.sep), location
-        super().__init__(location=location,
-                                                             base_url=None)  # useless here
+        super().__init__(location=location, base_url=None)  # useless here
 
     def url(self, name):
         return game_file_url(name)
@@ -26,6 +25,8 @@ protected_game_file_system_storage = ProtectedGameFileSystemStorage()
 def get_game_thumbnailer(rel_path):
     assert not rel_path.startswith("/")
     return Thumbnailer(
-        file=None, name=rel_path,
+        file=None,
+        name=rel_path,
         source_storage=protected_game_file_system_storage,
-        thumbnail_storage=protected_game_file_system_storage)
+        thumbnail_storage=protected_game_file_system_storage,
+    )

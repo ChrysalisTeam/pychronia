@@ -1,6 +1,12 @@
 import threading
 from pychronia_game.common import *
-from pychronia_game.datamanager import readonly_method, transaction_watcher, register_view, AbstractAbility, AbstractGameForm
+from pychronia_game.datamanager import (
+    readonly_method,
+    transaction_watcher,
+    register_view,
+    AbstractAbility,
+    AbstractGameForm,
+)
 from pychronia_game.datamanager.abstract_form import autostrip_form_charfields
 from django import forms
 from django.http import Http404
@@ -29,9 +35,11 @@ class ArtificialIntelligenceAbility(AbstractAbility):
     TITLE = gettext_lazy("Chat with Djinns")
     NAME = "artificial_intelligence"
 
-    GAME_ACTIONS = dict(process_user_sentence=dict(title=gettext_lazy("Respond to user input"),
-                                                   form_class=None,
-                                                   callback="process_user_sentence"))
+    GAME_ACTIONS = dict(
+        process_user_sentence=dict(
+            title=gettext_lazy("Respond to user input"), form_class=None, callback="process_user_sentence"
+        )
+    )
 
     TEMPLATE = "abilities/artificial_intelligence.html"
 
@@ -74,8 +82,9 @@ class ArtificialIntelligenceAbility(AbstractAbility):
         for data in list(self.all_private_data.values()):
             for bot_name in list(settings["specific_bot_properties"].keys()):
                 bot_session = data[bot_name]
-                utilities.check_has_keys(bot_session, ["_inputStack", "_inputHistory", "_outputHistory"],
-                                         strict=False)  # other session values may exist
+                utilities.check_has_keys(
+                    bot_session, ["_inputStack", "_inputHistory", "_outputHistory"], strict=False
+                )  # other session values may exist
 
     def _process_html_post_data(self):
         """We prevent default form handling and error reporting."""
@@ -85,9 +94,9 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
     def _get_entrance_template_vars(self):
         return {
-            'page_title': _("Djinns' Temple"),
-            'selected_djinn': None,
-            'bot_max_answers': self.settings["bot_max_answers"],
+            "page_title": _("Djinns' Temple"),
+            "selected_djinn": None,
+            "bot_max_answers": self.settings["bot_max_answers"],
         }
 
     def _get_djinn_template_vars(self, selected_bot):
@@ -101,9 +110,9 @@ class ArtificialIntelligenceAbility(AbstractAbility):
                 sentences.append(history[1][i])  # output
 
         return {
-            'page_title': _("%s's Shrine") % selected_bot,
-            'selected_djinn': selected_bot,
-            'history': sentences,
+            "page_title": _("%s's Shrine") % selected_bot,
+            "selected_djinn": selected_bot,
+            "history": sentences,
         }
 
     def get_template_vars(self, previous_form_data=None):
@@ -145,12 +154,11 @@ class ArtificialIntelligenceAbility(AbstractAbility):
             return _("[DJINN IS OFFLINE]")
 
         with djinn_singleton_lock:
-
             bot_session = self.get_bot_session(bot_name)  # we load previous session
             djinn_proxy.setSessionData(bot_session)
 
             # heavy, we override the personality of the target bot
-            for (predicate, value) in list(self.settings["common_bot_properties"].items()):
+            for predicate, value in list(self.settings["common_bot_properties"].items()):
                 djinn_proxy.setBotPredicate(predicate, value)  # hobbies and tastes
 
             # we change the bot personality #
@@ -160,8 +168,9 @@ class ArtificialIntelligenceAbility(AbstractAbility):
             djinn_proxy.setPredicate("name", self.username)  # who is talking to him ?
 
             if "?" in input:
-                djinn_proxy.setPredicate("topic",
-                                         "")  # WARNING - a hack to help the bot get away from its "persistent ideas", as long as A.I. doesn't work very well...
+                djinn_proxy.setPredicate(
+                    "topic", ""
+                )  # WARNING - a hack to help the bot get away from its "persistent ideas", as long as A.I. doesn't work very well...
                 djinn_proxy.setPredicate("orbType", "")
 
             (inputs, outputs) = self.get_bot_history(bot_name)
@@ -175,8 +184,9 @@ class ArtificialIntelligenceAbility(AbstractAbility):
                 res = djinn_proxy.respond(input)
                 # print ("DJINN REQUEST %r => %r" % (input, res))
                 data = djinn_proxy.getSessionData()
-                data = utilities.convert_object_tree(data,
-                                                     utilities.python_to_zodb_types)  # FIXME, is it really useful ??
+                data = utilities.convert_object_tree(
+                    data, utilities.python_to_zodb_types
+                )  # FIXME, is it really useful ??
                 self.private_data.update(data)  # we save current session in ZODB
 
             # we simulate answer delay
@@ -192,11 +202,12 @@ class ArtificialIntelligenceAbility(AbstractAbility):
         if djinn_name not in self.get_bot_names():
             raise Http404  # pathological
 
-        res = self.get_bot_response(bot_name=djinn_name,
-                                    input=message)  # in case of error, a "500" code will be returned
+        res = self.get_bot_response(
+            bot_name=djinn_name, input=message
+        )  # in case of error, a "500" code will be returned
         return dict(response=res)
 
-        '''
+        """
 
         def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.html'):
 
@@ -266,7 +277,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
                              # 'team_gems': team_gems,
                              'bots_max_answers': request.datamanager.get_global_parameter("bots_max_answers")
                             })
-            '''
+            """
 
 
 class DjinnProxy:
@@ -293,7 +304,7 @@ class DjinnProxy:
         kernel.verbose(False)  # DEBUG OUTPUT
         kernel.bootstrap(
             brainFile=os.path.join(config.GAME_FILES_ROOT, "AI", "botbrain.brn"),
-            learnFiles=glob.glob(os.path.join(config.GAME_FILES_ROOT, "AI", "djinn_specific_aiml", "*.aiml"))
+            learnFiles=glob.glob(os.path.join(config.GAME_FILES_ROOT, "AI", "djinn_specific_aiml", "*.aiml")),
         )
 
         self.bot_kernel = kernel
@@ -308,8 +319,7 @@ class DjinnProxy:
         """
 
     def _update_substitutions(self, substitutions_file):
-
-        """ OBSOLETE
+        """OBSOLETE
         subbers = self.bot_kernel._subbers
         for section_name, section in subbers.items():
             assert section_name in subbers, section_name

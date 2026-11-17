@@ -9,6 +9,6 @@ class ReverseProxyFixer(MiddlewareMixin):
     """
 
     def process_request(self, request):
-        if 'x-forwarded-for' in request.headers:
-            ip = request.headers['x-forwarded-for'].split(",")[0].strip()
-            request.META['REMOTE_ADDR'] = ip
+        if "x-forwarded-for" in request.headers:
+            ip = request.headers["x-forwarded-for"].split(",")[0].strip()
+            request.META["REMOTE_ADDR"] = ip

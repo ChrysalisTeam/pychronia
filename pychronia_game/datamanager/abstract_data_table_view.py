@@ -26,12 +26,16 @@ class AbstractDataTableManagement(AbstractGameView):
         else:
             idx = ""
 
-        res = self._instantiate_game_form(new_action_name="submit_item",
-                                          previous_form_data=previous_form_data,
-                                          initial_data=initial_data,
-                                          form_options=dict(auto_id="id_%s_%%s" % slugify(idx),
-                                                            # needed by select2 to wrap fields
-                                                            undeletable_identifiers=undeletable_identifiers))
+        res = self._instantiate_game_form(
+            new_action_name="submit_item",
+            previous_form_data=previous_form_data,
+            initial_data=initial_data,
+            form_options=dict(
+                auto_id="id_%s_%%s" % slugify(idx),
+                # needed by select2 to wrap fields
+                undeletable_identifiers=undeletable_identifiers,
+            ),
+        )
 
         return res
 
@@ -39,11 +43,11 @@ class AbstractDataTableManagement(AbstractGameView):
 
         assert identifier, "Bad submit_item previous_identifier %r" % identifier
 
-        identifier_changed = (previous_identifier != identifier)  # previous_identifier might be empty
+        identifier_changed = previous_identifier != identifier  # previous_identifier might be empty
 
         table = self.get_data_table_instance()
 
-        if (identifier_changed and identifier in table):
+        if identifier_changed and identifier in table:
             raise NormalUsageError(_("Entry '%s' already exists") % identifier)
 
         # insertion and update are the same then
@@ -54,11 +58,13 @@ class AbstractDataTableManagement(AbstractGameView):
             if previous_identifier in table:
                 del table[previous_identifier]
             else:
-                self.logger.critical("Wrong previous_identifier submitted in StaticPagesManagement: %r",
-                                     previous_identifier)
+                self.logger.critical(
+                    "Wrong previous_identifier submitted in StaticPagesManagement: %r", previous_identifier
+                )
 
         self._setup_http_redirect_on_success(
-            "./#entry-" + slugify(identifier))  # we set the #fragment to target new identifier, even if unchanged
+            "./#entry-" + slugify(identifier)
+        )  # we set the #fragment to target new identifier, even if unchanged
 
         return _("Entry '%s' properly submitted") % identifier
 
@@ -85,19 +91,28 @@ class AbstractDataTableManagement(AbstractGameView):
         immutable_table_items = table.get_all_data(as_sorted_list=True, mutability=False)
         undeletable_identifiers = table.get_undeletable_identifiers()
 
-        forms = [("", self.instantiate_table_form(previous_form_data=(
-        previous_form_data if concerned_identifier == "" else None)))]  # form for new table entry
+        forms = [
+            (
+                "",
+                self.instantiate_table_form(
+                    previous_form_data=(previous_form_data if concerned_identifier == "" else None)
+                ),
+            )
+        ]  # form for new table entry
 
-        for (table_key, table_value) in mutable_table_items:
+        for table_key, table_value in mutable_table_items:
             transfered_table_item = (table_key, table_value)  # even if previous_form_data is set for that entry
-            transfered_previous_form_data = previous_form_data if (
-            concerned_identifier and concerned_identifier == table_key) else None
+            transfered_previous_form_data = (
+                previous_form_data if (concerned_identifier and concerned_identifier == table_key) else None
+            )
 
-            new_form = self.instantiate_table_form(table_item=transfered_table_item,
-                                                   previous_form_data=transfered_previous_form_data,
-                                                   undeletable_identifiers=undeletable_identifiers)
+            new_form = self.instantiate_table_form(
+                table_item=transfered_table_item,
+                previous_form_data=transfered_previous_form_data,
+                undeletable_identifiers=undeletable_identifiers,
+            )
             forms.append((table_key, new_form))
 
-        return dict(immutable_table_items=immutable_table_items,
-                    undeletable_identifiers=undeletable_identifiers,
-                    forms=forms)
+        return dict(
+            immutable_table_items=immutable_table_items, undeletable_identifiers=undeletable_identifiers, forms=forms
+        )

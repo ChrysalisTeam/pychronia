@@ -8,6 +8,7 @@ category pages register no toolbar object, so cms would just swap the language p
 the current-language category slug (a 404, or a duplicate page served via the parler fallback):
 they are mapped here through the category's own per-language slug instead.
 """
+
 from django.conf import settings
 from django.template import Library
 from django.urls import NoReverseMatch
@@ -84,11 +85,13 @@ def _compute_language_alternates(context, request, current_language):
         path = _get_path_in_language(context, lang)
         if path is None:
             continue
-        alternates.append({
-            "code": lang,
-            "name": get_language_info(lang)["name_local"].capitalize(),
-            "url": request.build_absolute_uri(path),
-            "is_current": lang == current_language,
-            "is_default": lang == settings.LANGUAGE_CODE,
-        })
+        alternates.append(
+            {
+                "code": lang,
+                "name": get_language_info(lang)["name_local"].capitalize(),
+                "url": request.build_absolute_uri(path),
+                "is_current": lang == current_language,
+                "is_default": lang == settings.LANGUAGE_CODE,
+            }
+        )
     return alternates

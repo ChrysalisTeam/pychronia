@@ -1,5 +1,6 @@
 import re
 
+
 # BORROWED FROM https://github.com/Chimrod/typogrify
 def french_insecable(text):
     """Replace the space between each double sign punctuation by a thin
@@ -35,24 +36,28 @@ def french_insecable(text):
     """
 
     tag_pattern = r'</?\w+((\s+\w+(\s*=\s*(?:".*?"|\'.*?\'|[^\'">\s]+))?)+\s*|\s*)/?>'
-    intra_tag_finder = re.compile(r'(?P<prefix>(%s)?)(?P<text>([^<]*))(?P<suffix>(%s)?)' % (tag_pattern, tag_pattern))
+    intra_tag_finder = re.compile(r"(?P<prefix>(%s)?)(?P<text>([^<]*))(?P<suffix>(%s)?)" % (tag_pattern, tag_pattern))
 
     nnbsp = '<span style="white-space:nowrap">&thinsp;</span>'
-    space_finder = re.compile(r"""(?:
+    space_finder = re.compile(
+        r"""(?:
                             (\w\s[:;!\?\xbb])|       # Group 1, space before punctuation
                             ([\xab]\s\w)|
                             ([0-9]\s[0-9])|
                             ([0-9]\s\%)
-                            )""", re.VERBOSE)
+                            )""",
+        re.VERBOSE,
+    )
 
     def _insecable_wrapper(groups):
         """This is necessary to keep dotted cap strings to pick up extra spaces"""
+
         def substitute(matchobj):
             return matchobj.group(0).replace(" ", nnbsp)
 
-        prefix = groups.group('prefix') or ''
-        text = space_finder.sub(substitute, groups.group('text'))
-        suffix = groups.group('suffix') or ''
+        prefix = groups.group("prefix") or ""
+        text = space_finder.sub(substitute, groups.group("text"))
+        suffix = groups.group("suffix") or ""
         return prefix + text + suffix
 
     output = intra_tag_finder.sub(_insecable_wrapper, text)

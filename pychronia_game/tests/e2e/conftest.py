@@ -18,7 +18,9 @@ from django.contrib.auth.models import User  # noqa: E402
 from django.core.management import call_command  # noqa: E402
 
 from pychronia_game.datamanager.datamanager_administrator import (  # noqa: E402
-    reset_zodb_structure, create_game_instance, retrieve_game_instance,
+    reset_zodb_structure,
+    create_game_instance,
+    retrieve_game_instance,
 )
 
 from pychronia_game.tests.e2e import _configs, _pages, _server, _zodb_snapshot  # noqa: E402
@@ -28,8 +30,7 @@ PRISTINE_DIR = os.path.join(E2E_WORK_DIR, "pristine")
 
 
 def pytest_addoption(parser):
-    parser.addoption("--e2e-debug", action="store_true", default=False,
-                     help="Shortcut for --headed --slowmo 500")
+    parser.addoption("--e2e-debug", action="store_true", default=False, help="Shortcut for --headed --slowmo 500")
 
 
 def pytest_configure(config):
@@ -60,10 +61,15 @@ def e2e_environment():
 
     reset_zodb_structure()
     # English instances, since e2e tests check English UI strings (the UI defaults to the game language)
-    create_game_instance(game_instance_id=_configs.GAME_ID, creator_login="e2e_creator", game_language="en",
-                         skip_randomizations=True)
-    create_game_instance(game_instance_id=_configs.SECONDARY_GAME_ID, creator_login="e2e_creator", game_language="en",
-                         skip_randomizations=True)
+    create_game_instance(
+        game_instance_id=_configs.GAME_ID, creator_login="e2e_creator", game_language="en", skip_randomizations=True
+    )
+    create_game_instance(
+        game_instance_id=_configs.SECONDARY_GAME_ID,
+        creator_login="e2e_creator",
+        game_language="en",
+        skip_randomizations=True,
+    )
 
     dm = retrieve_game_instance(_configs.GAME_ID)
     _configs.apply_baseline_tweaks(dm)
@@ -118,8 +124,9 @@ def game(fresh_zodb):
 def player_storage_state(browser, base_url):
     context = browser.new_context(base_url=base_url)
     page = context.new_page()
-    _pages.login_as_player(page, base_url, _configs.GAME_ID, _configs.BOOSTED_PLAYER,
-                           _configs.PLAYER_CREDENTIALS[_configs.BOOSTED_PLAYER])
+    _pages.login_as_player(
+        page, base_url, _configs.GAME_ID, _configs.BOOSTED_PLAYER, _configs.PLAYER_CREDENTIALS[_configs.BOOSTED_PLAYER]
+    )
     state = context.storage_state()
     context.close()
     return state

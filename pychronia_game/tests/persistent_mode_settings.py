@@ -9,16 +9,10 @@ from pychronia_game.tests.common_test_settings import *  # simple overrides
 _curdir = os.path.dirname(os.path.realpath(__file__))
 
 # we override transient test DBs with persistent ones
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(_curdir, "django.db")
-    }
-}
+DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": os.path.join(_curdir, "django.db")}}
 
 ZODB_FILE = os.path.join(_curdir, "gamedata.fs")
 ZODB_URL = None
-
 
 
 ## OVERRIDES FOR INTEGRATION OF REAL CHRYSALIS FIXTURES, if they're in ../Chrysalis relatively to this depot's root ##
@@ -27,7 +21,6 @@ import pychronia_game, os
 _external_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(pychronia_game.__file__))))
 _chrysalis_data_dir = os.path.join(_external_dir, "Chrysalis")
 if os.path.exists(_chrysalis_data_dir):
-
     GAME_FILES_ROOT = get_chrysalis_game_files_root(_chrysalis_data_dir)
 
     # the scenario (auction or mindstorm) is chosen when creating each game instance
@@ -37,5 +30,6 @@ if os.path.exists(_chrysalis_data_dir):
 
 # machine-specific overrides (eg. a local MariaDB sandbox) go in an UNTRACKED "persistent_mode_settings_local.py"
 import importlib.util as _importlib_util
+
 if _importlib_util.find_spec("pychronia_game.tests.persistent_mode_settings_local"):
     from pychronia_game.tests.persistent_mode_settings_local import *
