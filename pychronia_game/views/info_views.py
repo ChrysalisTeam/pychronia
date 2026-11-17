@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_game_view import AbstractGameView, register_view
 from pychronia_game import forms
@@ -122,7 +118,7 @@ class EnyclopediaIndexVisibilityForm(AbstractGameForm):
     is_index_visible = django_forms.BooleanField(label=gettext_lazy("Full Index Visibility"), required=False)
 
     def __init__(self, datamanager, *args, **kwargs):
-        super(EnyclopediaIndexVisibilityForm, self).__init__(datamanager, *args, **kwargs)
+        super().__init__(datamanager, *args, **kwargs)
         self.fields["is_index_visible"].initial = datamanager.is_encyclopedia_index_visible()
 
 
@@ -361,7 +357,7 @@ def personal_folder(request, template_name='information/personal_folder.html'):
         personal_files = request.datamanager.get_personal_files(
             absolute_urls=True)
 
-    except EnvironmentError:
+    except OSError:
         personal_files = []
         user.add_error(_("Your personal folder is unreachable."))
 

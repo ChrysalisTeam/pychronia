@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 import os
 from django.core.files.storage import FileSystemStorage
 from .utilities import config
@@ -17,7 +13,7 @@ class ProtectedGameFileSystemStorage(FileSystemStorage):
     def __init__(self):
         location = config.GAME_FILES_ROOT
         assert location.endswith(os.sep), location
-        super(ProtectedGameFileSystemStorage, self).__init__(location=location,
+        super().__init__(location=location,
                                                              base_url=None)  # useless here
 
     def url(self, name):

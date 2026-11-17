@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Visits every page of the portal (see _inventory.py) as a Django superuser, exercising the
 URL-based impersonation mechanism (see _pages.goto_as): a GET to

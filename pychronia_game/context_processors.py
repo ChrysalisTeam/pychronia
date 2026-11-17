@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import config, NBSP, _
 from pychronia_game import menus as menus_module, utilities
 from pychronia_game.authentication import IMPERSONATION_TARGET_POST_VARIABLE, \
@@ -57,7 +53,7 @@ def pychronia_template_context(request):
         notifications = get_messages(request)  # lazy 'messages' context variable.
         notifications = utilities.remove_duplicates(notifications)  # we force computation there
         notification_type = "mixed"  # DEFAULT
-        levels = list(set(msg.tags for msg in notifications))
+        levels = list({msg.tags for msg in notifications})
         if len(levels) == 1:
             notification_type = levels[0]
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import sys
 
 import setup_pychronia_env   # NOW ONLY
@@ -36,7 +35,7 @@ def execute(output_file, game_language=None, game_scenario=None):
                                                 convert_types=True,  # should be output in UTF8
                                                 default_style="|")  # will output very long lines
 
-    print((">> Dumping whole initial data to file %r" % output_file))
+    print(">> Dumping whole initial data to file %r" % output_file)
 
     utilities.write_to_file(output_file, content=yaml_str)
 

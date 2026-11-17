@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from datetime import timedelta
 import traceback
 from smtplib import SMTPException
@@ -41,7 +37,7 @@ class GameInstanceCreationForm(SimpleForm):
                                       required=True)
 
     def __init__(self, require_email, *args, **kwargs):
-        super(GameInstanceCreationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         assert hasattr(self.fields["creator_email"], "required")
         self.fields["creator_email"].required = require_email
         self.fields["game_language"].choices = [(code, GAME_LANGUAGE_LABELS.get(code, code))
@@ -143,7 +139,7 @@ def create_instance(request):
                               from_email=settings.SERVER_EMAIL,
                               recipient_list=[creator_email],
                               fail_silently=False)
-                except (SMTPException, EnvironmentError):
+                except (SMTPException, OSError):
                     logging.error("Couldn't send game instance activation email to %s", creator_email, exc_info=True)
                     messages.add_message(request, messages.ERROR, _("Couldn't send activation email."))
                 else:

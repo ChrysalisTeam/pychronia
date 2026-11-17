@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from django import forms
 
 from pychronia_game.common import *
@@ -15,7 +11,7 @@ class DummyForm(AbstractGameForm):
     use_gems = forms.ChoiceField(label=gettext_lazy("Use_gems"), choices=[123, 122])
 
     def __init__(self, ability, *args, **kwargs):
-        super(DummyForm, self).__init__(ability, *args, **kwargs)
+        super().__init__(ability, *args, **kwargs)
         self.fields["target_item"] = forms.ChoiceField(label=_("Object"), choices=["one", "two"])
         self.fields["transcription"] = forms.CharField(label=_("Transcription"),
                                                        widget=forms.Textarea(attrs={'rows': '5', 'cols': '30'}))

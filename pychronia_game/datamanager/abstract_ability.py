@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 
 from .datamanager_administrator import GameDataManager
@@ -18,7 +14,7 @@ class AbilityMetaclass(GameViewMetaclass, type):
     """
 
     def __init__(NewClass, name, bases, new_dict):
-        super(AbilityMetaclass, NewClass).__init__(name, bases, new_dict)
+        super().__init__(name, bases, new_dict)
 
         if not NewClass.__name__.startswith("Abstract"):
             GameDataManager.register_ability(NewClass)
@@ -27,7 +23,7 @@ class AbilityMetaclass(GameViewMetaclass, type):
 # we us this syntax, because we can't dynamically assign a tuple of bases in a normal "class" definition
 AbstractAbilityBases = tuple(reversed(ACTION_MIDDLEWARES)) + (
 AbstractGameView,)  # middlewares FIRST, so that they can override game view stuffs...
-AbstractAbilityBasesAdapter = AbilityMetaclass(str('AbstractAbilityBasesAdapter'), AbstractAbilityBases, {})
+AbstractAbilityBasesAdapter = AbilityMetaclass('AbstractAbilityBasesAdapter', AbstractAbilityBases, {})
 
 """
 print(">>>>>>>>>", AbstractAbilityBases)
@@ -45,7 +41,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
     # NOT ATM - TITLE = None # menu title, use lazy gettext when setting
 
     def __init__(self, request, *args, **kwargs):
-        super(AbstractAbility, self, ).__init__(request, *args, **kwargs)
+        super().__init__(request, *args, **kwargs)
 
     @property
     def datamanager(self):
@@ -60,7 +56,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         if form_options:
             final_form_options.update(form_options)
         del form_options
-        return super(AbstractAbility, self)._common_instantiate_form(new_action_name=new_action_name,
+        return super()._common_instantiate_form(new_action_name=new_action_name,
                                                                      form_options=final_form_options,
                                                                      **kwargs)
 
@@ -79,7 +75,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         assert self.is_in_writing_transaction()
         if not self.has_action_middlewares_configured(action_name=action_name):
             # slight optimization, we bypass all the middlewares chain
-            return super(AbstractAbility, self)._execute_game_action_callback(action_name=action_name,
+            return super()._execute_game_action_callback(action_name=action_name,
                                                                               unfiltered_params=unfiltered_params)
         else:
             callback_name = self.GAME_ACTIONS[action_name]["callback"]
@@ -90,7 +86,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
     def _process_standard_request(self, request, *args, **kwargs):
         # Access checks have already been done here, so we may initialize lazy data
         self.perform_lazy_initializations()
-        return super(AbstractAbility, self)._process_standard_request(request, *args, **kwargs)
+        return super()._process_standard_request(request, *args, **kwargs)
 
     def __getattr__(self, name):
         assert not name.startswith("_")  # if we arrive here, it's probably a typo in an attribute fetching
@@ -184,15 +180,15 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
         # self.logger.debug("Checking data sanity")
 
-        assert isinstance(self.ability_data["settings"], collections.Mapping), self.ability_data["settings"]
-        assert isinstance(self.ability_data["data"], collections.Mapping), self.ability_data["data"]
+        assert isinstance(self.ability_data["settings"], collections.abc.Mapping), self.ability_data["settings"]
+        assert isinstance(self.ability_data["data"], collections.abc.Mapping), self.ability_data["data"]
 
         if strict:
             assert len(list(self.ability_data.keys())) == 2  # prevents misconfigurations
             available_logins = self._inner_datamanager.get_available_logins()
             for name, value in list(self.ability_data["data"].items()):
                 assert name in available_logins
-                assert isinstance(value, collections.Mapping)
+                assert isinstance(value, collections.abc.Mapping)
 
         self._check_action_middleware_data_sanity(strict=strict)
         self._check_data_sanity(strict=strict)
@@ -223,7 +219,7 @@ class AbstractPartnershipAbility(AbstractAbility):
 
     @readonly_method
     def check_data_sanity(self, strict=False):
-        super(AbstractPartnershipAbility, self).check_data_sanity(strict=strict)
+        super().check_data_sanity(strict=strict)
 
         assert self.ACCESS in (UserAccess.character, UserAccess.authenticated, UserAccess.anonymous)  # WORKAROUND
 

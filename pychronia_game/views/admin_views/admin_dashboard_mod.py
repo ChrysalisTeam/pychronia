@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 from pychronia_game.datamanager import AbstractGameForm, AbstractAbility, register_view, transaction_watcher
 
@@ -14,7 +10,7 @@ class GamePauseForm(AbstractGameForm):
     is_paused = forms.BooleanField(label=gettext_lazy("Game is paused?"), required=False)
 
     def __init__(self, datamanager, *args, **kwargs):
-        super(GamePauseForm, self).__init__(datamanager, *args, **kwargs)
+        super().__init__(datamanager, *args, **kwargs)
         self.fields['is_paused'].initial = not datamanager.is_game_started()
 
 
@@ -23,7 +19,7 @@ class AbilityAutoresponseForm(AbstractGameForm):
                                                       required=False)
 
     def __init__(self, datamanager, *args, **kwargs):
-        super(AbilityAutoresponseForm, self).__init__(datamanager, *args, **kwargs)
+        super().__init__(datamanager, *args, **kwargs)
         self.fields['disable_ability_autoresponse'].initial = datamanager.get_global_parameter(
             "disable_automated_ability_responses")
 
@@ -33,7 +29,7 @@ class ExternalNotificationForm(AbstractGameForm):
                                                           required=False)
 
     def __init__(self, datamanager, *args, **kwargs):
-        super(ExternalNotificationForm, self).__init__(datamanager, *args, **kwargs)
+        super().__init__(datamanager, *args, **kwargs)
         self.fields['disable_real_email_notifications'].initial = datamanager.get_global_parameter(
             "disable_real_email_notifications")
 
@@ -43,7 +39,7 @@ class GameViewActivationForm(AbstractGameForm):
                                                 widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, datamanager, *args, **kwargs):
-        super(GameViewActivationForm, self).__init__(datamanager, *args, **kwargs)
+        super().__init__(datamanager, *args, **kwargs)
 
         activable_views = datamanager.get_activable_views()  # mapping view_name -> klass
 
@@ -63,7 +59,7 @@ class GameDurationForm(AbstractGameForm):
                                 min_value=1, required=True)
 
     def __init__(self, datamanager, *args, **kwargs):
-        super(GameDurationForm, self).__init__(datamanager, *args, **kwargs)
+        super().__init__(datamanager, *args, **kwargs)
         self.fields['num_days'].initial = datamanager.get_global_parameter("game_theoretical_length_days")
 
 
@@ -75,7 +71,7 @@ class MasterCredentialsForm(AbstractGameForm):
     master_real_email = forms.EmailField(label=gettext_lazy("Master Real Email (optional)"), required=False)
 
     def __init__(self, datamanager, *args, **kwargs):
-        super(MasterCredentialsForm, self).__init__(datamanager, *args, **kwargs)
+        super().__init__(datamanager, *args, **kwargs)
 
         self.fields['master_real_email'].initial = datamanager.get_global_parameter("master_real_email")
         self.fields['master_login'].initial = datamanager.get_global_parameter("master_login")
@@ -131,7 +127,7 @@ class AdminDashboardAbility(AbstractAbility):
         admin_widget_identifier = request.POST.get("target_form_id")
 
         if not admin_widget_identifier:
-            return super(AdminDashboardAbility, self)._process_html_post_data()  # UGLY, FIXME
+            return super()._process_html_post_data()  # UGLY, FIXME
         else:
             # special part: we execute a single admin widget handler, and return the HTML result.
 

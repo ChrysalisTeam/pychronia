@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from ..urls import *  # including OUR HTTPXXX handlers
 from django.contrib.staticfiles.urls import urlpatterns as staticfiles_urlpatterns
 

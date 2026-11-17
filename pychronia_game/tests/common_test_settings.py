@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 import os, random
 
 ## PYCHRONIA SPECIFIC CONF ##

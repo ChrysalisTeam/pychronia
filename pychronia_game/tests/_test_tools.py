@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 import os, sys, pytest, unittest, traceback
 
 ## TEST CONFIGURATION ##
@@ -130,7 +126,7 @@ def raises_with_content(klass, string):
     assert string.lower() in str(exc.value).lower()
 
 
-class AutoCheckingDM(object):
+class AutoCheckingDM:
     """
     Dirty hack to automatically abort the ZODB transaction after each primary call to a datamanager method.
 

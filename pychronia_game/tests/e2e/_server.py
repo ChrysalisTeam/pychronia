@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import threading
 import time
 
@@ -10,7 +8,7 @@ _counter_lock = threading.Lock()
 _in_flight_count = 0
 
 
-class InFlightRequestsMiddleware(object):
+class InFlightRequestsMiddleware:
     """Tracks requests currently being handled by the live server thread, so that
     the per-test ZODB-restore fixture can wait for trailing AJAX polling (chat,
     webradio...) to settle before closing the ZODB connection.
@@ -42,7 +40,7 @@ def wait_for_idle_server(timeout=5.0, poll_interval=0.05):
         time.sleep(poll_interval)
 
 
-class LiveServerRunner(object):
+class LiveServerRunner:
     """Runs the Django app, in-process, in a background thread.
 
     Must run in-process (rather than as a `runserver` subprocess) so that the

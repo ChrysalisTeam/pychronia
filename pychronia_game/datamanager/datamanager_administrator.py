@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from BTrees.OOBTree import OOBTree
 
 from pychronia_game.common import *
@@ -13,7 +9,7 @@ import threading
 assert logging
 
 AllBases = tuple(reversed(datamanager_modules.MODULES_REGISTRY))  # latest classes must be first in hierarchy
-GameDataManager = type(str('GameDataManager'), AllBases, {})
+GameDataManager = type('GameDataManager', AllBases, {})
 assert GameDataManager.__mro__[-3:] == (
 BaseDataManager, utilities.TechnicalEventsMixin, object)  # IMPORTANT - all modules must be BEFORE BaseDataManager
 

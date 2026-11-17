@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_game_view import register_view
 from pychronia_game import forms
@@ -259,7 +255,7 @@ def DATABASE_OPERATIONS(request):
 
 @register_view(access=UserAccess.master, title=gettext_lazy("Fail Test"))
 def FAIL_TEST(request):
-    raise IOError("Dummy error to test email sending")
+    raise OSError("Dummy error to test email sending")
 
 
 @register_view(access=UserAccess.master, title=gettext_lazy("Media Display Test"))

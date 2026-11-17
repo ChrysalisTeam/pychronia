@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from .house_locking_mod import HouseLockingAbility
 
 house_locking = HouseLockingAbility.as_view

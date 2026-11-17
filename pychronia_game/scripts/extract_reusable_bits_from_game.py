@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import sys
 import setup_pychronia_env
 
@@ -24,7 +23,7 @@ def execute():
     utilities.write_to_file(output_file, content=yaml_str)
 
     #print(data)
-    print((">> Extract file %s successfully created" % output_file))
+    print(">> Extract file %s successfully created" % output_file)
 
 
 if __name__ == "__main__":

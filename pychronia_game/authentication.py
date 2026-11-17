@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 from django.db.utils import DatabaseError
 from pychronia_game.utilities import encryption

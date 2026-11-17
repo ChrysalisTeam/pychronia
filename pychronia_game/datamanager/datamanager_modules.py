@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 import string, random
 from collections import OrderedDict
 
@@ -41,7 +37,7 @@ class GameMasterManual(BaseDataManager):
     assert set(GAMEMASTER_WEB_MANUAL_PARTS) < set(GAMEMASTER_ALL_MANUAL_PARTS)
 
     def _load_initial_data(self, **kwargs):
-        super(GameMasterManual, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
 
@@ -53,7 +49,7 @@ class GameMasterManual(BaseDataManager):
             gamemaster_manual[key] = new_content
 
     def _check_database_coherence(self, **kwargs):
-        super(GameMasterManual, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         strict = kwargs.get("strict", False)
         game_data = self.data
@@ -93,7 +89,7 @@ class GameMasterManual(BaseDataManager):
 @register_module
 class GameGlobalParameters(BaseDataManager):
     def _load_initial_data(self, **kwargs):
-        super(GameGlobalParameters, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
 
@@ -103,7 +99,7 @@ class GameGlobalParameters(BaseDataManager):
             game_data["global_parameters"]["world_map_image_bw"]).replace(os.sep, "/")  # URL-like, even on Windows
 
     def _check_database_coherence(self, **kwargs):
-        super(GameGlobalParameters, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         game_data = self.data
         utilities.check_is_bool(game_data["global_parameters"]["game_is_started"])
@@ -187,17 +183,17 @@ class CurrentUserHandling(BaseDataManager):
     """
 
     def _init_from_db(self, **kwargs):
-        super(CurrentUserHandling, self)._init_from_db(**kwargs)
+        super()._init_from_db(**kwargs)
         self.user = None
         self._set_user(username=None)  # TODO - improve by doing player authentication at init time?
 
     def _notify_user_change(self, username, **kwargs):
-        assert not hasattr(super(CurrentUserHandling, self), "_notify_user_change")  # we're well top-level here
+        assert not hasattr(super(), "_notify_user_change")  # we're well top-level here
 
     @transaction_watcher(always_writable=True)
     def _set_user(self, username, impersonation_target=None, impersonation_writability=False, is_superuser=False,
                   is_observer=False):
-        assert not hasattr(super(CurrentUserHandling, self), "_set_user")  # we're well top-level here
+        assert not hasattr(super(), "_set_user")  # we're well top-level here
         self.user = GameUser(datamanager=self,
                              username=username,
                              impersonation_target=impersonation_target,
@@ -250,10 +246,10 @@ class FlexibleTime(BaseDataManager):  # TODO REFINE
     """
 
     def _load_initial_data(self, **kwargs):
-        super(FlexibleTime, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
     def _check_database_coherence(self, **kwargs):
-        super(FlexibleTime, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
         utilities.check_is_positive_float(self.get_global_parameter("game_theoretical_length_days"), non_zero=True)
 
     @readonly_method
@@ -305,7 +301,7 @@ class GameEvents(BaseDataManager):  # TODO REFINE
 
 
     def _load_initial_data(self, **kwargs):
-        super(GameEvents, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
         game_data.setdefault("events_log", PersistentList())
@@ -317,7 +313,7 @@ class GameEvents(BaseDataManager):  # TODO REFINE
         game_data["events_log"].sort(key=lambda evt: evt["time"])
 
     def _check_database_coherence(self, **kwargs):
-        super(GameEvents, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         event_reference = {
             "time": datetime,
@@ -429,12 +425,12 @@ class NovaltyTracker(BaseDataManager):
     _default_novelty_category = "default"
 
     def _load_initial_data(self, **kwargs):
-        super(NovaltyTracker, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
         game_data = self.data
         game_data.setdefault("novelty_tracker", PersistentMapping())
 
     def _check_database_coherence(self, **kwargs):
-        super(NovaltyTracker, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
         game_data = self.data
 
         allowed_usernames = self.get_character_usernames() + [self.get_global_parameter("master_login")]
@@ -500,7 +496,7 @@ class CharacterHandling(BaseDataManager):  # TODO REFINE
     CHARACTER_REAL_LIFE_ATTRIBUTES = ["real_life_identity", "real_life_email"]  # OPTIONAL DATA
 
     def _load_initial_data(self, **kwargs):
-        super(CharacterHandling, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
         for (name, character) in list(game_data["character_properties"].items()):
@@ -513,7 +509,7 @@ class CharacterHandling(BaseDataManager):  # TODO REFINE
                 character["gamemaster_hints"] = character["gamemaster_hints"].strip()
 
     def _check_database_coherence(self, **kwargs):
-        super(CharacterHandling, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -691,7 +687,7 @@ class DomainHandling(BaseDataManager):  # TODO REFINE
 
 
     def _load_initial_data(self, **kwargs):
-        super(DomainHandling, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
         for (name, content) in list(game_data["domains"].items()):
@@ -699,7 +695,7 @@ class DomainHandling(BaseDataManager):  # TODO REFINE
                 content["national_anthem"] = utilities.find_game_file("audio", content["national_anthem"])
 
     def _check_database_coherence(self, **kwargs):
-        super(DomainHandling, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -756,7 +752,7 @@ class PlayerAuthentication(BaseDataManager):
     """
 
     def _load_initial_data(self, skip_randomizations=False, **kwargs):
-        super(PlayerAuthentication, self)._load_initial_data(skip_randomizations=skip_randomizations, **kwargs)
+        super()._load_initial_data(skip_randomizations=skip_randomizations, **kwargs)
 
         for character in list(self.get_character_sets().values()):
             character.setdefault("secret_question", "")
@@ -771,7 +767,7 @@ class PlayerAuthentication(BaseDataManager):
                        "master_login"] == old_master_login  # later we might randomize master login too, for now it must NEVER change!
 
     def _check_database_coherence(self, **kwargs):
-        super(PlayerAuthentication, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -1255,7 +1251,7 @@ class PermissionsHandling(BaseDataManager):  # TODO REFINE
         cls.PERMISSIONS_REGISTRY.update(names)  # SET operation, not dict
 
     def _load_initial_data(self, **kwargs):
-        super(PermissionsHandling, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
 
@@ -1267,7 +1263,7 @@ class PermissionsHandling(BaseDataManager):  # TODO REFINE
             domain.setdefault("permissions", PersistentList())
 
     def _check_database_coherence(self, **kwargs):
-        super(PermissionsHandling, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         for permission in self.PERMISSIONS_REGISTRY:  # check all available permissions
             utilities.check_is_slug(permission)
@@ -1304,9 +1300,9 @@ class PermissionsHandling(BaseDataManager):  # TODO REFINE
         username = self._resolve_username(username)
         data = self.get_character_properties(username)
         if is_present:
-            permissions = set(data["permissions"]) | set([permission])
+            permissions = set(data["permissions"]) | {permission}
         else:
-            permissions = set(data["permissions"]) - set([permission])
+            permissions = set(data["permissions"]) - {permission}
         assert isinstance(permissions, set)
         data["permissions"] = PersistentList(permissions)
 
@@ -1340,7 +1336,7 @@ class PermissionsHandling(BaseDataManager):  # TODO REFINE
 @register_module
 class FriendshipHandling(BaseDataManager):
     def _load_initial_data(self, **kwargs):
-        super(FriendshipHandling, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
         game_data = self.data
         game_data.setdefault("friendships", PersistentMapping())
         game_data["friendships"].setdefault("proposed",
@@ -1349,7 +1345,7 @@ class FriendshipHandling(BaseDataManager):
                                             PersistentMapping())  # mapping (proposer, accepter) => dict(proposal_date, acceptance_date)
 
     def _check_database_coherence(self, **kwargs):
-        super(FriendshipHandling, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         game_data = self.data
         strict = kwargs.get("strict", False)
@@ -1400,7 +1396,7 @@ class FriendshipHandling(BaseDataManager):
         if (self.is_character(username) and self.is_character(impersonation) and
                 self.are_friends(username, impersonation)):
             return True
-        return super(FriendshipHandling, self).can_impersonate(username, impersonation)
+        return super().can_impersonate(username, impersonation)
 
     @transaction_watcher
     def propose_friendship(self, username=CURRENT_USER, recipient=None):
@@ -1617,14 +1613,14 @@ class GameInstructions(BaseDataManager):
 @register_module
 class LocationsHandling(BaseDataManager):
     def _load_initial_data(self, **kwargs):
-        super(LocationsHandling, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
         for (name, properties) in list(game_data["locations"].items()):
             properties.setdefault("summary", None)
 
     def _check_database_coherence(self, **kwargs):
-        super(LocationsHandling, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         game_data = self.data
         assert game_data["locations"]
@@ -1657,14 +1653,14 @@ class LocationsHandling(BaseDataManager):
 @register_module
 class OnlinePresence(BaseDataManager):
     def _load_initial_data(self, **kwargs):
-        super(OnlinePresence, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
         for character in list(self.get_character_sets().values()):
             character.setdefault("last_online_time", None)
 
         self.data["global_parameters"].setdefault("online_presence_timeout_s", 600)
 
     def _check_database_coherence(self, **kwargs):
-        super(OnlinePresence, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
         for character in list(self.get_character_sets().values()):
             assert not character["last_online_time"] or (isinstance(character["last_online_time"], datetime)
                                                          and character["last_online_time"] <= get_utc_now())
@@ -1672,7 +1668,7 @@ class OnlinePresence(BaseDataManager):
         utilities.check_is_positive_int(self.get_global_parameter("online_presence_timeout_s"))
 
     def _notify_user_change(self, username, **kwargs):
-        super(OnlinePresence, self)._notify_user_change(username=username, **kwargs)
+        super()._notify_user_change(username=username, **kwargs)
         if self.is_character(username):  # MUST BE FIRST, as a validation
             if self.is_game_writable():
                 self.set_online_status(username)
@@ -1717,7 +1713,7 @@ class TextMessagingCore(BaseDataManager):
         return str(str.translate(my_id, cls.OBFUSCATOR_TRANSTABLE))
 
     def _load_initial_data(self, **kwargs):
-        super(TextMessagingCore, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
 
@@ -1766,7 +1762,7 @@ class TextMessagingCore(BaseDataManager):
         messaging["messages_queued"].sort(key=lambda msg: msg["sent_at"])
 
     def _check_database_coherence(self, **kwargs):
-        super(TextMessagingCore, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         strict = kwargs.get("strict", False)
         messaging = self.messaging_data
@@ -1842,7 +1838,7 @@ class TextMessagingCore(BaseDataManager):
         assert isinstance(messaging["messages_queued"], PersistentList)
 
     def _process_periodic_tasks(self, report):
-        super(TextMessagingCore, self)._process_periodic_tasks(report)
+        super()._process_periodic_tasks(report)
 
         # WE SEND DELAYED MESSAGES #
 
@@ -1901,7 +1897,7 @@ class TextMessagingCore(BaseDataManager):
         """
         # TOP LEVEL HERE - no parent call #
         assert body_format in self.AVAILABLE_TEXT_FORMATS
-        assert not hasattr(super(TextMessagingCore, self), "_build_new_message")
+        assert not hasattr(super(), "_build_new_message")
 
         sender_email, recipient_emails = self._normalize_message_addresses(sender_email,
                                                                            recipient_emails)  # sender and recipient may be the same !
@@ -1966,7 +1962,7 @@ class TextMessagingCore(BaseDataManager):
         We don't check the form of emails here, they might even be string
         with spaces or without "@".
         """
-        assert not hasattr(super(TextMessagingCore, self), "_normalize_message_addresses")
+        assert not hasattr(super(), "_normalize_message_addresses")
 
         pangea_network = self.data["global_parameters"]["pangea_network_domain"]
 
@@ -1991,7 +1987,7 @@ class TextMessagingCore(BaseDataManager):
         Special override system - each override of these methods below must return if access is permittedn 
         or raise an exception, or transmit to parent if unsure of what to answer.
         """
-        assert not hasattr(super(TextMessagingCore, self), "_check_message_is_authorized")
+        assert not hasattr(super(), "_check_message_is_authorized")
         self._check_sender_email(sender_email)
         for recipient_email in recipient_emails:
             self._check_recipient_email(recipient_email, sender_email=sender_email)
@@ -2025,14 +2021,14 @@ class TextMessagingCore(BaseDataManager):
         """
         Here we don't care about "enqueued messages" cleanup.
         """
-        assert not hasattr(super(TextMessagingCore, self), "_immediately_dispatch_message")
+        assert not hasattr(super(), "_immediately_dispatch_message")
         self.messaging_data["messages_dispatched"].append(msg)
         self.messaging_data["messages_dispatched"].sort(key=lambda msg: msg["sent_at"])  # python sorting is stable !
 
         self._message_dispatching_post_hook(copy.deepcopy(msg))
 
     def _message_dispatching_post_hook(self, frozen_msg):
-        assert not hasattr(super(TextMessagingCore, self), "_message_dispatching_post_hook")
+        assert not hasattr(super(), "_message_dispatching_post_hook")
         pass
 
     @transaction_watcher
@@ -2140,21 +2136,21 @@ class TextMessagingCore(BaseDataManager):
 @register_module
 class TextMessagingExternalContacts(BaseDataManager):
     def _load_initial_data(self, **kwargs):
-        super(TextMessagingExternalContacts, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         self.messaging_data.setdefault("globally_registered_contacts",
                                        PersistentMapping())  # identifier -> None or dict(description, avatar)
         self.global_contacts._load_initial_data(**kwargs)
 
     def _check_database_coherence(self, **kwargs):
-        super(TextMessagingExternalContacts, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         self.global_contacts._check_database_coherence(**kwargs)
 
     def _check_sender_email(self, sender_email):
         if sender_email in self.global_contacts:
             return
-        super(TextMessagingExternalContacts, self)._check_sender_email(sender_email=sender_email)
+        super()._check_sender_email(sender_email=sender_email)
 
     def _check_recipient_email(self, recipient_email, sender_email):
         if recipient_email in self.global_contacts:
@@ -2171,7 +2167,7 @@ class TextMessagingExternalContacts(BaseDataManager):
                 else:
                     raise UsageError(_("Mailbox %s has rejected your email") % recipient_email)
         else:
-            super(TextMessagingExternalContacts, self)._check_recipient_email(recipient_email=recipient_email,
+            super()._check_recipient_email(recipient_email=recipient_email,
                                                                               sender_email=sender_email)
 
     # Handling of contacts #
@@ -2288,7 +2284,7 @@ class TextMessagingTemplates(BaseDataManager):
     COMMON_TEMPLATE_AND_MESSAGE_PARAMETERS = "sender_email recipient_emails subject body attachment transferred_msg parent_id".split()
 
     def _load_initial_data(self, **kwargs):
-        super(TextMessagingTemplates, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
         messaging = self.messaging_data
@@ -2304,8 +2300,8 @@ class TextMessagingTemplates(BaseDataManager):
                         fallback_id = random.randint(10000000, 100000000)
                     t["id"] = fallback_id
                 t.setdefault("order", idx * 10)
-            messaging["manual_messages_templates"] = dict(
-                (t["id"], t) for t in messaging["manual_messages_templates"])  # indexed by ID
+            messaging["manual_messages_templates"] = {
+                t["id"]: t for t in messaging["manual_messages_templates"]}  # indexed by ID
 
         existing_template_categories = set()  # we build initial list of template "tags"
 
@@ -2347,7 +2343,7 @@ class TextMessagingTemplates(BaseDataManager):
             "message_template_categories"] = existing_template_categories  # OVERRIDDEN and STATIC for now !
 
     def _check_database_coherence(self, **kwargs):
-        super(TextMessagingTemplates, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         strict = kwargs.get("strict", False)
         self.data["global_parameters"].setdefault("message_template_categories",
@@ -2422,7 +2418,7 @@ class TextMessagingTemplates(BaseDataManager):
 
     def _build_new_message(self, *args, **kwargs):
         template_id = kwargs.get("template_id", None)
-        msg = super(TextMessagingTemplates, self)._build_new_message(*args, **kwargs)
+        msg = super()._build_new_message(*args, **kwargs)
 
         if template_id:
             try:
@@ -2474,7 +2470,7 @@ class TextMessagingForCharacters(BaseDataManager):  # TODO REFINE
     EMAIL_BOOLEAN_FIELDS_FOR_USERS = ("has_read", "has_replied", "has_starred", "has_archived")
 
     def _load_initial_data(self, **kwargs):
-        super(TextMessagingForCharacters, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
         messaging = self.messaging_data
@@ -2521,7 +2517,7 @@ class TextMessagingForCharacters(BaseDataManager):  # TODO REFINE
         '''
 
     def _check_database_coherence(self, **kwargs):
-        super(TextMessagingForCharacters, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         # TODO - check all messages and templates with utilities.check_is_restructuredtext(value) ? What happens if invalid rst ?
 
@@ -2590,7 +2586,7 @@ class TextMessagingForCharacters(BaseDataManager):  # TODO REFINE
     """
 
     def _build_new_message(self, *args, **kwargs):
-        msg = super(TextMessagingForCharacters, self)._build_new_message(*args, **kwargs)
+        msg = super()._build_new_message(*args, **kwargs)
 
         assert not any(field in msg for field in self.EMAIL_BOOLEAN_FIELDS_FOR_USERS)
         msg.update({field: PersistentList(kwargs.get(field, {})) for field in self.EMAIL_BOOLEAN_FIELDS_FOR_USERS})
@@ -2606,10 +2602,10 @@ class TextMessagingForCharacters(BaseDataManager):  # TODO REFINE
         for (k, v) in list(msg["visible_by"].items()):
             if (v == VISIBILITY_REASONS.sender) and (k not in msg["has_read"]):
                 msg["has_read"].append(k)  # of course everyone knows his own sent messages...
-        super(TextMessagingForCharacters, self)._immediately_dispatch_message(msg)
+        super()._immediately_dispatch_message(msg)
 
     def _message_dispatching_post_hook(self, frozen_msg):
-        super(TextMessagingForCharacters, self)._message_dispatching_post_hook(frozen_msg)
+        super()._message_dispatching_post_hook(frozen_msg)
 
         self._update_address_book(msg=frozen_msg)
         #print(">>>>>>>>>>>", frozen_msg["visible_by"])
@@ -2626,12 +2622,12 @@ class TextMessagingForCharacters(BaseDataManager):  # TODO REFINE
     def _check_sender_email(self, sender_email):
         if sender_email in self.get_character_emails():
             return  # OK, sent by a character (player or not)
-        super(TextMessagingForCharacters, self)._check_sender_email(sender_email=sender_email)
+        super()._check_sender_email(sender_email=sender_email)
 
     def _check_recipient_email(self, recipient_email, sender_email):
         if recipient_email in self.get_character_emails():
             return  # OK, sent by a character (player or not)
-        super(TextMessagingForCharacters, self)._check_recipient_email(recipient_email=recipient_email,
+        super()._check_recipient_email(recipient_email=recipient_email,
                                                                        sender_email=sender_email)
 
     @readonly_method
@@ -3037,7 +3033,7 @@ class TextMessagingForCharacters(BaseDataManager):  # TODO REFINE
 @register_module
 class TextMessagingInterception(BaseDataManager):
     def _load_initial_data(self, **kwargs):
-        super(TextMessagingInterception, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
 
@@ -3047,7 +3043,7 @@ class TextMessagingInterception(BaseDataManager):
                             None)  # UTC datetime when SSL/TLS security was bought
 
     def _check_database_coherence(self, **kwargs):
-        super(TextMessagingInterception, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
 
         character_names = self.get_character_usernames()
@@ -3076,7 +3072,7 @@ class TextMessagingInterception(BaseDataManager):
                 msg["visible_by"][
                     username] = VISIBILITY_REASONS.interceptor  # might be overriden by more basic visibility (sender, recipient...), in parent methods
 
-        super(TextMessagingInterception, self)._immediately_dispatch_message(msg)
+        super()._immediately_dispatch_message(msg)
 
     @readonly_method
     def get_intercepted_messages(self, username=CURRENT_USER):  # for wiretapping
@@ -3168,11 +3164,11 @@ class RadioMessaging(BaseDataManager):  # TODO REFINE
     _radio_playlist_novelty_marker = "radio_playlist"
 
     def _load_initial_data(self, **kwargs):
-        super(RadioMessaging, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
         self.radio_spots._load_initial_data(**kwargs)
 
     def _check_database_coherence(self, **kwargs):
-        super(RadioMessaging, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
         self.radio_spots._check_database_coherence(**kwargs)
 
         game_data = self.data
@@ -3362,7 +3358,7 @@ class RadioMessaging(BaseDataManager):  # TODO REFINE
 @register_module
 class Chatroom(BaseDataManager):
     def _load_initial_data(self, **kwargs):
-        super(Chatroom, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
 
@@ -3375,7 +3371,7 @@ class Chatroom(BaseDataManager):
         game_data["global_parameters"].setdefault("chatroom_timestamp_display_threshold_s", 120)
 
     def _check_database_coherence(self, **kwargs):
-        super(Chatroom, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -3470,7 +3466,7 @@ class ActionScheduling(BaseDataManager):
     # USELESS ATM ?? FIXME ??
 
     def _load_initial_data(self, **kwargs):
-        super(ActionScheduling, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
 
@@ -3482,13 +3478,13 @@ class ActionScheduling(BaseDataManager):
         game_data["scheduled_actions"].sort(key=lambda evt: evt["execute_at"])
 
     def _check_database_coherence(self, **kwargs):
-        super(ActionScheduling, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         game_data = self.data
 
         scheduled_action_reference = {
             "execute_at": datetime,
-            "function": (str, collections.Callable),  # string to represent a datamanager method
+            "function": (str, collections.abc.Callable),  # string to represent a datamanager method
             "args": tuple,
             "kwargs": PersistentMapping
         }
@@ -3502,7 +3498,7 @@ class ActionScheduling(BaseDataManager):
             utilities.check_dictionary_with_template(action, scheduled_action_reference)
 
     def _process_periodic_tasks(self, report):
-        super(ActionScheduling, self)._process_periodic_tasks(report)
+        super()._process_periodic_tasks(report)
 
         last_index_processed = None
         utcnow = get_utc_now()
@@ -3577,10 +3573,10 @@ class PersonalFiles(BaseDataManager):
     COMMON_FILES_DIRS = "_common_files_"
 
     def _load_initial_data(self, **kwargs):
-        super(PersonalFiles, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
     def _check_database_coherence(self, **kwargs):
-        super(PersonalFiles, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         # TODO CHECK LOWERCASENESS OF SECRET FOLDERS AND NO SPACE
 
@@ -3707,7 +3703,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
 
     def _load_initial_data(self, **kwargs):
-        super(MoneyItemsOwnership, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
 
@@ -3739,7 +3735,7 @@ class MoneyItemsOwnership(BaseDataManager):
         self.game_items._load_initial_data(**kwargs)  # important
 
     def _check_database_coherence(self, **kwargs):
-        super(MoneyItemsOwnership, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         strict = kwargs.get("strict", False)
         game_data = self.data
@@ -4166,10 +4162,10 @@ class MoneyItemsOwnership(BaseDataManager):
 @register_module
 class Items3dViewing(BaseDataManager):
     def _load_initial_data(self, **kwargs):
-        super(Items3dViewing, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
     def _check_database_coherence(self, **kwargs):
-        super(Items3dViewing, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -4217,7 +4213,7 @@ class GameViews(BaseDataManager):
     ACTIVABLE_VIEWS_REGISTRY = {}  # only views that need to be activated by game master
 
     def _init_from_db(self, **kwargs):
-        super(GameViews, self)._init_from_db(**kwargs)
+        super()._init_from_db(**kwargs)
         self.sync_game_view_data()  # important if some views have disappeared since then
 
     @classmethod
@@ -4258,14 +4254,14 @@ class GameViews(BaseDataManager):
         self.notify_event("SYNC_GAME_VIEW_DATA_CALLED")
 
     def _load_initial_data(self, **kwargs):
-        super(GameViews, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
         game_data = self.data
         game_data.setdefault("views", PersistentMapping())
         game_data["views"].setdefault("activated_views", PersistentList())
         # no need to sync - it will done later in _init_from_db()
 
     def _check_database_coherence(self, **kwargs):
-        super(GameViews, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         game_data = self.data
         utilities.check_no_duplicates(game_data["views"]["activated_views"])
@@ -4365,7 +4361,7 @@ class SpecialAbilities(BaseDataManager):
     ABILITIES_REGISTRY = {}  # abilities automatically register themselves with this dict, thanks to their metaclass
 
     def _init_from_db(self, **kwargs):
-        super(SpecialAbilities, self)._init_from_db(**kwargs)
+        super()._init_from_db(**kwargs)
         # self.abilities = SpecialAbilities.AbilityLazyLoader(self)
         # self.sync_ability_data()
 
@@ -4403,7 +4399,7 @@ class SpecialAbilities(BaseDataManager):
      '''
 
     def _load_initial_data(self, **kwargs):
-        super(SpecialAbilities, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
         game_data.setdefault("abilities", {})
@@ -4415,7 +4411,7 @@ class SpecialAbilities(BaseDataManager):
             assert "settings" in game_data["abilities"][key] and "data" in game_data["abilities"][key]
 
     def _check_database_coherence(self, **kwargs):
-        super(SpecialAbilities, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         strict = kwargs.get("strict", False)
         utilities.check_is_bool(self.get_global_parameter("disable_automated_ability_responses"))
@@ -4466,11 +4462,11 @@ class StaticPages(BaseDataManager):
     """
 
     def _load_initial_data(self, **kwargs):
-        super(StaticPages, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
         self.static_pages._load_initial_data(**kwargs)
 
     def _check_database_coherence(self, **kwargs):
-        super(StaticPages, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
         self.static_pages._check_database_coherence(**kwargs)
 
     # bunch of standard categories #
@@ -4633,7 +4629,7 @@ class Encyclopedia(BaseDataManager):
     ENCYCLOPEDIA_CATEGORY = "encyclopedia"
 
     def _load_initial_data(self, **kwargs):
-        super(Encyclopedia, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
 
         game_data = self.data
 
@@ -4643,7 +4639,7 @@ class Encyclopedia(BaseDataManager):
             character.setdefault("known_article_ids", PersistentList())
 
     def _check_database_coherence(self, **kwargs):
-        super(Encyclopedia, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -4755,7 +4751,7 @@ class Encyclopedia(BaseDataManager):
 @register_module
 class NightmareCaptchas(BaseDataManager):
     def _load_initial_data(self, **kwargs):
-        super(NightmareCaptchas, self)._load_initial_data(**kwargs)
+        super()._load_initial_data(**kwargs)
         game_data = self.data
         for (key, value) in list(game_data["nightmare_captchas"].items()):
             value.setdefault("text", None)
@@ -4765,7 +4761,7 @@ class NightmareCaptchas(BaseDataManager):
                 value["image"] = utilities.find_game_file("images", "captchas", value["image"])
 
     def _check_database_coherence(self, **kwargs):
-        super(NightmareCaptchas, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         strict = kwargs.get("strict", False)
         game_data = self.data
@@ -4845,7 +4841,7 @@ class NightmareCaptchas(BaseDataManager):
 @register_module
 class NoveltyNotifications(BaseDataManager):
     def _check_database_coherence(self, **kwargs):
-        super(NoveltyNotifications, self)._check_database_coherence(**kwargs)
+        super()._check_database_coherence(**kwargs)
 
         self.data["global_parameters"].setdefault("disable_real_email_notifications", False)  ## TEMP FIXME
         utilities.check_is_bool(self.get_global_parameter("disable_real_email_notifications"))

@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 import time
 from ZODB.POSException import ConflictError
 

@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 from pychronia_game.datamanager import AbstractGameView, register_view, AbstractGameForm, transaction_watcher
 from pychronia_game.authentication import try_authenticating_with_credentials, logout_session
@@ -16,7 +12,7 @@ class FriendshipMinDurationForm(AbstractGameForm):
                                             max_value=60 * 24 * 30, min_value=0, required=True)
 
     def __init__(self, datamanager, *args, **kwargs):
-        super(FriendshipMinDurationForm, self).__init__(datamanager, *args, **kwargs)
+        super().__init__(datamanager, *args, **kwargs)
         self.fields['duration_mn'].initial = datamanager.get_global_parameter("friendship_minimum_duration_mn_abs")
 
 
@@ -214,7 +210,7 @@ class FriendshipRequestForm(AbstractGameForm):
     other_username = None  # django_forms.CharField(label=gettext_lazy("User Identifier"), required=True)
 
     def __init__(self, datamanager, *args, **kwargs):
-        super(FriendshipRequestForm, self).__init__(datamanager, *args, **kwargs)
+        super().__init__(datamanager, *args, **kwargs)
 
         field_name = "other_username"
         self.fields[field_name] = Select2TagsField(label=_("User Identifier"), required=True)

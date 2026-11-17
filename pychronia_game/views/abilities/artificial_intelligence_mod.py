@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 import threading
 from pychronia_game.common import *
 from pychronia_game.datamanager import readonly_method, transaction_watcher, register_view, AbstractAbility, AbstractGameForm
@@ -273,7 +269,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
             '''
 
 
-class DjinnProxy(object):
+class DjinnProxy:
     """
     Abstraction layer, redirecting either to a local PyAiml bot,
     or an external bot server.
@@ -321,7 +317,7 @@ class DjinnProxy(object):
         """
         subbers = self.bot_kernel._subbers
         del self
-        with open(substitutions_file, "r") as inFile:
+        with open(substitutions_file) as inFile:
             parser = ConfigParser()
             parser.read_file(inFile, substitutions_file)
             inFile.close()

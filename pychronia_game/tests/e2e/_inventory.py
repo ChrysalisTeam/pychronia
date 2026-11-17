@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Inventory of every URL exposed by ``pychronia_game.urls.inner_game_urlpatterns``.
 
@@ -91,7 +90,8 @@ Known per-page caveats for downstream test authors (not modeled by compute_acces
 
 import re
 from dataclasses import dataclass, field
-from typing import Callable, Optional, Tuple
+from typing import Optional, Tuple
+from collections.abc import Callable
 
 from pychronia_game.common import AccessResult
 from pychronia_game.urls import inner_game_urlpatterns
@@ -173,15 +173,15 @@ class InventoryEntry:
     name: str                      # GameView NAME (may repeat across URL patterns, eg. view_encyclopedia)
     entry_id: str                  # unique identifier for THIS url pattern (name, possibly suffixed by its params)
     pattern: str                   # raw regex pattern string, straight from inner_game_urlpatterns
-    url_params: Tuple[str, ...]    # named capture groups in the URL pattern, eg. ("current_article_id",)
+    url_params: tuple[str, ...]    # named capture groups in the URL pattern, eg. ("current_article_id",)
     view_class: type               # the AbstractGameView subclass (callback.klass)
     access: str                    # UserAccess.{anonymous,authenticated,character,master}
     requires_permission: bool      # REQUIRES_CHARACTER_PERMISSION -- gated by access_permission_name
     requires_activation: bool      # REQUIRES_GLOBAL_PERMISSION -- must be in dm's activated_views, unless requires_permission overrides it
-    access_permission_name: Optional[str]   # "access_<name>" iff requires_permission, else None
-    extra_permissions: Tuple[str, ...]      # EXTRA_PERMISSIONS -- feature-specific, do NOT gate view access itself
+    access_permission_name: str | None   # "access_<name>" iff requires_permission, else None
+    extra_permissions: tuple[str, ...]      # EXTRA_PERMISSIONS -- feature-specific, do NOT gate view access itself
     category: str
-    sample_paths: Callable[[Optional[object]], list]   # fn(dm=None) -> list[SamplePath]; dm needed only for dynamic samples
+    sample_paths: Callable[[object | None], list]   # fn(dm=None) -> list[SamplePath]; dm needed only for dynamic samples
     notes: str = ""
 
     def __str__(self):
@@ -349,7 +349,7 @@ def _build_inventory():
             sample_paths=sample_paths,
         ))
 
-    assert set(entry.category for entry in entries) <= ALL_CATEGORIES
+    assert {entry.category for entry in entries} <= ALL_CATEGORIES
     return entries
 
 

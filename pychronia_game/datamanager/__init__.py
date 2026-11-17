@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from .datamanager_tools import *
 from .datamanager_core import *  # only for temporary compatibility
 from .datamanager_administrator import GameDataManager

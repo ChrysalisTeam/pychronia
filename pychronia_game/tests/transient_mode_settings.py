@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 from pychronia_game.common_settings import *
 
 from pychronia_common.tests.transient_mode_settings import *  # simple overrides

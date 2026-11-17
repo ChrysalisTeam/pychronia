@@ -1,10 +1,9 @@
-#-*- coding: utf-8 -*-
 from django.utils.encoding import smart_str
 import mimetypes
 import os
 
 
-class ServerBase(object):
+class ServerBase:
     def __init__(self, *args, **kwargs):
         pass
 
@@ -33,7 +32,7 @@ class ServerBase(object):
         if size is None and path:
             try:
                 size = os.stat(path).st_size
-            except EnvironmentError:
+            except OSError:
                 pass
         if size is not None:
             response['Content-Length'] = str(size)

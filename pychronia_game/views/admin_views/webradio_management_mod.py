@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 from pychronia_game.datamanager import register_view, AbstractGameView
 
@@ -89,7 +85,7 @@ class WebradioManagement(AbstractGameView):
             result = True
         else:
             assert result is None
-            return super(WebradioManagement, self)._process_html_request()  # displays error if POST data is useless
+            return super()._process_html_request()  # displays error if POST data is useless
         """ # seems unused ATM
         elif "reset_playlist" in POST:  
             result = False

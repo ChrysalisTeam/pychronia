@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 from pychronia_game.datamanager import register_view, AbstractDataTableManagement, DataTableForm
 from django import forms

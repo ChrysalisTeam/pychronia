@@ -29,11 +29,11 @@ def freeze_tree(tree):
         hash(tree)
         return tree
     except TypeError:  # unhashable type
-        if isinstance(tree, collections.MutableMapping):  # for DICTS
+        if isinstance(tree, collections.abc.MutableMapping):  # for DICTS
             return tuple(my_sorted((k, freeze_tree(v)) for (k, v) in list(tree.items())))  # keys always hashable
-        elif isinstance(tree, collections.Set):  # for SETS
+        elif isinstance(tree, collections.abc.Set):  # for SETS
             return tuple(my_sorted(v for v in tree))  # their elements are always hashable
-        elif isinstance(tree, collections.MutableSequence):  # for LISTS
+        elif isinstance(tree, collections.abc.MutableSequence):  # for LISTS
             return tuple(my_sorted(freeze_tree(v) for v in tree))  # we could optimize out call h
         else:
             return tuple(my_sorted((k, freeze_tree(v)) for (k, v) in
@@ -131,7 +131,7 @@ if __name__ == "__main__":
     assert apply_tree_diff(2, opcodes) == True
 
 
-    class TestClass(object):
+    class TestClass:
         def __init__(self, **kwargs):
             self.__dict__.update(kwargs)
 
@@ -143,7 +143,7 @@ if __name__ == "__main__":
              dog=[22, 33],
              bird=None,
              stuffs=TestClass(obj="hello"),
-             missing=set((1, 2, 3)))
+             missing={1, 2, 3})
 
     b = dict(cat=True,
              dog=[11, 33, 99],
@@ -169,7 +169,7 @@ if __name__ == "__main__":
 
     a = [{1: 76,
           (1, 2): False,
-          "key": set(["yesh", "huu"])},
+          "key": {"yesh", "huu"}},
          None,
          TestClass(kkk=1.23, ml=1233),
          222,
@@ -191,7 +191,7 @@ if __name__ == "__main__":
 
     initial = dict(a=3,
                    b=[[True, "hi", [8.6]]],
-                   c=set([1, 2, datetime(2000, 10, 7)]),
+                   c={1, 2, datetime(2000, 10, 7)},
                    d=TestClass(k=None, m=22)
                    )
     final = freeze_tree(initial)

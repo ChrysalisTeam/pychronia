@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ERROR_PAGE_MARKERS = ("Traceback (most recent call last)", "Exception Value", "Exception Type")
 
 

@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 import sys, os, math, random, hashlib, logging, types, re
 import contextlib, collections, time, glob, copy, atexit, inspect
 from urllib.parse import urlparse
@@ -80,7 +76,7 @@ class GameError(Exception):
     def __init__(self, *args, **kwargs):
         if self.__class__ == GameError:
             raise NotImplementedError("This is an abstract error class")
-        super(GameError, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class AccessDeniedError(GameError):

@@ -10,7 +10,7 @@ register = template.Library()
 
 
 class ReplaceNode(template.Node):
-    def __init__(self, source, search=u'', replacement=u'', use_regexp=True):
+    def __init__(self, source, search='', replacement='', use_regexp=True):
         self.nodelist = source
         self.search = search
         self.replacement = replacement
@@ -35,8 +35,8 @@ class ReplaceNode(template.Node):
 
 def replace_tag(parser, token):
     default_arguments = {}
-    default_arguments['search'] = u''
-    default_arguments['replacement'] = u''
+    default_arguments['search'] = ''
+    default_arguments['replacement'] = ''
     default_arguments['use_regexp'] = True
     arguments = decode_tag_arguments(token, default_arguments)
     

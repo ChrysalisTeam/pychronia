@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Short, focused interaction scenarios (design doc E2E_TESTS_PLAN.md, section 9's
 bottom "interaction tests" list). Kept deliberately minimal: one happy-path test

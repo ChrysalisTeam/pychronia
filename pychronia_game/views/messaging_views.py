@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 import urllib.request, urllib.parse, urllib.error
 
 from pychronia_game.common import *
@@ -54,7 +50,7 @@ class MessageComposeForm(AbstractGameForm):
     parent_id = forms.CharField(required=False, widget=forms.HiddenInput())
 
     def __init__(self, request, *args, **kwargs):
-        super(MessageComposeForm, self).__init__(request.datamanager, *args, **kwargs)
+        super().__init__(request.datamanager, *args, **kwargs)
 
         url_data = request.GET
 

@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 from pychronia_game.datamanager import register_view, AbstractDataTableManagement, DataTableForm
 from django import forms
@@ -26,12 +22,12 @@ class GlobalContactForm(DataTableForm):
         initial = kwargs.get("initial")
         # NOT YET SETUP if initial and "access_tokens" in initial:
         # NOT YET SETUP     initial["is_public"] = (initial["access_tokens"] is None) # else, we let it be false
-        super(GlobalContactForm, self).__init__(datamanager=datamanager, **kwargs)
+        super().__init__(datamanager=datamanager, **kwargs)
         # NOT YET SETUP assert not self.fields["access_tokens"].choices
         # NOT YET SETUP self.fields["access_tokens"].choices = datamanager.build_select_choices_from_character_usernames(datamanager.get_character_usernames(), add_empty=False)
 
     def get_normalized_values(self):
-        values = super(GlobalContactForm, self).get_normalized_values()
+        values = super().get_normalized_values()
         return values
 
         """

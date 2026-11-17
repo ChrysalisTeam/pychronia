@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Compatibility patches for running RelStorage (MySQL adapter) on a MariaDB server.
 

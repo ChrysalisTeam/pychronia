@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 from pychronia_game.datamanager import UninstantiableFormError, AbstractAbility, register_view, readonly_method, \
     transaction_watcher
@@ -13,7 +9,7 @@ from pychronia_game.utilities.select2_extensions import Select2TagsField
 
 class WiretappingTargetsForm(AbstractGameForm):
     def __init__(self, ability, *args, **kwargs):
-        super(WiretappingTargetsForm, self).__init__(ability, *args, **kwargs)
+        super().__init__(ability, *args, **kwargs)
         # dynamic fields here ...
 
         self._usernames = ability.get_character_usernames(exclude_current=True)  # for data validation
@@ -37,7 +33,7 @@ class WiretappingTargetsForm(AbstractGameForm):
             self.fields[field_name].max_selection_size = 1  # IMPORTANT
 
     def clean(self):
-        cleaned_data = super(WiretappingTargetsForm, self).clean()
+        cleaned_data = super().clean()
 
         for (key, value) in list(cleaned_data.items()):
             if key.startswith("target_"):
@@ -56,7 +52,7 @@ class WiretappingTargetsForm(AbstractGameForm):
         return cleaned_data
 
     def get_normalized_values(self):
-        parameters = super(WiretappingTargetsForm, self).get_normalized_values()
+        parameters = super().get_normalized_values()
 
         targets = set()
         for (key, value) in list(parameters.items()):

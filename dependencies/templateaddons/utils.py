@@ -17,7 +17,7 @@ def parse_tag_argument(argument, context):
     - 1.70 is converted to a float
     - object.get_person is interpreted as a variable and parsed within the context
     """
-    if isinstance(argument, (str, str)) and argument:
+    if isinstance(argument, str) and argument:
         if argument[0] == argument[-1] and argument[0] in ('"', "'"):
             argument = argument[1:-1]
         else:
@@ -32,21 +32,21 @@ def parse_tag_argument(argument, context):
     return argument
 
 
-split_re = re.compile('(?P<left>[\w-]+=)?(?P<right>"(?:[^"\\\\]*(?:\\\\.[^"\\\\]*)*)"|\'(?:[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*)\'|[^\\s]+)')
+split_re = re.compile('(?P<left>[\\w-]+=)?(?P<right>"(?:[^"\\\\]*(?:\\\\.[^"\\\\]*)*)"|\'(?:[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*)\'|[^\\s]+)')
 def split_arguments(str):
     """
     Inspired by django.template.Token.split_contents(), except that arguments
     can be named.
     """ 
     str = force_str(str)  # PASCAL
-    str = str.split(u' ', 1)
+    str = str.split(' ', 1)
     if not len(str) > 1:
         return []
     str = str[1]
     arguments = []
     for match in split_re.finditer(str):
-        left = match.group('left') or u''
-        right = match.group('right') or u''
+        left = match.group('left') or ''
+        right = match.group('right') or ''
         if right[0] == '"' and right[-1] == '"':
             right = '"' + right[1:-1].replace('\\"', '"').replace('\\\\', '\\') + '"'
         elif right[0] == "'" and right[-1] == "'":

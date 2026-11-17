@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import re, copy
 from django_select2 import HeavySelect2MultipleChoiceField
 from django_select2.widgets import MultipleSelect2HiddenInput, Select2Mixin
@@ -36,7 +34,7 @@ class Select2TagsWidget(Select2Mixin,
                     var hashedSelector = "#" + selector;
                     $(hashedSelector).data("field_id", fieldID);
                   ''' % (fieldset_id)
-            js += super(Select2TagsWidget, self).render_inner_js_code(id_, *args)
+            js += super().render_inner_js_code(id_, *args)
             js += '};'
             js += 'django_select2.%s("%s", "%s");' % (fieldset_id, id_, id_)
             return js
@@ -59,13 +57,13 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
             #who expect data_view to be sent to widget
             kwargs['widget'] = self.widget()
 
-        super(Select2TagsField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self.choice_tags = choice_tags  # triggers property
         self.max_selection_size = max_selection_size  # triggers property
 
     def __deepcopy__(self, memo):
-        result = super(Select2TagsField, self).__deepcopy__(memo)
+        result = super().__deepcopy__(memo)
         result._choice_tags = copy.deepcopy(self._choice_tags, memo)  # in case it's modified in place by end user
         return result
 
@@ -82,7 +80,7 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
         """
         Validates that the input is in self.choices.
         """
-        super(Select2TagsField, self).validate(value)
+        super().validate(value)
         if value and self.max_selection_size > 0:
             if len(value) > self.max_selection_size:
                 raise ValidationError(self.error_messages['too_many'])

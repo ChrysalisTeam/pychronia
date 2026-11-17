@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import pytz
 
 GAME_LOCAL_TZ = pytz.timezone('Europe/Paris')  # for now...

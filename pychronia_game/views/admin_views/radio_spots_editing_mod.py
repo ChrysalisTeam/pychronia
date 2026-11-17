@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from datetime import datetime
 
 from django import forms
@@ -73,7 +69,7 @@ class RadioSpotsEditing(AbstractDataTableManagement):
             try:
                 #res = {'alt_sound_size': None, 'sound_size': u'6799', 'sound_time': u'805.75', 'sound_id': u'289920127_cffb8f40d9f30', 'alt_sound_url': None, 'sound_url': u'http://vaas.acapela-group.com/MESSAGES/009086065076095086065065083/EVAL_4775608/sounds/289920127_cffb8f40d9f30.mp3', 'warning': u'', 'get_count': 0}
                 res = tts.create_sample(voice=voice, text=text, response_type="INFO")
-            except EnvironmentError as e:
+            except OSError as e:
                 self.logger.critical("TTS generation failed for %s/%r: %r", voice, text, e)
                 raise  # OK for AJAX request
 

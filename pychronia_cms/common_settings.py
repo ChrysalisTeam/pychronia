@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from pychronia_common.common_settings import *
 
 LANGUAGE_CODE = 'fr'  # for now, CMS content is french only so....

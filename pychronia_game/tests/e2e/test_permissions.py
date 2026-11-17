@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Permission-gating tests (design doc E2E_TESTS_PLAN.md, section 6, plus the
 "no_activated_views" / permission rows of section 5.2's table).

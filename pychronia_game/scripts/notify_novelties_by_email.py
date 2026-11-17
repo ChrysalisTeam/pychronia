@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import logging
 import setup_pychronia_env
 
@@ -79,7 +78,7 @@ def execute():
                         """Sending novelty notification from '%(from_email)s' to %(recipient_list)r : "%(subject)s"\n%(message)s""",
                         params)
                     send_mail(**params)
-                except (SMTPException, EnvironmentError):
+                except (SMTPException, OSError):
                     logging.error("Couldn't send external notification email to %s", real_email, exc_info=True)
                     errors += 1
                 else:

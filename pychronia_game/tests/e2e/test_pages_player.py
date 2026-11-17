@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Visits every page of the portal (see _inventory.py) as a plain game player, in both
 directions: the boosted player (guy1, every permission + every view activated) should

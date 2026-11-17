@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from django import forms
 import json
 
@@ -76,7 +72,7 @@ class BaseAbstractGameForm(SimpleForm):
                           "id_default_%s")  # in multi-form case, this one will be used for unique "bound" form
         # no explicit label_suffix: Django's default, the translated ":", gives the French " :" spacing
 
-        super(BaseAbstractGameForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self.fields[self.__class__._ability_field_name] = forms.CharField(initial=self._get_dotted_class_name(),
                                                                           widget=forms.HiddenInput)  # appended at the end
@@ -102,7 +98,7 @@ class BaseAbstractGameForm(SimpleForm):
         return values
 
 
-class GemHandlingFormUtils(object):
+class GemHandlingFormUtils:
     @staticmethod
     def _encode_gems(gems):  # gems are TUPLES
         return [json.dumps([idx] + list(gem)) for idx, gem in enumerate(gems)]  # add index to make all values different
@@ -125,7 +121,7 @@ class GemPayementFormMixin(GemHandlingFormUtils):
         payment_by_gems = kwargs.pop("payment_by_gems", False)
         payment_by_money = kwargs.pop("payment_by_money", False)
 
-        super(GemPayementFormMixin, self).__init__(datamanager, *args, **kwargs)
+        super().__init__(datamanager, *args, **kwargs)
 
         if datamanager.is_character():
 
@@ -160,7 +156,7 @@ class GemPayementFormMixin(GemHandlingFormUtils):
 
     def get_normalized_values(self):
 
-        parameters = super(GemPayementFormMixin, self).get_normalized_values()
+        parameters = super().get_normalized_values()
 
         #print(">>>>>>>>> get_normalized_values", self.__class__.__name__, parameters)
 
@@ -203,7 +199,7 @@ class DataTableForm(AbstractGameForm):
             assert "previous_identifier" not in initial
             initial["previous_identifier"] = initial["identifier"]
 
-        super(DataTableForm, self).__init__(datamanager, initial=initial, **kwargs)
+        super().__init__(datamanager, initial=initial, **kwargs)
 
         if initial and undeletable_identifiers:
             assert isinstance(undeletable_identifiers, set), undeletable_identifiers

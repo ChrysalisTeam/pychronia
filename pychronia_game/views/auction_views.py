@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 from pychronia_game.datamanager import AbstractGameView, register_view, transaction_watcher
 from django.http import Http404, HttpResponse
@@ -324,7 +320,7 @@ def _build_display_data_from_viewer_settings(viewer_settings):
         image_urls.append(level_urls)
 
     real_per_level = viewer_settings["per_level"] * (2 if viewer_settings["autoreverse"] else 1)
-    assert set([len(imgs) for imgs in image_urls]) == set([real_per_level])  # all levels have the same number of images
+    assert {len(imgs) for imgs in image_urls} == {real_per_level}  # all levels have the same number of images
 
     display_data = dict(levels=viewer_settings["levels"],
                         per_level=real_per_level,

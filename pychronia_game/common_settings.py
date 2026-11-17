@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from pychronia_common.common_settings import *
 
 TEMPLATES[0]["OPTIONS"]["context_processors"].append("pychronia_game.context_processors.pychronia_template_context")

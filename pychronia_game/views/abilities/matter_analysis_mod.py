@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 
 from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility

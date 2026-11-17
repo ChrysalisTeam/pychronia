@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 ### NO import from pychronia_game.common, else circular import !! ###
 
 import io
@@ -31,7 +27,7 @@ email_re = re.compile(
     re.IGNORECASE)  # literal form, ipv4 address (SMTP 4.1.3)
 
 
-class Conf(object):
+class Conf:
     """
     Helper class which handles default game settings.
     """
@@ -97,11 +93,10 @@ def normalize(v):
 
 ## Python <-> ZODB types conversion and checking ##
 
-ATOMIC_PYTHON_TYPES = (type(None), int, int, float, str, datetime, Callable)
+ATOMIC_PYTHON_TYPES = (type(None), int, float, str, datetime, Callable)
 
 python_to_zodb_types = {list: PersistentList,
                         dict: PersistentMapping,
-                        str: lambda x: normalize(x),
                         str: lambda x: normalize(x)}
 zodb_to_python_types = dict((value, key) if isinstance(value, type) else (key, value)  # NOT ALL are reversed
                             for (key, value) in list(python_to_zodb_types.items()))
@@ -338,7 +333,7 @@ def adapt_parameters_to_func(all_parameters, func):
     if keywords is not None:
         relevant_args = all_parameters  # exceeding args will be handled properly
     else:
-        relevant_args = dict((key, value) for (key, value) in list(all_parameters.items()) if key in args)
+        relevant_args = {key: value for (key, value) in list(all_parameters.items()) if key in args}
 
     try:
         #print("#<<<<<<<", func, relevant_args)
@@ -758,13 +753,13 @@ def recursive_dict_sum(d1, d2, appendable_fields):
 
     all_keys = list(d1.keys()) + list(d2.keys())
     #print("---->", repr(all_keys)[0:30])
-    return dict((k, ((d1[k] if k in d1 else d2[k])
+    return {k: ((d1[k] if k in d1 else d2[k])
                      if k not in d1 or k not in d2
                      else (_append_or_replace(k, d1[k], d2[k])
                            if not isinstance(d1[k], dict)
                            else recursive_dict_sum(d1[k], d2[k],
-                                                   appendable_fields=appendable_fields))))
-                for k in set(all_keys))
+                                                   appendable_fields=appendable_fields)))
+                for k in set(all_keys)}
 
 
 def load_yaml_file(yaml_file, pretreatment=None, convert_types=False):
@@ -773,7 +768,7 @@ def load_yaml_file(yaml_file, pretreatment=None, convert_types=False):
     pretreatment can be a callback applied on the string before it gets actually parsed as yaml.
     """
     logging.info("Loading yaml fixture %s" % yaml_file)
-    with open(yaml_file, "r", encoding="utf-8-sig") as f:  # beware of the unicode BOM
+    with open(yaml_file, encoding="utf-8-sig") as f:  # beware of the unicode BOM
         raw_data = f.read()
 
     for (lineno, linestr) in enumerate(raw_data.split("\n"), start=1):
@@ -905,7 +900,7 @@ def is_ajax_request(request):
     return request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
 
 
-class TechnicalEventsMixin(object):
+class TechnicalEventsMixin:
     """
     This private registry keeps track of miscellaneous events sent throughout the datamanager system.
     This feature should solely be used for debugging purpose, with function calls protected by
@@ -915,7 +910,7 @@ class TechnicalEventsMixin(object):
     """
 
     def __init__(self, *args, **kwargs):
-        super(TechnicalEventsMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._event_registry = {}  # stores, for each event name, a (calling_frame, count) tuple
 
     def notify_event(self, event_name):

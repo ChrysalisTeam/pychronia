@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from django import forms
 
 from pychronia_game.common import *
@@ -14,7 +10,7 @@ from pychronia_game.datamanager.abstract_game_view import register_view
 
 class TranslationForm(AbstractGameForm):
     def __init__(self, ability, *args, **kwargs):
-        super(TranslationForm, self).__init__(ability, *args, **kwargs)
+        super().__init__(ability, *args, **kwargs)
 
         ''' No need to specify object anymore - auto detect!!
         
@@ -169,8 +165,8 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         if not all_translation_settings:
             return None
 
-        results = dict((utilities.string_similarity(decoding_attempt, translation_settings["decoding"]), item_name)
-                       for item_name, translation_settings in list(all_translation_settings.items()))
+        results = {utilities.string_similarity(decoding_attempt, translation_settings["decoding"]): item_name
+                       for item_name, translation_settings in list(all_translation_settings.items())}
 
         best_score = min(results.keys())
 
@@ -274,4 +270,4 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
                                                       properties["translation"])  # we ensure tokens are well matching
 
         assert not any(x for x in list(self.all_private_data.values())
-                       if set(x.keys()) - set(["middlewares"]))
+                       if set(x.keys()) - {"middlewares"})

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.core.exceptions import ValidationError
 
 from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
@@ -13,8 +12,8 @@ class StaticPageForm(DataTableForm):
     title = forms.CharField(label=gettext_lazy("Title"), required=False)
 
     categories = Select2TagsField(label=gettext_lazy("Categories"), required=False,
-                                  choice_tags=sorted(set([StaticPages.CONTENT_CATEGORY, StaticPages.HELP_CATEGORY,
-                                                          Encyclopedia.ENCYCLOPEDIA_CATEGORY])))
+                                  choice_tags=sorted({StaticPages.CONTENT_CATEGORY, StaticPages.HELP_CATEGORY,
+                                                          Encyclopedia.ENCYCLOPEDIA_CATEGORY}))
 
     keywords = Select2TagsField(label=gettext_lazy("Keywords"), required=False)
 

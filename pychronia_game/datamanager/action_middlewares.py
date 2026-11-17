@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 from pychronia_game.datamanager.datamanager_tools import readonly_method
 
@@ -20,7 +16,7 @@ def register_action_middleware(klass):
     return klass
 
 
-class AbstractActionMiddleware(object):
+class AbstractActionMiddleware:
     """
     Action middlewares are meant to be active ONLY for characters, not anonymous/master!
     """
@@ -62,9 +58,9 @@ class AbstractActionMiddleware(object):
             for action_name, tree in list(private_data.get("middlewares", {}).items()):
                 all_middleware_data_packs.append(tree)  # maps middleware class names to their data
 
-        known_middleware_names_set = set([klass.__name__ for klass in ACTION_MIDDLEWARES])
-        compatible_middleware_names_set = set(
-            [klass.__name__ for klass in ACTION_MIDDLEWARES if self.ACCESS in klass.COMPATIBLE_ACCESSES])
+        known_middleware_names_set = {klass.__name__ for klass in ACTION_MIDDLEWARES}
+        compatible_middleware_names_set = {
+            klass.__name__ for klass in ACTION_MIDDLEWARES if self.ACCESS in klass.COMPATIBLE_ACCESSES}
 
         #print("------DATAPACKS-------->", self.__class__.__name__, all_middleware_data_packs)
 
@@ -207,7 +203,7 @@ class AbstractActionMiddleware(object):
         """
         BEWARE - overrides AbstractGameView stuffs!
         """
-        res = super(AbstractActionMiddleware, self).get_game_actions_explanations()
+        res = super().get_game_actions_explanations()
         for (action_name, action_data) in sorted(
                 self.GAME_ACTIONS.items()):  # sorted by IDENTIFIER order at the moment....
             explanations = self.get_middleware_data_explanations(
@@ -252,14 +248,14 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
     COMPATIBLE_ACCESSES = (UserAccess.character,)
 
     def _lazy_setup_private_action_middleware_data(self, action_name):
-        super(CostlyActionMiddleware, self)._lazy_setup_private_action_middleware_data(action_name)
+        super()._lazy_setup_private_action_middleware_data(action_name)
         if self.is_action_middleware_activated(action_name, CostlyActionMiddleware):
             data = self.get_private_middleware_data(action_name, CostlyActionMiddleware, create_if_unexisting=True)
             if not data:
                 pass  # nothing to store for that middleware, actually
 
     def _check_action_middleware_data_sanity(self, strict=False):
-        super(CostlyActionMiddleware, self)._check_action_middleware_data_sanity(strict=strict)
+        super()._check_action_middleware_data_sanity(strict=strict)
 
         for _action_name_, settings in list(self.get_all_middleware_settings(CostlyActionMiddleware).items()):
 
@@ -273,7 +269,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
         Override this to agregate the whole list of huma-readable instruction strings.
         """
 
-        other_instructions = super(CostlyActionMiddleware, self)._get_middleware_data_explanations(action_name)
+        other_instructions = super()._get_middleware_data_explanations(action_name)
 
         if self.is_action_middleware_activated(action_name, CostlyActionMiddleware):
 
@@ -342,7 +338,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                         url=None,
                         visible_by=[self.user.username])
 
-        return super(CostlyActionMiddleware, self)._process_action_through_middlewares(action_name=action_name,
+        return super()._process_action_through_middlewares(action_name=action_name,
                                                                                        method=method, params=params)
 
     def _pay_with_gems(self, gems_price, gems_list):
@@ -374,7 +370,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
 
     def _get_game_form_extra_params(self, action_name):
 
-        extra_params = super(CostlyActionMiddleware, self)._get_game_form_extra_params(action_name=action_name)
+        extra_params = super()._get_game_form_extra_params(action_name=action_name)
 
         if self.is_action_middleware_activated(action_name, CostlyActionMiddleware):
 
@@ -410,7 +406,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
     COMPATIBLE_ACCESSES = (UserAccess.character,)
 
     def _lazy_setup_private_action_middleware_data(self, action_name):
-        super(CountLimitedActionMiddleware, self)._lazy_setup_private_action_middleware_data(action_name)
+        super()._lazy_setup_private_action_middleware_data(action_name)
         if self.is_action_middleware_activated(action_name, CountLimitedActionMiddleware):
 
             data = self.get_private_middleware_data(action_name, CountLimitedActionMiddleware,
@@ -419,7 +415,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
                 data.setdefault("private_usage_count", 0)
 
     def _check_action_middleware_data_sanity(self, strict=False):
-        super(CountLimitedActionMiddleware, self)._check_action_middleware_data_sanity(strict=strict)
+        super()._check_action_middleware_data_sanity(strict=strict)
 
         settings = self.settings
         for action_name, settings in list(self.get_all_middleware_settings(CountLimitedActionMiddleware).items()):
@@ -441,7 +437,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
         """
         Override this to agregate the whole list of huma-readable instruction strings.
         """
-        other_instructions = super(CountLimitedActionMiddleware, self)._get_middleware_data_explanations(action_name)
+        other_instructions = super()._get_middleware_data_explanations(action_name)
 
         if self.is_action_middleware_activated(action_name, CountLimitedActionMiddleware):
 
@@ -500,7 +496,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
 
             private_data["private_usage_count"] += 1  # important
 
-        return super(CountLimitedActionMiddleware, self)._process_action_through_middlewares(action_name=action_name,
+        return super()._process_action_through_middlewares(action_name=action_name,
                                                                                              method=method,
                                                                                              params=params)
 
@@ -528,7 +524,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
     COMPATIBLE_ACCESSES = (UserAccess.character,)
 
     def _lazy_setup_private_action_middleware_data(self, action_name):
-        super(TimeLimitedActionMiddleware, self)._lazy_setup_private_action_middleware_data(action_name)
+        super()._lazy_setup_private_action_middleware_data(action_name)
         if self.is_action_middleware_activated(action_name, TimeLimitedActionMiddleware):
 
             data = self.get_private_middleware_data(action_name, TimeLimitedActionMiddleware, create_if_unexisting=True)
@@ -536,7 +532,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
                 data.setdefault("last_use_times", PersistentList())
 
     def _check_action_middleware_data_sanity(self, strict=False):
-        super(TimeLimitedActionMiddleware, self)._check_action_middleware_data_sanity(strict=strict)
+        super()._check_action_middleware_data_sanity(strict=strict)
 
         settings = self.settings
         now = get_utc_now()
@@ -561,7 +557,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         Override this to agregate the whole list of huma-readable instruction strings.
         """
 
-        other_instructions = super(TimeLimitedActionMiddleware, self)._get_middleware_data_explanations(action_name)
+        other_instructions = super()._get_middleware_data_explanations(action_name)
 
         if self.is_action_middleware_activated(action_name, TimeLimitedActionMiddleware):
 
@@ -629,7 +625,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
 
             private_data["last_use_times"].append(get_utc_now())  # updated in any case
 
-        return super(TimeLimitedActionMiddleware, self)._process_action_through_middlewares(action_name=action_name,
+        return super()._process_action_through_middlewares(action_name=action_name,
                                                                                             method=method,
                                                                                             params=params)
 

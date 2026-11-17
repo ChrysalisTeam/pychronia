@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from django import forms
 
 from pychronia_game.common import *
@@ -18,7 +14,7 @@ def _get_bank_choice(datamanager):
 @autostrip_form_charfields
 class MoneyTransferForm(AbstractGameForm):
     def __init__(self, datamanager, *args, **kwargs):
-        super(MoneyTransferForm, self).__init__(datamanager, *args, **kwargs)
+        super().__init__(datamanager, *args, **kwargs)
         user = datamanager.user
 
         # dynamic fields here ...
@@ -48,7 +44,7 @@ class MoneyTransferForm(AbstractGameForm):
 
 class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
     def __init__(self, datamanager, *args, **kwargs):
-        super(GemsTransferForm, self).__init__(datamanager, *args, **kwargs)
+        super().__init__(datamanager, *args, **kwargs)
         user = datamanager.user
 
         if user.is_master:
@@ -87,7 +83,7 @@ class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
 
     def clean(self):
         """We transform back *gems_choices* to proper python objects."""
-        cleaned_data = super(GemsTransferForm, self).clean()
+        cleaned_data = super().clean()
 
         raw_gems_choices = cleaned_data.get("gems_choices")  # might be None, if errors
 
@@ -105,7 +101,7 @@ class ArtefactTransferForm(AbstractGameForm):
 
 
     def __init__(self, datamanager, *args, **kwargs):
-        super(ArtefactTransferForm, self).__init__(datamanager, *args, **kwargs)
+        super().__init__(datamanager, *args, **kwargs)
 
         artefacts = datamanager.get_user_artefacts()  # dicts
         artefacts_choices = [(name, value["title"]) for (name, value) in list(artefacts.items())]
@@ -149,7 +145,7 @@ class CharacterProfileForm(AbstractGameForm):
     secret_answer = forms.CharField(label=gettext_lazy("New secret answer"), required=False)
 
     def __init__(self, datamanager, *args, **kwargs):
-        super(CharacterProfileForm, self).__init__(datamanager, *args, **kwargs)
+        super().__init__(datamanager, *args, **kwargs)
 
         allegiances_choices = datamanager.build_domain_select_choices()
         permissions_choices = datamanager.build_permission_select_choices()
@@ -179,7 +175,7 @@ class PasswordChangeForm(AbstractGameForm):
                                     widget=forms.PasswordInput)
 
     def clean(self):
-        cleaned_data = super(PasswordChangeForm, self).clean()
+        cleaned_data = super().clean()
 
         new_password1 = cleaned_data.get("new_password1")  # might be None
         new_password2 = cleaned_data.get("new_password2")  # might be None
@@ -203,7 +199,7 @@ class SecretQuestionChangeForm(AbstractGameForm):
                                     widget=forms.TextInput(attrs={'autocomplete': 'off'}))
 
     def clean(self):
-        cleaned_data = super(SecretQuestionChangeForm, self).clean()
+        cleaned_data = super().clean()
 
         secret_question = cleaned_data.get("secret_question")  # might be None
         secret_answer = cleaned_data.get("secret_answer")  # might be None
@@ -221,7 +217,7 @@ class SecretQuestionForm(SimpleForm):
     target_email = forms.EmailField(label=gettext_lazy("Email"), max_length=50)
 
     def __init__(self, username, *args, **kwargs):
-        super(SecretQuestionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["secret_username"].initial = username
 
 
@@ -244,7 +240,7 @@ class HiddenClueForm(SimpleForm):
 class HouseReportForm(AbstractGameForm):
 
     def __init__(self, ability, *args, **kwargs):
-        super(HouseReportForm, self).__init__(ability, *args, **kwargs)
+        super().__init__(ability, *args, **kwargs)
 
         periods_availability = ability.get_available_periods()
 
@@ -259,7 +255,7 @@ class HouseReportForm(AbstractGameForm):
 
 class TranslationForm(SimpleForm):
     def __init__(self, datamanager, *args, **kwargs):
-        super(TranslationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         _translatable_items_ids = list(datamanager.get_translatable_items().keys())
         _translatable_items_pretty_names = [datamanager.get_all_items()[item_name]["title"] for item_name in
@@ -275,7 +271,7 @@ class TranslationForm(SimpleForm):
 
 class ScanningForm(SimpleForm):
     def __init__(self, available_items, *args, **kwargs):
-        super(ScanningForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # dynamic fields here ...
         reference_items_choices = [("", _("< Use Description Instead >"))]
         reference_items_choices += [(name, value["title"]) for (name, value) in list(available_items.items())]
@@ -292,7 +288,7 @@ class ArmedInterventionForm(SimpleForm):
                               widget=forms.Textarea(attrs={'rows': '8', 'cols': '35'}))
 
     def __init__(self, available_locations, *args, **kwargs):
-        super(ArmedInterventionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # dynamic fields here ...
         available_locations_choices = [(name, name.capitalize()) for name in available_locations]
         self.fields["city_name"] = forms.ChoiceField(label=_("Location"), choices=available_locations_choices)
@@ -300,7 +296,7 @@ class ArmedInterventionForm(SimpleForm):
 
 class ArtefactForm(AbstractGameForm):
     def __init__(self, ability, *args, **kwargs):
-        super(ArtefactForm, self).__init__(ability, *args, **kwargs)
+        super().__init__(ability, *args, **kwargs)
 
         _user_artefacts = ability.get_user_artefacts()
 
@@ -316,7 +312,7 @@ class ArtefactForm(AbstractGameForm):
 
 class OtherKnownCharactersForm(AbstractGameForm):
     def __init__(self, datamanager, *args, **kwargs):
-        super(OtherKnownCharactersForm, self).__init__(datamanager=datamanager, *args, **kwargs)
+        super().__init__(datamanager=datamanager, *args, **kwargs)
 
         usernames = datamanager.get_other_known_characters()
         usernames_choices = [("", _(

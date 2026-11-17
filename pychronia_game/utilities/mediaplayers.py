@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 HTML5 media players (audio/video), enhanced client-side by Plyr (see static
 MetalRadiance/pychronia_media.js), plus the image thumbnail viewer.

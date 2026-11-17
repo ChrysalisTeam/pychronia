@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import setup_pychronia_env
 import pychronia_game.models  # initializes everything

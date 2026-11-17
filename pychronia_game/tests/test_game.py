@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 import json
 import random
 from textwrap import dedent
@@ -301,12 +297,12 @@ class TestUtilities(BaseGameTestCase):
 
         # test 1 #
 
-        class dummy(object):
+        class dummy:
             def __init__(self):
                 self.attr1 = ["hello"]
                 self.attr2 = 34
 
-        data = dict(abc=[1, 2, 3], efg=dummy(), hij=(1.0, 2), klm=set([8, ()]))
+        data = dict(abc=[1, 2, 3], efg=dummy(), hij=(1.0, 2), klm={8, ()})
 
         newdata = utilities.convert_object_tree(data, utilities.python_to_zodb_types)
 
@@ -321,7 +317,7 @@ class TestUtilities(BaseGameTestCase):
         self.assertTrue(isinstance(newdata["efg"].attr1, utilities.PersistentList))
         self.assertTrue(isinstance(newdata["efg"].attr2, int))
 
-        self.assertEqual(newdata["klm"], set([8, ()]))
+        self.assertEqual(newdata["klm"], {8, ()})
 
         # back-conversion
         newnewdata = utilities.convert_object_tree(newdata, utilities.zodb_to_python_types)
@@ -938,7 +934,7 @@ class TestMetaAdministration(unittest.TestCase):  # no django setup required ATM
         create_game_instance("defaultlanguage", creator_login="ze_creator_test")
         create_game_instance("englishgame", creator_login="ze_creator_test", game_language="en")
 
-        metadata = dict((meta["instance_id"], meta) for meta in get_all_instances_metadata())
+        metadata = {meta["instance_id"]: meta for meta in get_all_instances_metadata()}
         assert metadata["defaultlanguage"]["game_language"] == config.GAME_DEFAULT_LANGUAGE == "fr"
         assert metadata["englishgame"]["game_language"] == "en"
 
@@ -1020,7 +1016,7 @@ class TestMetaAdministration(unittest.TestCase):  # no django setup required ATM
             create_game_instance("betagame", creator_login="ze_creator_test", game_scenario="beta")
             assert executed_scripts == ["alpha", "beta"]
 
-            metadata = dict((meta["instance_id"], meta) for meta in get_all_instances_metadata())
+            metadata = {meta["instance_id"]: meta for meta in get_all_instances_metadata()}
             assert metadata["defaultscenario"]["game_scenario"] == "alpha"
             assert metadata["betagame"]["game_scenario"] == "beta"
 
@@ -1792,7 +1788,7 @@ class TestDatamanager(BaseGameTestCase):
         items_new = copy.deepcopy(self.dm.get_all_items())
         lg_new = self.dm.get_character_properties("guy3")
         nw_new = self.dm.get_character_properties("guy1")
-        assert set(self.dm.get_available_items_for_user("guy3").keys()) == set([gem_name1, object_name])
+        assert set(self.dm.get_available_items_for_user("guy3").keys()) == {gem_name1, object_name}
         self.assertEqual(lg_new["gems"],
                          [(items_new[gem_name1]["unit_cost"], gem_name1)] * items_new[gem_name1]["num_items"])
         self.assertEqual(items_new[gem_name1]["owner"], "guy3")
@@ -1926,18 +1922,18 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_available_items_for_user("master", auction_only=False), self.dm.get_all_items())
         self.assertEqual(self.dm.get_available_items_for_user("master", auction_only=True), self.dm.get_auction_items())
 
-        self.assertEqual(set(self.dm.get_available_items_for_user("guy1").keys()), set([]))
+        self.assertEqual(set(self.dm.get_available_items_for_user("guy1").keys()), set())
         self.assertNotEqual(self.dm.get_available_items_for_user("guy2", auction_only=False),
                             self.dm.get_available_items_for_user(
                                 "guy1"))  # no sharing of objects, even shared allegiance
-        self.assertEqual(set(self.dm.get_available_items_for_user("guy2").keys()), set([gem_name1, gem_name2]))
-        self.assertEqual(set(self.dm.get_available_items_for_user("guy3").keys()), set([object_name_auction]))
+        self.assertEqual(set(self.dm.get_available_items_for_user("guy2").keys()), {gem_name1, gem_name2})
+        self.assertEqual(set(self.dm.get_available_items_for_user("guy3").keys()), {object_name_auction})
         self.assertEqual(set(self.dm.get_available_items_for_user("guy3", auction_only=True).keys()),
-                         set([object_name_auction]))
+                         {object_name_auction})
         self.assertEqual(set(self.dm.get_available_items_for_user("guy4", auction_only=False).keys()),
-                         set([object_name_no_auction]))
+                         {object_name_no_auction})
         self.assertEqual(set(self.dm.get_available_items_for_user("guy4", auction_only=True).keys()),
-                         set([]))  # filtered out
+                         set())  # filtered out
 
         assert self.dm.get_user_artefacts() == {}  # guy1
         assert self.dm.get_user_artefacts("guy1") == {}
@@ -2235,7 +2231,7 @@ class TestDatamanager(BaseGameTestCase):
         print(new_tpl)
         assert new_tpl == {'body': 'qsdqsd', 'gamemaster_hints': '',
                            'recipient_emails': ['guy1@pangea.com'],
-                           'transferred_msg': '1_1ef3', 'attachment': None, 'sender_email': 'guy3@pangea.com',
+                           'transferred_msg': '1_1ef3', 'sender_email': 'guy3@pangea.com',
                            'categories': ['unsorted'], 'subject': 'ssd', 'attachment': 'local_url_bidon'}
 
     @for_core_module(Chatroom)
@@ -2337,9 +2333,9 @@ class TestDatamanager(BaseGameTestCase):
 
         emails = self.dm.get_sorted_user_contacts("guy3")
         assert emails[0] == ml
-        assert set(emails) == set([ml, "judicators2@akaris.com", "guy3@pangea.com"])
+        assert set(emails) == {ml, "judicators2@akaris.com", "guy3@pangea.com"}
         emails = self.dm.get_character_address_book("guy3")
-        assert set(emails) == set([ml, "judicators2@akaris.com", "guy3@pangea.com"])
+        assert set(emails) == {ml, "judicators2@akaris.com", "guy3@pangea.com"}
         usernames = self.dm.get_other_known_characters("guy3")
         assert not usernames  # guy3
 
@@ -2543,7 +2539,7 @@ class TestDatamanager(BaseGameTestCase):
 
         res = self.dm.get_contacts_display_properties(
             ["guy1@pangea.com", "judicators@akaris.com", "unknown@mydomain.com"], as_dict=True)
-        assert set(res.keys()) == set(["guy1@pangea.com", "judicators@akaris.com", "unknown@mydomain.com"])
+        assert set(res.keys()) == {"guy1@pangea.com", "judicators@akaris.com", "unknown@mydomain.com"}
         assert sorted(list(res.values()), key=lambda x: x["address"]) == expected_res  # values are the same as above...
 
     def test_post_message_with_template(self):
@@ -2850,8 +2846,8 @@ class TestDatamanager(BaseGameTestCase):
 
         res = self.dm.get_intercepted_messages("guy1")
         self.assertEqual(len(res), 3)  # wiretapping of user as sender AND recipient
-        self.assertEqual(set([msg["subject"] for msg in res]),
-                         set(["hello everybody 1", "hello everybody 2", "hello everybody 4"]))
+        self.assertEqual({msg["subject"] for msg in res},
+                         {"hello everybody 1", "hello everybody 2", "hello everybody 4"})
         assert all([msg["visible_by"]["guy1"] == VISIBILITY_REASONS.interceptor for msg in res])
 
         msg = res[0]  # first of these messages intercepted by guy1
@@ -3130,7 +3126,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(username, "guy3")
 
         properties = self.dm.get_audio_message_properties(audio_id)
-        self.assertEqual(set(properties.keys()), set(["title", "text", "file", "initial", "gamemaster_hints"]))
+        self.assertEqual(set(properties.keys()), {"title", "text", "file", "initial", "gamemaster_hints"})
 
         # self.assertEqual(properties["new_messages_notification_for_user"], "guy3")
         # self.assertEqual(self.dm.get_audio_message_properties("request_for_report_teldorium")["new_messages_notification_for_user"], None)
@@ -4511,7 +4507,7 @@ class TestDatamanager(BaseGameTestCase):
         assert captcha1 != captcha2
 
         random_captchas = [self.dm.get_random_captcha() for i in range(30)]
-        assert set(v["id"] for v in random_captchas) == set(captcha_ids)  # unless very bad luck...
+        assert {v["id"] for v in random_captchas} == set(captcha_ids)  # unless very bad luck...
 
         with pytest.raises(AbnormalUsageError):
             self.dm.check_captcha_answer_attempt(captcha_id="unexisting_id", attempt="whatever")
@@ -5752,7 +5748,7 @@ class TestGameViewSystem(BaseGameTestCase):
 
         with pytest.raises(AssertionError):
             while True:
-                a, b, c = [random.choice([_undefined, False]) for i in range(3)]
+                a, b, c = (random.choice([_undefined, False]) for i in range(3))
                 if not all((a, b, c)):
                     break  # at leats one of them must NOT be _undefined
             _normalize_view_access_parameters(a, b, c, attach_to=myview)
@@ -5790,7 +5786,7 @@ class TestGameViewSystem(BaseGameTestCase):
                           title=gettext_lazy("ssss"))  # double registration impossible!
 
         # case of class registration #
-        class DummyViewNonGameView(object):
+        class DummyViewNonGameView:
             ACCESS = "sqdqsjkdqskj"
 
         with pytest.raises(AssertionError):
@@ -5813,7 +5809,7 @@ class TestGameViewSystem(BaseGameTestCase):
 
         with pytest.raises(AssertionError):  # when a klass is given, all other arguments become forbidden
             while True:
-                a, b, c, d = [random.choice([_undefined, False]) for i in range(4)]
+                a, b, c, d = (random.choice([_undefined, False]) for i in range(4))
                 if not all((a, b, c)):
                     break  # at least one of them must NOT be _undefined
             register_view(OtherDummyView, a, b, c, d, title=gettext_lazy("SSS"))
@@ -6806,7 +6802,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         res = world_scan(request)
         assert res.status_code == 200
-        print((res.content.decode("utf8")))
+        print(res.content.decode("utf8"))
         assert "World scan submission in progress" in res.content.decode("utf8")
 
         assert request.datamanager.get_character_properties("guy1")["account"] < old_account
@@ -7373,7 +7369,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         wiretapping.change_current_user_wiretapping_targets([char_names[0], char_names[0], char_names[1]])
 
-        self.assertEqual(set(wiretapping.get_wiretapping_targets()), set([char_names[0], char_names[1]]))
+        self.assertEqual(set(wiretapping.get_wiretapping_targets()), {char_names[0], char_names[1]})
         self.assertEqual(wiretapping.get_listeners_for(char_names[1]), ["guy1"])
 
         self.assertRaises(UsageError, wiretapping.change_current_user_wiretapping_targets, ["dummy_name"])
@@ -7381,7 +7377,7 @@ class TestSpecialAbilities(BaseGameTestCase):
                           [char_names[i] for i in range(wiretapping.get_wiretapping_slots_count() + 1)])
 
         self.assertEqual(set(wiretapping.get_wiretapping_targets()),
-                         set([char_names[0], char_names[1]]))  # didn't change
+                         {char_names[0], char_names[1]})  # didn't change
         self.assertEqual(wiretapping.get_listeners_for(char_names[1]), ["guy1"])
 
         # SSL/TLS protection purchase

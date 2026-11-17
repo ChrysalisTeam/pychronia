@@ -52,9 +52,9 @@ class CounterNode(template.Node):
             context[assign] = counters[name].value
         
         if self.silent:
-            return u''
+            return ''
         else:
-            return u'%d' % counters[name].value
+            return '%d' % counters[name].value
 
 
 def counter(parser, token):

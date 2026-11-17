@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 import weakref
 
 from pychronia_game.common import *
@@ -64,7 +60,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         assert game_root is not None  # a dict, it's actually game DATA, no METADATA is included here!
 
-        super(BaseDataManager, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self.notify_event("BASE_DATA_MANAGER_INIT_CALLED")
 

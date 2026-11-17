@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from django.shortcuts import render
 
 from pychronia_game.common import *
@@ -20,7 +16,7 @@ class AbstractCaptchaProtectedView(AbstractGameView):
 
     def __init__(self, *args, **kwargs):
         assert not self.GAME_ACTIONS  # views protected by captchas should not use POST requests, at the moment
-        return super(AbstractCaptchaProtectedView, self).__init__(*args, **kwargs)
+        return super().__init__(*args, **kwargs)
 
     def _is_nightmare_captcha_successful(self):
 
@@ -57,7 +53,7 @@ class AbstractCaptchaProtectedView(AbstractGameView):
     def _process_html_request(self):
         if self._is_nightmare_captcha_successful():
             self.request.method = "GET"  # dirty hack
-            return super(AbstractCaptchaProtectedView, self)._process_html_request()
+            return super()._process_html_request()
         else:
             return self._generate_captcha_page()
 

@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 import re, logging, random, json
 
 from pychronia_game.utilities import (mediaplayers, autolinker,

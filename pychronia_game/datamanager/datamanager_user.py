@@ -1,13 +1,9 @@
-# -*- coding: utf-8 -*-
-
-
-
 import weakref
 from pychronia_game.common import *
 from django.contrib import messages
 
 
-class GameUser(object):
+class GameUser:
     def __init__(self, datamanager, username=None,
                  impersonation_target=None, impersonation_writability=False,
                  is_superuser=False, is_observer=False):

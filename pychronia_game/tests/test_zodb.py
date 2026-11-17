@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 import unittest, copy, time, random
 from unittest import TestCase
 import multiprocessing.pool

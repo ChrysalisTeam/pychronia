@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility
 from pychronia_game import utilities
@@ -98,7 +94,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
             utilities.check_num_custom_settings(settings, 4)  # with dedicated email
 
         assert not any(x for x in list(self.all_private_data.values())
-                       if set(x.keys()) - set(["middlewares"]))
+                       if set(x.keys()) - {"middlewares"})
 
     @readonly_method
     def _compute_scanning_result_or_none(self, item_name):

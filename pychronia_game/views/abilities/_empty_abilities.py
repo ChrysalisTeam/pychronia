@@ -1,14 +1,10 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_game_view import AbstractGameView
 from pychronia_game.datamanager.abstract_ability import AbstractAbility
 from pychronia_game.views.gameview_mixins import AbstractCaptchaProtectedView
 
 
-class EmptyAbilityMixin(object):
+class EmptyAbilityMixin:
     GAME_ACTIONS = {}
     TEMPLATE = "abilities/_empty_ability.html"
 

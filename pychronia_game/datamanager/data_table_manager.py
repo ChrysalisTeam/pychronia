@@ -1,13 +1,9 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game import utilities
 from pychronia_game.common import *
 from .datamanager_tools import *
 
 
-class DataTableManager(object):
+class DataTableManager:
     """
     Put an instance of this class as an attribute of a datamanager class, 
     to automatically extend it to handle (get/set/delete...)
@@ -162,7 +158,7 @@ class DataTableManager(object):
         return getattr(self._table, name)  # for methods like keys()... don't use copy() as it's MODIFYING object
 
 
-class LazyInstantiationDescriptor(object):
+class LazyInstantiationDescriptor:
     """
     Used to place a special attribute in datamanager modules, 
     proxying to a new instance of DataTableManager on attribute access.

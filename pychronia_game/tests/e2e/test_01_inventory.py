@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Meta-tests over the page inventory itself (see _inventory.py).
 

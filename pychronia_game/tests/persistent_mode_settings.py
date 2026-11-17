@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import time
 
 from pychronia_game.common_settings import *

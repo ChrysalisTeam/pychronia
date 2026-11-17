@@ -16,7 +16,7 @@ class AssignNode(template.Node):
         silent = parse_tag_argument(self.silent, context)
         context[name] = self.nodelist.render(context)
         if silent:
-            return u''
+            return ''
         else:
             return context[name]
 

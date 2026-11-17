@@ -1,11 +1,7 @@
-# -*- coding: utf-8 -*-
-
-
-
 import requests, urllib.parse
 
 
-class AcapelaClient(object):
+class AcapelaClient:
     def __init__(self, url, login, password, application, environment):
 
         assert environment.upper() == environment and " " not in environment

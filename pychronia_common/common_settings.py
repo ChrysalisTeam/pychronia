@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import sys, os, tempfile, random, logging, re
 
 try:

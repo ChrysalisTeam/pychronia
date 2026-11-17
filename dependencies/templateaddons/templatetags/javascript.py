@@ -4,14 +4,14 @@ from django import template
 register = template.Library()
 
 
-class JavascriptContainer(object):
+class JavascriptContainer:
     """
     Content storage. Stores fragments of code in a list (self.nodes).
     Provides a method to render code fragments as an unicode. 
     """
     def __init__(self):
         self.nodes = []
-        self.separator = u'\n'
+        self.separator = '\n'
         self.unique = True
     
     def __str__(self):
@@ -21,7 +21,7 @@ class JavascriptContainer(object):
         """
         if self.unique:
             self.remove_duplicates()
-        return u'%s' % self.separator.join(self.nodes)
+        return '%s' % self.separator.join(self.nodes)
     
     def remove_duplicates(self):
         """
@@ -44,7 +44,7 @@ javascript_container = JavascriptContainer()
 
 class JavascriptRenderNode(template.Node):
     def render(self, context):
-        return u'%s' % javascript_container
+        return '%s' % javascript_container
 
 
 @register.tag
@@ -62,7 +62,7 @@ class JavascriptAssignNode(template.Node):
     def render(self, context):
         content = self.nodelist.render(context)
         javascript_container.append(content)
-        return u''
+        return ''
 
 
 @register.tag
@@ -83,4 +83,4 @@ def javascript_reset():
     """
     global javascript_container
     javascript_container = JavascriptContainer()
-    return u''
+    return ''

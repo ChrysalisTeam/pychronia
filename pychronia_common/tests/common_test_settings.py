@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 DEBUG = True
 
 SITE_ID = 1

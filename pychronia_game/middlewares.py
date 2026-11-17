@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from pychronia_game.common import *
 from django.http import Http404, HttpResponse
 import django.core.mail as mail

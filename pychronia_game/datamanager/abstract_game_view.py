@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 import urllib.request, urllib.parse, urllib.error
 import json
 
@@ -76,7 +72,7 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
     assert False
 
 
-class ClassInstantiationProxy(object):
+class ClassInstantiationProxy:
     """
     Stateless object which automatically instantiates and triggers its wrapped GameView class on call.
     Also forwards attribute retrievals.
@@ -105,7 +101,7 @@ class GameViewMetaclass(type):
 
     def __init__(NewClass, name, bases, new_dict):
 
-        super(GameViewMetaclass, NewClass).__init__(name, bases, new_dict)
+        super().__init__(name, bases, new_dict)
 
         if not NewClass.__name__.startswith("Abstract"):
 
@@ -212,7 +208,7 @@ class GameViewMetaclass(type):
         return cls._instantiation_proxy  # ALWAYS THE SAME RETURNED
 
 
-class SubmittedGameForm(object):
+class SubmittedGameForm:
     """
     Simple container class.
     """
@@ -226,7 +222,7 @@ class SubmittedGameForm(object):
         self.action_successful = action_successful
 
 
-class AbstractGameView(object, metaclass=GameViewMetaclass):
+class AbstractGameView(metaclass=GameViewMetaclass):
     """
     By default, concrete subclasses just need to implement the _process_standard_request() method 
     of that class, and they are then suitable to process multiple http requests related to multiple datamanagers,
@@ -641,7 +637,7 @@ class AbstractGameView(object, metaclass=GameViewMetaclass):
 
         template_vars = self.get_template_vars(previous_form_data)
 
-        assert isinstance(template_vars, collections.Mapping), template_vars
+        assert isinstance(template_vars, collections.abc.Mapping), template_vars
 
         response = render(self.request,
                           self.TEMPLATE,
@@ -904,8 +900,8 @@ def register_view(view_object=None,
                                                                        requires_global_permission=requires_global_permission,
                                                                        attach_to=local_attach_to)
 
-            class_data = dict(
-                (key.upper(), value) for key, value in list(normalized_access_args.items()))  # auto build access attributes
+            class_data = {
+                key.upper(): value for key, value in list(normalized_access_args.items())}  # auto build access attributes
             class_data["TITLE"] = title
             class_data["TITLE_FOR_MASTER"] = title_for_master
             class_data["NAME"] = final_view_name

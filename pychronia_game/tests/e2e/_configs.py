@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from persistent.list import PersistentList
 
 GAME_ID = "e2egame"

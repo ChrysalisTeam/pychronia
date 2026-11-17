@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import os, tempfile, random
 
 from pychronia_common.tests.common_test_settings import *

@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from django import forms
 
 from pychronia_game.common import *
@@ -13,7 +9,7 @@ from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbili
 
 class AgentsHiringForm(AbstractGameForm):
     def __init__(self, datamanager, *args, **kwargs):
-        super(AgentsHiringForm, self).__init__(datamanager, *args, **kwargs)
+        super().__init__(datamanager, *args, **kwargs)
 
         _locations = sorted(datamanager.get_locations().keys())
         _location_choices = list(zip(_locations, _locations))

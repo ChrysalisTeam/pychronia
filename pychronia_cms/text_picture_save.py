@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Vendored from djangocms_text_ckeditor.picture_save (5.1.7), since djangocms-text (the
 successor plugin) dropped its own implementation of TEXT_SAVE_IMAGE_FUNCTION and expects
