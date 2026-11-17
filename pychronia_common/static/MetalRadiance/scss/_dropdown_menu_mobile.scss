@@ -1,7 +1,7 @@
 
 ul.dropmenu {
 
-    padding: 0 15px;
+    padding: 0 4px;
 
     a, span {
         text-align: left;
@@ -10,12 +10,14 @@ ul.dropmenu {
     a {
         display: none;
         color: $dark_orange;
-        font-size: 17px;
+        font-size: 17px; // fallback for browsers without clamp()
+        font-size: unquote("clamp(14px, 4.3vw, 17px)"); // shrinks on narrow phones, so that the CMS menu fits on one line
         text-decoration: none;
         line-height: 27px;
         // tap targets of ~48px high, as recommended for touch screens, but narrow horizontal padding,
         // so that the menu wraps on fewer lines (no horizontal scrolling here: it would clip dropdowns)
         padding: 10px 6px;
+        padding: 10px unquote("clamp(3px, 1.2vw, 6px)");
         float: none;
 
         &:hover {
@@ -30,6 +32,7 @@ ul.dropmenu {
 
     ul a, ul span {
         background-color: #342716; // sublinks only
+        font-size: 17px; // dropdown entries have room, they don't shrink
         padding: 10px 10px;
     }
 

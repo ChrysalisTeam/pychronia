@@ -2995,7 +2995,7 @@ i.novelty_dot {
     display: table;
   }
   #full_menu #main_menu .big_icon_panel {
-    margin: 10px 10px 5px;
+    margin: 10px 4px 5px 6px;
   }
   #full_menu #main_menu .big_icon_panel .positioner .novelty_mark {
     font-size: 20px;
@@ -3008,7 +3008,7 @@ i.novelty_dot {
     height: 13px;
   }
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu {
-    padding: 0 15px;
+    padding: 0 4px;
   }
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a,
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu span {
@@ -3018,9 +3018,11 @@ i.novelty_dot {
     display: none;
     color: #f5af09;
     font-size: 17px;
+    font-size: clamp(14px, 4.3vw, 17px);
     text-decoration: none;
     line-height: 27px;
     padding: 10px 6px;
+    padding: 10px clamp(3px, 1.2vw, 6px);
     float: none;
   }
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a:hover {
@@ -3032,6 +3034,7 @@ i.novelty_dot {
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul a,
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul span {
     background-color: #342716;
+    font-size: 17px;
     padding: 10px 10px;
   }
   #full_content {
