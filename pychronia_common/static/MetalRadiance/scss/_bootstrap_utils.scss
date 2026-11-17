@@ -8,7 +8,7 @@
 @import "bootstrap/mixins";
 // Utility classes
 @import "bootstrap/utilities";
-@import "bootstrap/responsive-utilities";
+// (bootstrap/responsive-utilities not imported: its .visible-*/.hidden-* classes are unused, we have .mobile-only/.desktop-only)
 
 /* DON'T restrict to "screen" for now, since we have no layout for print and other media... */
 @mixin mobile-only {

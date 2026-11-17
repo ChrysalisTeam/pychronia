@@ -316,15 +316,9 @@
     display: none;
 }
 
-@include mobile-only {
-    .p4wn-controls {
-        margin-top: 20px;
-    }
-}
-
-@include desktop-only {
-    .p4wn-controls {
-        margin-top: 20px;
+.p4wn-controls {
+    margin-top: 20px;
+    @include desktop-only {
         width: 450px;
     }
 }

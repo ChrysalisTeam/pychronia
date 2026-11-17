@@ -142,18 +142,6 @@ h1, h2, h3, h4, p {
     overflow: hidden;  // enforces min-width
 }
 
-@include mobile-only {
-    p {
-        font-size: 1em;
-    }
-}
-
-@include desktop-only {
-    p {
-        font-size: 1em;
-    }
-}
-
 a img {
     border-width: 0;
 }
@@ -567,8 +555,6 @@ button.pretty_button {
 img.content {
     margin-top: 15px;
     margin-bottom: 15px;
-    @include mobile-only {
-        // TODO - how to prevent image from taking 80% of width, and thus compressing texts?
-    }
+    // TODO - on mobile, how to prevent image from taking 80% of width, and thus compressing texts?
 }
 
