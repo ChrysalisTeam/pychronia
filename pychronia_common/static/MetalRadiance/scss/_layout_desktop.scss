@@ -380,9 +380,9 @@ body .notification_panel {
         width: 660px;
     }
 
-    .big_frame {
+    .big_frame { // one-column pages: same width as .giant_frame, so all one-column layouts (game and CMS) match
         @include main_frame_common;
-        width: 740px;
+        width: 960px;
     }
 
     .giant_frame {
