@@ -1018,7 +1018,7 @@ div[class] p.admonition-title {
 .main_frame_border .markItUp {
   width: 95%;
   margin: auto;
-  border: 1px solid #aaa;
+  border: 1px solid rgba(60, 35, 10, 0.45);
 }
 .main_frame_border .markItUpContainer {
   background-image: url('img/backgrounds/ricepaper-hue-orange.jpg');
@@ -1036,7 +1036,7 @@ div[class] p.admonition-title {
   width: 100%;
   height: 150px;
   border: none;
-  border-top: 1px solid #aaa;
+  border-top: 1px solid rgba(60, 35, 10, 0.45);
 }
 .main_frame_border .markItUpFooter {
   display: none;
@@ -2325,6 +2325,109 @@ table.realtable .ui-dropdownchecklist-selector-wrapper:disabled,
   font-family: Consolas, "Courier New", monospace;
   font-size: 14px;
 }
+.scroll_yellow_rolled .markItUp, .scroll_yellow_flat .markItUp,
+.scroll_realistic .markItUp, .scroll_realistic_thin_ends .markItUp,
+.post-it .markItUp, .rice_paper_beige .markItUp, .rice_paper_rose .markItUp,
+table.realtable .markItUp, .missing-content .markItUp, .form_scroll_thin .markItUp,
+.form_scroll_medium .markItUp, .form_scroll_big .markItUp, .hentry .markItUp {
+  background: transparent;
+  border: 1px solid rgba(40, 20, 0, 0.22);
+  border-radius: 4px;
+  box-shadow: inset 0 2px 4px rgba(40, 20, 0, 0.55), 0 1px 0 rgba(255, 240, 200, 0.5);
+  overflow: hidden;
+}
+.scroll_yellow_rolled .markItUp .markItUpContainer,
+.scroll_yellow_flat .markItUp .markItUpContainer,
+.scroll_realistic .markItUp .markItUpContainer,
+.scroll_realistic_thin_ends .markItUp .markItUpContainer,
+.post-it .markItUp .markItUpContainer,
+.rice_paper_beige .markItUp .markItUpContainer,
+.rice_paper_rose .markItUp .markItUpContainer,
+table.realtable .markItUp .markItUpContainer,
+.missing-content .markItUp .markItUpContainer,
+.form_scroll_thin .markItUp .markItUpContainer,
+.form_scroll_medium .markItUp .markItUpContainer,
+.form_scroll_big .markItUp .markItUpContainer, .hentry .markItUp .markItUpContainer {
+  background: none;
+}
+.scroll_yellow_rolled .markItUp .markItUpHeader,
+.scroll_yellow_flat .markItUp .markItUpHeader,
+.scroll_realistic .markItUp .markItUpHeader,
+.scroll_realistic_thin_ends .markItUp .markItUpHeader,
+.post-it .markItUp .markItUpHeader, .rice_paper_beige .markItUp .markItUpHeader,
+.rice_paper_rose .markItUp .markItUpHeader,
+table.realtable .markItUp .markItUpHeader,
+.missing-content .markItUp .markItUpHeader,
+.form_scroll_thin .markItUp .markItUpHeader,
+.form_scroll_medium .markItUp .markItUpHeader,
+.form_scroll_big .markItUp .markItUpHeader, .hentry .markItUp .markItUpHeader {
+  background-color: rgba(90, 58, 20, 0.08);
+  border-bottom: 1px solid rgba(60, 35, 10, 0.18);
+  padding: 2px 4px;
+}
+.scroll_yellow_rolled .markItUp .markItUpHeader a,
+.scroll_yellow_flat .markItUp .markItUpHeader a,
+.scroll_realistic .markItUp .markItUpHeader a,
+.scroll_realistic_thin_ends .markItUp .markItUpHeader a,
+.post-it .markItUp .markItUpHeader a,
+.rice_paper_beige .markItUp .markItUpHeader a,
+.rice_paper_rose .markItUp .markItUpHeader a,
+table.realtable .markItUp .markItUpHeader a,
+.missing-content .markItUp .markItUpHeader a,
+.form_scroll_thin .markItUp .markItUpHeader a,
+.form_scroll_medium .markItUp .markItUpHeader a,
+.form_scroll_big .markItUp .markItUpHeader a, .hentry .markItUp .markItUpHeader a {
+  border-radius: 2px;
+  opacity: 0.7;
+}
+.scroll_yellow_rolled .markItUp .markItUpHeader a:hover,
+.scroll_yellow_flat .markItUp .markItUpHeader a:hover,
+.scroll_realistic .markItUp .markItUpHeader a:hover,
+.scroll_realistic_thin_ends .markItUp .markItUpHeader a:hover,
+.post-it .markItUp .markItUpHeader a:hover,
+.rice_paper_beige .markItUp .markItUpHeader a:hover,
+.rice_paper_rose .markItUp .markItUpHeader a:hover,
+table.realtable .markItUp .markItUpHeader a:hover,
+.missing-content .markItUp .markItUpHeader a:hover,
+.form_scroll_thin .markItUp .markItUpHeader a:hover,
+.form_scroll_medium .markItUp .markItUpHeader a:hover,
+.form_scroll_big .markItUp .markItUpHeader a:hover,
+.hentry .markItUp .markItUpHeader a:hover {
+  opacity: 1;
+  background-color: rgba(90, 58, 20, 0.12);
+}
+.scroll_yellow_rolled .markItUp .markItUpHeader .markItUpSeparator,
+.scroll_yellow_flat .markItUp .markItUpHeader .markItUpSeparator,
+.scroll_realistic .markItUp .markItUpHeader .markItUpSeparator,
+.scroll_realistic_thin_ends .markItUp .markItUpHeader .markItUpSeparator,
+.post-it .markItUp .markItUpHeader .markItUpSeparator,
+.rice_paper_beige .markItUp .markItUpHeader .markItUpSeparator,
+.rice_paper_rose .markItUp .markItUpHeader .markItUpSeparator,
+table.realtable .markItUp .markItUpHeader .markItUpSeparator,
+.missing-content .markItUp .markItUpHeader .markItUpSeparator,
+.form_scroll_thin .markItUp .markItUpHeader .markItUpSeparator,
+.form_scroll_medium .markItUp .markItUpHeader .markItUpSeparator,
+.form_scroll_big .markItUp .markItUpHeader .markItUpSeparator,
+.hentry .markItUp .markItUpHeader .markItUpSeparator {
+  background-color: rgba(60, 35, 10, 0.45);
+}
+.scroll_yellow_rolled .markItUp textarea.markItUpEditor,
+.scroll_yellow_flat .markItUp textarea.markItUpEditor,
+.scroll_realistic .markItUp textarea.markItUpEditor,
+.scroll_realistic_thin_ends .markItUp textarea.markItUpEditor,
+.post-it .markItUp textarea.markItUpEditor,
+.rice_paper_beige .markItUp textarea.markItUpEditor,
+.rice_paper_rose .markItUp textarea.markItUpEditor,
+table.realtable .markItUp textarea.markItUpEditor,
+.missing-content .markItUp textarea.markItUpEditor,
+.form_scroll_thin .markItUp textarea.markItUpEditor,
+.form_scroll_medium .markItUp textarea.markItUpEditor,
+.form_scroll_big .markItUp textarea.markItUpEditor,
+.hentry .markItUp textarea.markItUpEditor {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
 .scroll_yellow_rolled select, .scroll_yellow_flat select, .scroll_realistic select,
 .scroll_realistic_thin_ends select, .post-it select, .rice_paper_beige select,
 .rice_paper_rose select, table.realtable select, .missing-content select,
@@ -2665,6 +2768,37 @@ table.realtable a:hover, table.realtable a:active, .missing-content a:hover,
   .main_frame_content textarea.markItUpEditor {
     font-family: Consolas, "Courier New", monospace;
     font-size: 14px;
+  }
+  .main_frame_content .markItUp {
+    background: transparent;
+    border: 1px solid rgba(40, 20, 0, 0.22);
+    border-radius: 4px;
+    box-shadow: inset 0 2px 4px rgba(40, 20, 0, 0.55), 0 1px 0 rgba(255, 240, 200, 0.5);
+    overflow: hidden;
+  }
+  .main_frame_content .markItUp .markItUpContainer {
+    background: none;
+  }
+  .main_frame_content .markItUp .markItUpHeader {
+    background-color: rgba(90, 58, 20, 0.08);
+    border-bottom: 1px solid rgba(60, 35, 10, 0.18);
+    padding: 2px 4px;
+  }
+  .main_frame_content .markItUp .markItUpHeader a {
+    border-radius: 2px;
+    opacity: 0.7;
+  }
+  .main_frame_content .markItUp .markItUpHeader a:hover {
+    opacity: 1;
+    background-color: rgba(90, 58, 20, 0.12);
+  }
+  .main_frame_content .markItUp .markItUpHeader .markItUpSeparator {
+    background-color: rgba(60, 35, 10, 0.45);
+  }
+  .main_frame_content .markItUp textarea.markItUpEditor {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
   }
   .main_frame_content select {
     -webkit-appearance: none;
