@@ -90,6 +90,24 @@ ul.dropmenu {
             //outline: $medium_yellow solid 1px; // FAILED!!!!
         }
 
+        /* sublevel entries: dark engraved ink, since white outlined text is unreadable on the pale metal tubes */
+
+        li a, li span {
+            color: $ink_color;
+            text-shadow: 0 1px 0 rgba(255, 240, 200, 0.7);
+            letter-spacing: 0.5px;
+        }
+
+        li span {
+            // INACTIVE sublevel entry, must stay distinguishable from links
+            color: rgba(60, 35, 10, 0.55) !important; // faded ink; NOT opacity, which would fade the tube too
+            text-shadow: none !important;
+        }
+
+        li a.hover {
+            color: $ink_link_hover_color;
+        }
+
         a.selected, span.selected {
             //todo
         }

@@ -3665,6 +3665,19 @@ i.novelty_dot {
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li span.hover {
     color: #AAA;
   }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li a,
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li span {
+    color: #2b1a08;
+    text-shadow: 0 1px 0 rgba(255, 240, 200, 0.7);
+    letter-spacing: 0.5px;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li span {
+    color: rgba(60, 35, 10, 0.55) !important;
+    text-shadow: none !important;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li a.hover {
+    color: #8E0D0D;
+  }
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li ul {
     display: none;
     margin: 0;
