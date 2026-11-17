@@ -99,6 +99,9 @@
 {% endblock %}
 
 
+{# few top-level entries, which may wrap on 2 rows on phones: tighter rows, wider gaps (see _dropdown_menu_mobile.scss) #}
+{% block main_menu_class %}compact_menu{% endblock %}
+
 {% block main_menu %}
     {{ block.super }}
     {% show_menu 0 100 100 100 %}

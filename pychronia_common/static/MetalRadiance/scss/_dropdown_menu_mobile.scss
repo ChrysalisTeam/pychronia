@@ -26,6 +26,19 @@ ul.dropmenu {
 
     }
 
+    // "compact" menus (CMS) on phones: rows stay close together (tap targets of 32px, above the 24px minimum of
+    // WCAG 2.2); from ~350px wide, the entries still fit on one row with these side paddings...
+    &.compact_menu > li > a {
+        @media (max-width: 480px) {
+            padding: 4px unquote("clamp(4px, 1.3vw, 6px)");
+            line-height: 24px;
+        }
+        // ... while narrower screens need 2 rows anyway, so their entries can be clearly set apart
+        @media (max-width: 349px) {
+            padding: 4px 9px;
+        }
+    }
+
     ul {
         border: 1px solid $dark_orange;
     }

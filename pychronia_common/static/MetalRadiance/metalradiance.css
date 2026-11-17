@@ -3200,6 +3200,19 @@ i.novelty_dot {
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a:hover {
     text-decoration: underline;
   }
+}
+@media (max-width: 991px) and (max-width: 480px) {
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu.compact_menu > li > a {
+    padding: 4px clamp(4px, 1.3vw, 6px);
+    line-height: 24px;
+  }
+}
+@media (max-width: 991px) and (max-width: 349px) {
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu.compact_menu > li > a {
+    padding: 4px 9px;
+  }
+}
+@media (max-width: 991px) {
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul {
     border: 1px solid #f5af09;
   }
