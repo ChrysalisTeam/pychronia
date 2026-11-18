@@ -10,7 +10,7 @@ compat-patcher-core==2.2
 Pillow>=10
 
 easy-thumbnails==2.8.5
-django-filer==3.0.3
+django-filer==3.5.0
 
 # DEV
 
