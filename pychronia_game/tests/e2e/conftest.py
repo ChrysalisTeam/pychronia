@@ -8,7 +8,7 @@ import pytest
 # is imported anywhere (it calls django.setup() at import time, which freezes settings).
 E2E_WORK_DIR = tempfile.mkdtemp(prefix="pychronia_e2e_")
 os.environ["PYCHRONIA_E2E_WORK_DIR"] = E2E_WORK_DIR
-os.environ["DJANGO_SETTINGS_MODULE"] = "pychronia_game.tests.e2e.e2e_settings"
+os.environ["DJANGO_SETTINGS_MODULE"] = "config.settings.e2e"
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"  # Playwright's sync API runs an event loop in the main thread
 
 import setup_pychronia_env  # noqa: E402, F401  (import order is load-bearing, see above)

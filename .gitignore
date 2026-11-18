@@ -25,5 +25,8 @@ thumbs
 
 /.venv
 
-# machine-specific settings overrides
+# machine-specific settings overrides (see config/settings/__init__.py)
+.env
+config/settings/local_*.py
+# obsolete location of these overrides
 persistent_mode_settings_local.py

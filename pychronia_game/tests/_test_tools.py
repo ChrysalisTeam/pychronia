@@ -6,7 +6,7 @@ import traceback
 
 ## TEST CONFIGURATION ##
 
-os.environ["DJANGO_SETTINGS_MODULE"] = "pychronia_game.tests.transient_mode_settings"
+os.environ["DJANGO_SETTINGS_MODULE"] = "config.settings.game_test"
 import setup_pychronia_env  # only AFTER setting this DJANGO_SETTINGS_MODULE
 
 from pychronia_game.common import *

@@ -1,3 +1,5 @@
+"""Overrides shared by all DEV and TEST settings."""
+
 DEBUG = True
 
 SITE_ID = 1

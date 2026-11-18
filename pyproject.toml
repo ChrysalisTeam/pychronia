@@ -37,7 +37,13 @@ dependencies = [
     "pytz",
     "docutils",
     "pyparsing>=3.1.1",
+    "django-environ>=0.12",  # reads the untracked .env file of dev/prod settings, see config/settings/
 ]
+
+[project.scripts]
+# django-admin equivalents, with the DEV settings of each site by default, eg. "uv run pychronia-game runserver"
+pychronia-game = "config.cli:game"
+pychronia-cms = "config.cli:cms"
 
 [project.optional-dependencies]
 # Django-CMS portal (pychronia_cms package). Verified working on Django 5.1.15 as of the
@@ -124,7 +130,7 @@ dev-mode-dirs = [".", "vendor"]
 
 [tool.hatch.build.targets.wheel]
 # for non-editable builds: "vendor/xxx" packages are installed as top-level "xxx" packages
-packages = ["pychronia_common", "pychronia_game", "pychronia_cms", "vendor/templateaddons", "vendor/fileservers"]
+packages = ["config", "pychronia_common", "pychronia_game", "pychronia_cms", "vendor/templateaddons", "vendor/fileservers"]
 
 
 [tool.uv.sources]
@@ -181,7 +187,8 @@ ignore = [
 "pychronia_game/datamanager/__init__.py" = ["F401"]
 "vendor/fileservers/__init__.py" = ["F401"]
 "pychronia_game/tests/_test_tools.py" = ["F401"]  # star-imported by test modules
-"**/*settings*.py" = ["F401"]  # settings are star-import chains, overridden by untracked *_local.py files
+"**/*settings*.py" = ["F401"]  # settings are star-import chains
+"config/settings/*.py" = ["F401"]
 # test idioms: "assert x == True", "assert False", "assertRaises(Exception)", attribute accesses expected to raise, unused call results
 "**/tests/**" = ["E712", "E741", "B011", "B017", "B018", "F841"]
 

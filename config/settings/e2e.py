@@ -1,10 +1,12 @@
+"""Settings of the Playwright end-to-end tests of the game site (see pychronia_game/tests/e2e/conftest.py)."""
+
 import os
 
-from pychronia_game.common_settings import *
+from config.settings.game import *
 
-from pychronia_common.tests.common_test_settings import *  # DEBUG, SITE_DOMAIN, SECRET_KEY...
+from config.settings._dev_base import *  # DEBUG, SITE_DOMAIN, SECRET_KEY...
 
-from pychronia_game.tests.common_test_settings import *  # ROOT_URLCONF, GAME_FILES_ROOT, ZODB_RESET_ALLOWED...
+from config.settings._game_dev_base import *  # ROOT_URLCONF, GAME_FILES_ROOT, ZODB_RESET_ALLOWED...
 
 E2E_WORK_DIR = os.environ["PYCHRONIA_E2E_WORK_DIR"]
 

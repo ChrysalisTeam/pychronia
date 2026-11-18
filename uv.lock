@@ -502,6 +502,15 @@ wheels = [
 ]
 
 [[package]]
+name = "django-environ"
+version = "0.14.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/57/e1/4c4ddcf6e90f023e89edb1d92f9a7fffce61ad4b691df497f2f5c0be6e26/django_environ-0.14.0.tar.gz", hash = "sha256:b6c48d93b9d2ff8a3ea14099e90c35aa4f101c1b4d5f262dfee0d27b06742ed7", size = 60417, upload-time = "2026-06-18T22:49:55.847Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1a/fe/67b423fc30f16d10259e901320fbc121746bf168aaaad9043e6ebb0110c1/django_environ-0.14.0-py3-none-any.whl", hash = "sha256:8dbe8a57f0a540ab8abd6f54f230de5e99e3a2c9d797cb9caecb037bca3d47d8", size = 20934, upload-time = "2026-06-18T22:49:54.355Z" },
+]
+
+[[package]]
 name = "django-filer"
 version = "3.6.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1522,6 +1531,7 @@ dependencies = [
     { name = "decorator" },
     { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.1.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "django-environ" },
     { name = "django-filer" },
     { name = "django-sekizai" },
     { name = "django-select2" },
@@ -1601,6 +1611,7 @@ requires-dist = [
     { name = "django-apptemplates", marker = "extra == 'cms'", specifier = "==1.4" },
     { name = "django-cms", marker = "extra == 'cms'", specifier = "==5.1.3" },
     { name = "django-cms-jplayer", marker = "extra == 'cms'", git = "https://github.com/pakal/django-cms-jplayer.git?rev=a4458ed2b271e47280cd307cdcc4a099f3b240cf" },
+    { name = "django-environ", specifier = ">=0.12" },
     { name = "django-filer", specifier = ">=3.0.3" },
     { name = "django-filer", marker = "extra == 'cms'", specifier = ">=3.6.0" },
     { name = "django-inline-ordering", marker = "extra == 'cms'", specifier = ">=1.0.2" },

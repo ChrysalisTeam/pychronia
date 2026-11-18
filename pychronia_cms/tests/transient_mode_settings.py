@@ -1,5 +1,2 @@
-from pychronia_cms.common_settings import *
-
-from pychronia_common.tests.transient_mode_settings import *  # simple overrides
-
-ROOT_URLCONF = "pychronia_cms.tests._test_urls"
+# DEPRECATED alias, kept for existing deployments and habits: use "config.settings.cms_test" instead
+from config.settings.cms_test import *  # noqa: F403

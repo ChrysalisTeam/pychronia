@@ -1,0 +1,313 @@
+from config.settings.base import *
+
+LANGUAGE_CODE = "fr"  # for now, CMS content is french only so....
+
+CMS_CONFIRM_VERSION4 = True  # required by cms>=4 to acknowledge the Title->PageContent/versioning rewrite
+
+
+SILENCED_SYSTEM_CHECKS = [
+    "admin.E012",  # duplicate field(s) in 'fieldsets
+    "urls.W001",
+]  # wrong "is_endpoint" checks by Django
+
+
+INSTALLED_APPS += [
+    "djangocms_admin_style",  # must come BEFORE admin
+    "django.contrib.admin",
+    "pychronia_cms",
+    "request",  # stats on HTTP requests
+    "django.contrib.sitemaps",
+    "djangocms_page_sitemap",
+    "djangocms_text",  # must be before django-cms entry; replaces djangocms_text_ckeditor (deprecated upstream)
+    "cms",
+    "treebeard",  # new menu handler for djangocms
+    "menus",
+    "djangocms_versioning",  # required by cms4+ (versioned PageContent/placeholders)
+    "djangocms_alias",  # required by cms4+ (reusable content aliases)
+    "cmsplugin_rst",
+    "cmsplugin_simple_gallery",
+    # 'djangocms_flash',
+    # 'djangocms_googlemap',
+    "djangocms_link",
+    "djangocms_snippet",
+    "djangocms_rawhtml",
+    "filer",
+    "djangocms_picture",  # replaces cmsplugin_filer_image (data migrated, see cms4_data_fix_migrate_filer_image_video.py)
+    "djangocms_video",  # replaces cmsplugin_filer_video (data migrated, see cms4_data_fix_migrate_filer_image_video.py)
+    "jplayer",
+    # djangocms-stories replaces zinnia/cmsplugin_zinnia (abandoned, no cms4+ release); entries
+    # migrated by cms4_data_fix_migrate_zinnia_to_stories.py, see DJANGO_CMS_UPGRADE_REPORT.md.
+    "parler",
+    "sortedm2m",
+    "taggit",
+    "meta",
+    "djangocms_stories",
+    "reversion",
+    "debug_toolbar",
+]
+
+_TEMPLATE_OPTIONS = TEMPLATES[0]["OPTIONS"]
+
+_TEMPLATE_OPTIONS["context_processors"].append(
+    "cms.context_processors.cms_settings"  # for CMS_MEDIA_URL etc.
+)
+_TEMPLATE_OPTIONS["loaders"].insert(
+    0,
+    "apptemplates.Loader",  # allows the use of {% extends "admin:admin/base.html" %}
+)
+
+MIDDLEWARE = (
+    ("django.middleware.cache.UpdateCacheMiddleware",)
+    + MIDDLEWARE
+    + (
+        # debug toolbar, CSRF and X-Frame-Options middlewares are inherited from pychronia_common
+        "cms.middleware.page.CurrentPageMiddleware",
+        "cms.middleware.user.CurrentUserMiddleware",
+        "request.middleware.RequestMiddleware",
+        "cms.middleware.toolbar.ToolbarMiddleware",
+        "cms.middleware.language.LanguageCookieMiddleware",
+        "django.middleware.cache.FetchFromCacheMiddleware",
+    )
+)
+
+# global django overrides, easier than overridding models get_absolute_url() methods
+ABSOLUTE_URL_OVERRIDES = {
+    "auth.user": (lambda u: "/")  # access to user data, eg. u.username
+}
+
+
+############# DJANGO-APP CONFS ############
+
+
+## DJANGO DEBUG TOOLBAR CONF ##
+def show_toolbar_to_superusers_only(request):
+    # also gates the toolbar's own /__debug__/ views (debug_toolbar.decorators.require_show_toolbar)
+    user = getattr(request, "user", None)
+    return bool(user and user.is_superuser)
+
+
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": show_toolbar_to_superusers_only,  # only show toolbar to authenticated users
+    "SHOW_COLLAPSED": True,
+}
+DEBUG_TOOLBAR_PATCH_SETTINGS = False  # let us configure MANUALLY
+
+FILER_IMAGE_USE_ICON = True  # use django-filer icons for plugins
+TEXT_SAVE_IMAGE_FUNCTION = (
+    "pychronia_cms.text_picture_save.create_picture_plugin"  # djangocms_text ships no default impl
+)
+
+## DJANGO-REQUEST STATS CONF ##
+# most settings only work with dev version of module, as of 2013/06
+REQUEST_IGNORE_AJAX = True
+REQUEST_ANONYMOUS_IP = True
+REQUEST_LOG_USER = False
+REQUEST_IGNORE_USERNAME = ("admin", "PKL")
+REQUEST_IGNORE_PATHS = (
+    r"^admin/",
+    r"^static/",
+)
+REQUEST_ONLY_ERRORS = False
+
+## DJANGO CONTRIB RST CONF ##
+# on the public portal, only superuser write RST docs
+# so we trust him for "raw" directive (not file insertion though)
+CMSPLUGIN_RST_SETTINGS_OVERRIDES["raw_enabled"] = True
+
+CMS_LANGUAGES = {
+    1: [
+        {
+            "code": "fr",
+            "name": gettext("French"),
+            "fallbacks": ["en"],
+            "public": True,
+        },
+        {
+            "code": "en",
+            "name": gettext("English"),
+            "fallbacks": ["fr"],
+            "public": True,
+        },
+    ],
+    "default": {
+        "fallbacks": ["en", "fr"],
+        "redirect_on_fallback": True,
+        "public": True,
+        "hide_untranslated": False,
+    },
+}
+
+## DJANGO CMS CONF ##
+CMS_TEMPLATES = (
+    ("cms_one_column.html", gettext("One column")),
+    ("cms_two_columns.html", gettext("Two columns")),
+)
+
+CMS_TEMPLATE_INHERITANCE = True
+CMS_PLACEHOLDER_CONF = {}  # unused atm
+CMS_PLUGIN_CONTEXT_PROCESSORS = []
+CMS_PLUGIN_PROCESSORS = []
+CMS_UNESCAPED_RENDER_MODEL_TAGS = False
+
+CMS_PUBLIC_FOR = "all"  # not restricted to "staff"
+CMS_PERMISSION = False  # no fine grained restrictions ATM
+
+CMS_CACHE_DURATIONS = {  # in seconds
+    "menus": 60 * 60,
+    "content": 60,
+    "permissions": 60 * 60,
+}
+
+CMS_CACHE_PREFIX = "chryscms-"  # useful if multiple CMS installations
+# Disabled (rung 11, cms 3.11.11->5.0.13): with BOTH page and placeholder caching on,
+# cms.views.details()'s cache-hit path does `response.headers = headers` with a headers
+# object pulled back out of the cache (cms/views.py, combined with cms/cache/page.py's
+# set_page_cache() persisting get_response_headers(response) i.e. response.headers
+# alongside placeholder-cache entries under the same locmem cache). The second real HTTP
+# request to any given cached CMS page then fails at the WSGI layer with
+# `AssertionError: Header names/values must be of type str` while serializing the
+# reconstructed response - reproducible via raw HTTP (curl) against runserver, NOT via
+# Django's test Client, and only when both settings are True together (confirmed neither
+# flag alone reproduces it). No upstream fix identified yet; disabling both avoids the
+# broken code path entirely until this is revisited.
+CMS_PAGE_CACHE = False
+CMS_PLACEHOLDER_CACHE = False
+CMS_PLUGIN_CACHE = True
+
+CMS_MAX_PAGE_HISTORY_REVERSIONS = 15
+CMS_MAX_PAGE_PUBLISH_REVERSIONS = 10
+
+CMS_TOOLBARS = None  # all, by default
+CMS_TOOLBAR_ANONYMOUS_ON = True
+CMS_TOOLBAR_HIDE = False
+
+# FIXME, still needed ??
+CMS_REDIRECTS = True  # handy for "dummy" menu entries # DEPRECATED, use django.contrib.redirects instead
+
+CMS_SOFTROOT = False  # no need to cut the menu in sections  # DEPRECATED
+
+
+## SIMPLEGALLERY CONF ##
+CMS_SIMPLEGALLERY_THUMBNAIL_OPTIONS = {
+    "size": (240, 180),
+    "crop": True,
+    "quality": 80,
+}
+
+## DJANGOCMS-STORIES CONF (replaces zinnia/cmsplugin_zinnia, see cms4_data_fix_migrate_zinnia_to_stories.py) ##
+# django-parler needs to know which languages exist per site; mirrors LANGUAGE_CODE='fr' (CMS
+# content is french-only) + LANGUAGES=('fr', 'en') from config.settings.base.
+PARLER_LANGUAGES = {
+    1: (  # SITE_ID
+        {"code": "fr"},
+        {"code": "en"},
+    ),
+    "default": {
+        "fallbacks": ["fr"],
+        "hide_untranslated": False,
+    },
+}
+
+# django-meta (used by djangocms_stories' category pages to build their "meta" context, see
+# djangocms_stories.views.CategoryEntriesView.get_context_data) has no default for these two and
+# raises ImproperlyConfigured if unset; only affects generated OG/canonical meta tags, not
+# routing/ALLOWED_HOSTS, so a static value is fine here regardless of environment.
+META_SITE_PROTOCOL = "https"
+META_SITE_DOMAIN = "chrysalis-game.com"
+
+## CMSPLUGIN JPLAYER CONF ##
+JPLAYER_BASE_PATH = STATIC_URL + "libs/jquery-jplayer-2.3.0/"  # for Jplayer SWF object mainly
+
+## DJANGO REGISTRATION CONF ##
+ACCOUNT_ACTIVATION_DAYS = 7
+
+## WYMEDITOR CONF ##
+""" USELESS now that we have ckeditor
+WYM_TOOLS = ",\n".join([
+    "{'name': 'Bold', 'title': 'Strong', 'css': 'wym_tools_strong'}",
+    "{'name': 'Italic', 'title': 'Emphasis', 'css': 'wym_tools_emphasis'}",
+    "{'name': 'Superscript', 'title': 'Superscript', 'css': 'wym_tools_superscript'}",
+    "{'name': 'Subscript', 'title': 'Subscript', 'css': 'wym_tools_subscript'}",
+    "{'name': 'InsertOrderedList', 'title': 'Ordered_List', 'css': 'wym_tools_ordered_list'}",
+    "{'name': 'InsertUnorderedList', 'title': 'Unordered_List', 'css': 'wym_tools_unordered_list'}",
+    "{'name': 'Indent', 'title': 'Indent', 'css': 'wym_tools_indent'}",
+    "{'name': 'Outdent', 'title': 'Outdent', 'css': 'wym_tools_outdent'}",
+    "{'name': 'Undo', 'title': 'Undo', 'css': 'wym_tools_undo'}",
+    "{'name': 'Redo', 'title': 'Redo', 'css': 'wym_tools_redo'}",
+    "{'name': 'Paste', 'title': 'Paste_From_Word', 'css': 'wym_tools_paste'}",
+    "{'name': 'ToggleHtml', 'title': 'HTML', 'css': 'wym_tools_html'}",
+    ##"{'name': 'CreateLink', 'title': 'Link', 'css': 'wym_tools_link'}",
+    ##"{'name': 'Unlink', 'title': 'Unlink', 'css': 'wym_tools_unlink'}",
+    ##"{'name': 'InsertImage', 'title': 'Image', 'css': 'wym_tools_image'}",
+    "{'name': 'InsertTable', 'title': 'Table', 'css': 'wym_tools_table'}",
+    "{'name': 'Preview', 'title': 'Preview', 'css': 'wym_tools_preview'}",
+])
+
+WYM_CONTAINERS = ",\n".join([
+    "{'name': 'P', 'title': 'Paragraph', 'css': 'wym_containers_p'}",
+    "{'name': 'H1', 'title': 'Heading_1', 'css': 'wym_containers_h1'}",
+    "{'name': 'H2', 'title': 'Heading_2', 'css': 'wym_containers_h2'}",
+    "{'name': 'H3', 'title': 'Heading_3', 'css': 'wym_containers_h3'}",
+    "{'name': 'H4', 'title': 'Heading_4', 'css': 'wym_containers_h4'}",
+    "{'name': 'H5', 'title': 'Heading_5', 'css': 'wym_containers_h5'}",
+    "{'name': 'H6', 'title': 'Heading_6', 'css': 'wym_containers_h6'}",
+    "{'name': 'PRE', 'title': 'Preformatted', 'css': 'wym_containers_pre'}",
+    "{'name': 'BLOCKQUOTE', 'title': 'Blockquote', 'css': 'wym_containers_blockquote'}",
+    ##"{'name': 'TH', 'title': 'Table_Header', 'css': 'wym_containers_th'}",
+])
+
+WYM_CLASSES = ",\n".join([
+    "{'name': 'date', 'title': 'PARA: Date', 'expr': 'p'}",
+    "{'name': 'hidden-note', 'title': 'PARA: Hidden note', 'expr': 'p[@class!=\"important\"]'}",
+])
+
+WYM_STYLES = ",\n".join([
+    "{'name': '.hidden-note', 'css': 'color: #999; border: 2px solid #ccc;'}",
+    "{'name': '.date', 'css': 'background-color: #ff9; border: 2px solid #ee9;'}",
+])
+"""
+
+## CKEDITOR SETTINGS ##
+# djangocms_text now defaults to the TipTap editor (no CKEditor4 contrib app installed), so
+# this config is currently dormant - kept in case djangocms_text.contrib.text_ckeditor4 is
+# enabled later (TEXT_EDITOR setting) to restore the legacy CKEditor4 editing experience.
+# See http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html for all settings
+
+CKEDITOR_SETTINGS = {
+    #'language': '{{ language }}',
+    #'skin': 'moono',
+    "height": "320px",
+    #'toolbar': 'CMS',
+    "toolbar_CMS": [
+        ["Undo", "Redo"],
+        ["CMSPlugins", "-", "ShowBlocks"],
+        ["Font", "FontSize", "Format", "Styles"],
+        ["TextColor", "BGColor", "-", "PasteText", "PasteFromWord"],
+        ["Maximize", ""],
+        "/",
+        ["Bold", "Italic", "Underline", "-", "Subscript", "Superscript", "-", "RemoveFormat"],
+        ["CreateDiv", "JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock"],
+        ["Link", "Unlink"],
+        ["NumberedList", "BulletedList", "-", "Outdent", "Indent", "-", "Table"],
+        ["Source"],
+    ],
+    #'toolbarCanCollapse': False,
+    #'extraPlugins': 'cmsplugins'
+}
+
+"""
+## DJANGO LOCALEURL CONF - OBSOLETE TO DELETE ASAP
+ 
+LOCALE_INDEPENDENT_PATHS = ()
+LOCALE_INDEPENDENT_MEDIA_URL = True
+PREFIX_DEFAULT_LOCALE = True # whether we must enforce a locale in url even for default language
+USE_ACCEPT_LANGUAGE = True # use http headres to choose the right language
+LOCALE_INDEPENDENT_PATHS = (
+      '^/$',
+      '^/files/',
+      '^/admin/',
+      '^/media/',
+      '^/static/',
+      '^/i18n/', # TO BE REMOVED
+      )
+"""

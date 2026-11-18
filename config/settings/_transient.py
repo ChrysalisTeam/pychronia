@@ -1,8 +1,10 @@
+"""Overrides shared by TEST settings: throwaway SQL DB in a temp folder."""
+
 import os
 import tempfile
 import random
 
-from pychronia_common.tests.common_test_settings import *
+from config.settings._dev_base import *
 
 TEMP_DIR = tempfile.mkdtemp()
 UNICITY_STRING = str(random.randint(100000, 1000000000))

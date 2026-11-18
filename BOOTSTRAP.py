@@ -7,7 +7,7 @@ import os
 import subprocess
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
-# dev settings (pychronia_game.tests.persistent_mode_settings), not the PROD settings of root manage.py
+# dev settings (config.settings.game_dev), not the PROD settings of root manage.py
 MANAGE = os.path.join(REPO_ROOT, "pychronia_game", "tests", "manage.py")
 
 # "uv sync" also installs this project in editable mode, so that its folders are importable from anywhere
