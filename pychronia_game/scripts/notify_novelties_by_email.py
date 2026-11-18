@@ -2,7 +2,6 @@
 import logging
 import setup_pychronia_env  # noqa: F401
 
-import pychronia_game.models  # noqa: F401 - initializes everything
 from pychronia_game.datamanager.datamanager_administrator import get_all_instances_metadata, retrieve_game_instance
 from django.conf import settings
 from smtplib import SMTPException

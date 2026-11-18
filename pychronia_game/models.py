@@ -1,2 +1,1 @@
-# IMPORTANT to register all views/abilities/permissions #
-from . import views  # noqa: F401
+# no SQL models: game data lives in ZODB, and game views are registered by PychroniaGameConfig.ready()

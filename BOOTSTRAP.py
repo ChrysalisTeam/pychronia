@@ -7,7 +7,8 @@ import os
 import subprocess
 
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
-RUNNER = os.path.join(REPO_ROOT, "pychronia_game", "tests", "runner.py")
+# dev settings (pychronia_game.tests.persistent_mode_settings), not the PROD settings of root manage.py
+MANAGE = os.path.join(REPO_ROOT, "pychronia_game", "tests", "manage.py")
 
 # "uv sync" also installs this project in editable mode, so that its folders are importable from anywhere
 print(">>>>> Installing python/pip modules")
@@ -20,11 +21,11 @@ assert not retcode, (
 )
 
 print(">>>>> Resetting sqlite django DB")
-retcode = subprocess.call([sys.executable, RUNNER, "reset_django"])
-assert not retcode, "Error when resetting django DB, please launch runner.py commands manually"
+retcode = subprocess.call([sys.executable, MANAGE, "reset_django", "--noinput"])
+assert not retcode, "Error when resetting django DB, please launch manage.py commands manually"
 
 print(">>>>> Resetting demo game in zodb")
-retcode = subprocess.call([sys.executable, RUNNER, "reset_zodb"])
-assert not retcode, "Error when resetting zodb, please launch runner.py commands manually"
+retcode = subprocess.call([sys.executable, MANAGE, "reset_zodb", "--noinput"])
+assert not retcode, "Error when resetting zodb, please launch manage.py commands manually"
 
 print(">>>>> ALL BOOTSTRAPPING TASKS COMPLETED")

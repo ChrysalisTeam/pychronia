@@ -41,7 +41,7 @@ Else::
 	Add "--extra cms" to also install the (currently broken) Django-CMS dependencies of the "pychronia_cms" package.
 	Use "uv lock --upgrade-package <name>" to upgrade a pinned dependency.
 
-	Then reset both Mysql DB and Zope Object DB for the game portal, using the "runner.py" described below.
+	Then reset both the SQL DB and the Zope Object DB of the game portal, with the "reset_django" and "reset_zodb" management commands described below.
 
 The Django-CMS app, located in "pychronia_cms" package, behaves like a quite standard Django application, in development mode you can setup its databases and run a test server via the "pychronia_cms/tests/manage.py" script.
 So the remaindee of this doc focuses on the non-standard "pychronia_game" package.
@@ -69,15 +69,20 @@ See pychronia_common/static/MetalRadiance/build.bat for related commands.
 Utilities and servers
 ========================
 
-The script "runner.py", in pychronia_game/tests/ folder, can be used to "reset_django" (the MySQL DB storing sesssions) and then "reset_zodb" (the object DB containing game data), see its help::
+The "pychronia_game/tests/manage.py" script is a standard django manage.py, pointing to the "persistent test DB" configuration (pychronia_game.tests.persistent_mode_settings).
+Besides standard django commands (runserver, migrate...), it offers these pychronia_game management commands (see "--help" of each)::
 
-    python pychronia_game/tests/runner.py --help
+    python pychronia_game/tests/manage.py reset_django     # DEV ONLY: migrate, then flush, the SQL DB (users, sessions...)
+    python pychronia_game/tests/manage.py reset_zodb       # DEV ONLY: wipe the object DB (game data) and create a "DEMO" game instance
+    python pychronia_game/tests/manage.py pack_zodb_file   # pack a local ZODB file, in case it gets too heavy (server must be stopped)
+    python pychronia_game/tests/manage.py runserver
 
 The demo game which gets created, is by default filled with the content of "pychronia_game/tests/test_game_files/game_initial_data.yaml", and then altered by the GAME_INITIAL_FIXTURE_SCRIPT() function if it exists in settings.
 
 You may modify GAME_FILES_ROOT and GAME_INITIAL_DATA_PATH settings to point respectively to a different tree of game assets, and a different yaml fixture file (or list of folders/files).
 
-In addition to resetting DBs, the runner.py script of pychronia_game package can pack persistent ZODB, and run django dev server against test DBs located in the same directory::
+Maintenance commands, used by "bin/daily_game_maintenance.sh" in production: backup_all_games, check_global_sanity, reset_demo_account, notify_novelties_by_email.
+Other tools: dump_initial_game_yaml (initial game data, eg. for murder-party sheet generators), extract_reusable_bits_from_game (message templates of a game instance).
 
 When dev server is launched, the test game instance (created by "reset_zodb") can be reached at "http://localhost:8000/DEMO/"
 
@@ -85,7 +90,7 @@ When dev server is launched, the test game instance (created by "reset_zodb") ca
 
 ..note::
 
-    Standard manage.py scripts, pointing to the "persistent test DB" configuration, are also available in /test folders, so as to launch standard dev servers, or issue any other standard django commands.
+    Similarly, "pychronia_cms/tests/manage.py" (and "pychronia_common/tests/manage.py") point to the dev configuration of the other packages.
 
     Note that the "manage.py" file at depot root expects a PROD setup, with a "pychronia_settings.py" file (or symlink) available; in dev environment, you won't need it.
 

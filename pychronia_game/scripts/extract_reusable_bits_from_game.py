@@ -2,13 +2,11 @@
 import sys
 import setup_pychronia_env  # noqa: F401
 
-import pychronia_game.models  # noqa: F401 - initializes everything
 from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance
 from pychronia_game import utilities
 
 
-def execute():
-    instance_id = sys.argv[1]  # please provide game instance id on cmd line
+def execute(instance_id):
     dm = retrieve_game_instance(instance_id)
 
     msgs = dm.get_all_dispatched_messages()
@@ -27,4 +25,4 @@ def execute():
 
 
 if __name__ == "__main__":
-    execute()
+    execute(sys.argv[1])  # please provide game instance id on cmd line

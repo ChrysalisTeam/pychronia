@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 
+"""
+Django manage.py script for the DEV environment of pychronia_game, with its DB not in a temp dir.
+
+A --settings option (eg. --settings=pychronia_game.tests.transient_mode_settings) overrides these default settings.
+"""
+
 import os
-
-# equivalent of "set DJANGO_SETTINGS_MODULE=pychronia_game.tests.persistent_mode_settings" on windows shell
-os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = (
-    "pychronia_game.tests.persistent_mode_settings"  # with DB not in temp dir
-)
-
-import setup_pychronia_env  # noqa: F401 - only AFTER setting this DJANGO_SETTINGS_MODULE
-
-from django.core.management import execute_from_command_line
+import sys
 
 if __name__ == "__main__":
-    execute_from_command_line()
+    os.environ["DJANGO_SETTINGS_MODULE"] = "pychronia_game.tests.persistent_mode_settings"
+    from django.core.management import execute_from_command_line
+
+    execute_from_command_line(sys.argv)
