@@ -14,7 +14,7 @@ Prerequisites
 
 - Checkout the repository to your system with GIT, or download/extract it as a zip
 
-- To ensure that the initializer "setup_pychronia_env.py" is well found by the different scripts, its' advised to have the root of repository in your PYTHONPATH (eg. via your Windows environment variables, or ~/.bashrc on linux, or virtualenv's activate script...)
+- "uv sync" (or BOOTSTRAP.py, see below) installs the project itself in editable mode, so the repository root and its "vendor/" folder (patched or unmaintained third-party packages) are importable from anywhere, no PYTHONPATH setup is needed
 
 
 Installing dependencies and creating game DBs

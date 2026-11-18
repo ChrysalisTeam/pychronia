@@ -9,13 +9,7 @@ import subprocess
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 RUNNER = os.path.join(REPO_ROOT, "pychronia_game", "tests", "runner.py")
 
-# print(sys.path)
-if REPO_ROOT not in sys.path and REPO_ROOT + os.sep not in sys.path:
-    print(
-        """-------> WARNING, it seems you don't have the folder "%s" in your python paths, please add it (eg. via the PYTHONPATH environment variable) so that all scripts in this project manage to bootstrap themselves."""
-        % REPO_ROOT
-    )
-
+# "uv sync" also installs this project in editable mode, so that its folders are importable from anywhere
 print(">>>>> Installing python/pip modules")
 assert sys.prefix != sys.base_prefix, "Please launch this script with the python executable of a virtualenv"
 # uv installs into the virtualenv of the current python, instead of its default ".venv" folder
@@ -26,11 +20,11 @@ assert not retcode, (
 )
 
 print(">>>>> Resetting sqlite django DB")
-retcode = subprocess.call('python "%s" reset_django' % RUNNER, shell=True)
+retcode = subprocess.call([sys.executable, RUNNER, "reset_django"])
 assert not retcode, "Error when resetting django DB, please launch runner.py commands manually"
 
 print(">>>>> Resetting demo game in zodb")
-retcode = subprocess.call('python "%s" reset_zodb' % RUNNER, shell=True)
+retcode = subprocess.call([sys.executable, RUNNER, "reset_zodb"])
 assert not retcode, "Error when resetting zodb, please launch runner.py commands manually"
 
 print(">>>>> ALL BOOTSTRAPPING TASKS COMPLETED")

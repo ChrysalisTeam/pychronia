@@ -4,11 +4,6 @@ import sys
 import os
 import logging
 
-root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))  # CHRYSALIS/ root dir
-sys.path.insert(0, root)
-sys.path.insert(0, os.path.join(root, "dependencies"))
-# print ">>>>>>>", sys.path
-
 os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = (
     "pychronia_game.tests.persistent_mode_settings"  # with DB not in temp dir
 )

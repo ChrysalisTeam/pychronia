@@ -1,3 +1,8 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+
 [project]
 name = "pychronia"
 version = "0.1.0"
@@ -109,7 +114,18 @@ override-dependencies = [
     "Django>=5.2",
     "django-polymorphic>=3.0.0",
 ]
-package = false  # this is an application, scripts bootstrap sys.path via setup_pychronia_env.py
+# the project itself is installed (in editable mode) into the virtualenv, so that its root folder and its
+# "vendor/" folder are importable from anywhere, without PYTHONPATH tweaks (see [tool.hatch.build] below)
+package = true
+
+[tool.hatch.build]
+# editable installs ("uv sync") add these folders to sys.path, via a .pth file
+dev-mode-dirs = [".", "vendor"]
+
+[tool.hatch.build.targets.wheel]
+# for non-editable builds: "vendor/xxx" packages are installed as top-level "xxx" packages
+packages = ["pychronia_common", "pychronia_game", "pychronia_cms", "vendor/templateaddons", "vendor/fileservers"]
+
 
 [tool.uv.sources]
 django-zodb = { git = "https://github.com/pakal/django-zodb.git", rev = "556c54da5a8b32f632097449fffcb25d0f607c5f" }
@@ -131,7 +147,7 @@ markers = ["e2e: Playwright browser end-to-end tests (run with: pytest pychronia
 line-length = 120
 target-version = "py311"
 extend-exclude = [
-    "dependencies/___aiml",  # vendored third-party code
+    "vendor/___aiml",  # untracked old copy of third-party code
     "pychronia_game/views/abilities/djinn_chat_mod.py",  # dead draft, not valid code
 ]
 
@@ -163,7 +179,7 @@ ignore = [
 "pychronia_game/common.py" = ["F401"]
 "pychronia_game/views/__init__.py" = ["F401"]
 "pychronia_game/datamanager/__init__.py" = ["F401"]
-"dependencies/fileservers/__init__.py" = ["F401"]
+"vendor/fileservers/__init__.py" = ["F401"]
 "pychronia_game/tests/_test_tools.py" = ["F401"]  # star-imported by test modules
 "**/*settings*.py" = ["F401"]  # settings are star-import chains, overridden by untracked *_local.py files
 # test idioms: "assert x == True", "assert False", "assertRaises(Exception)", attribute accesses expected to raise, unused call results
