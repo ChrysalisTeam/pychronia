@@ -8,7 +8,10 @@ for path in (os.path.join(root, "vendor"), root):
     if path not in sys.path:
         sys.path.insert(0, path)
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pychronia_settings")  # not erased if already set, eg. for tests
+from config.settings._env import configure_settings_module  # noqa: E402
+
+# not erased if already set, eg. for tests; else taken from the ".env" file, else the legacy "pychronia_settings"
+configure_settings_module(default="pychronia_settings")
 
 # warnings.resetwarnings() # UNCOMMENT TO SHOW ALL WARNINGS (even deprecation stuffs)
 

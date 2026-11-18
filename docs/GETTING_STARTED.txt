@@ -107,7 +107,19 @@ When dev server is launched, the test game instance (created by "reset_zodb") ca
 
 ..note::
 
-    Note that the "manage.py" file at depot root expects a PROD setup, with a "pychronia_settings.py" file (or symlink) available; in dev environment, you won't need it.
+    Note that the "manage.py" file at depot root expects a PROD setup (see below); in dev environment, you won't need it.
+
+
+Production deployment
+========================
+
+Each production site (game or CMS) runs from its own checkout, installed with "uv sync" ("uv sync --extra cms" for the CMS), and configured by an untracked ".env" file at its root (see the "PROD SERVERS ONLY" section of ".env.example"), whose DJANGO_SETTINGS_MODULE picks the site: "config.settings.prod_game" or "config.settings.prod_cms".
+
+- The WSGI application is "config.wsgi:application" (the legacy "pychronia_launcher.wsgi" file is equivalent).
+- The root "manage.py" and the "bin/daily_*_maintenance.sh" scripts (to be launched from the root of the checkout) use the same settings.
+- Python-level overrides (eg. PASSWORDS_POOL or ACAPELA_CLIENT_ARGS of the game) go in an untracked "config/settings/local_game.py" or "config/settings/local_cms.py".
+
+Without DJANGO_SETTINGS_MODULE, these entry points fall back to a legacy "pychronia_settings.py" module at the root of the checkout.
 
 
 Special support for Chrysalis RPG

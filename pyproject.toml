@@ -38,6 +38,7 @@ dependencies = [
     "docutils",
     "pyparsing>=3.1.1",
     "django-environ>=0.12",  # reads the untracked .env file of dev/prod settings, see config/settings/
+    "pymemcache>=4",  # memcached client of the CACHE_URL setting of prod (pymemcache://...), see config/settings/_prod_base.py
 ]
 
 [project.scripts]
