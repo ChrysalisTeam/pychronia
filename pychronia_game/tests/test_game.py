@@ -798,6 +798,27 @@ class TestUtilities(BaseGameTestCase):
             shutil.rmtree(tmp_dir)
 
 
+class TestThrowawayDatabasesGuard(unittest.TestCase):
+    def test_guard(self):
+        from pychronia_game.tests._safety import ensure_throwaway_databases, get_non_throwaway_databases
+
+        assert get_non_throwaway_databases() == []  # current test settings
+        ensure_throwaway_databases()
+
+        with override_settings(ZODB_URL="mysql://root@localhost?driver=MySQLdb#mydb"):
+            assert get_non_throwaway_databases() == ["ZODB_URL 'mysql://root@localhost?driver=MySQLdb#mydb'"]
+            with pytest.raises(RuntimeError, match="Refusing to run tests"):
+                ensure_throwaway_databases()
+
+        real_zodb_file = os.path.join(os.path.dirname(__file__), "gamedata.fs")
+        with override_settings(ZODB_FILE=real_zodb_file):
+            assert get_non_throwaway_databases() == ["ZODB_FILE %r" % real_zodb_file]
+
+        mysql_db = {"default": {"ENGINE": "django.db.backends.mysql", "NAME": "mydb"}}
+        with override_settings(DATABASES=mysql_db):
+            assert get_non_throwaway_databases() == ["DATABASES['default'] django.db.backends.mysql 'mydb'"]
+
+
 class TestReadableColors(unittest.TestCase):  # no django setup required
     def test_make_color_readable_on_parchment(self):
         from PIL import ImageColor

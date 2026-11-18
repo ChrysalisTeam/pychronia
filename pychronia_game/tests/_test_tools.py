@@ -43,6 +43,10 @@ import django.utils.translation
 if not config.ZODB_RESET_ALLOWED:
     raise RuntimeError("Can't launch tests - we must be in a production environment !!")
 
+from pychronia_game.tests._safety import ensure_throwaway_databases
+
+ensure_throwaway_databases()  # tests wipe the ZODB and flush the SQL DB, they must never touch real DBs
+
 ORIGINAL_CONFIG_INSTALLED_APPS = config.INSTALLED_APPS[:]
 
 DJANGO_TEST_CLIENT = Client()

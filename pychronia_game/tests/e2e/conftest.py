@@ -24,6 +24,9 @@ from pychronia_game.datamanager.datamanager_administrator import (  # noqa: E402
 )
 
 from pychronia_game.tests.e2e import _configs, _pages, _server, _zodb_snapshot  # noqa: E402
+from pychronia_game.tests._safety import ensure_throwaway_databases  # noqa: E402
+
+ensure_throwaway_databases()  # the e2e session wipes the ZODB and migrates the SQL DB, they must never be real DBs
 
 ACTIVE_DIR = os.path.join(E2E_WORK_DIR, "active")
 PRISTINE_DIR = os.path.join(E2E_WORK_DIR, "pristine")
