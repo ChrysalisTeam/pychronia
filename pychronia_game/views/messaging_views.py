@@ -5,7 +5,7 @@ import urllib.error
 from pychronia_game.common import *
 from pychronia_game.datamanager import register_view, VISIBILITY_REASONS, AbstractGameForm
 from django import forms
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, QueryDict, RawPostDataException
 from pychronia_game.utilities.select2_extensions import Select2TagsField
 from django.core.exceptions import ValidationError
 from pychronia_game.templatetags.helpers import format_enriched_text
@@ -26,6 +26,11 @@ FILTERABLE_MSG_FIELDS = [
 ]
 
 
+# sane limits, since messages are stored forever and displayed in lots of pages
+MESSAGE_SUBJECT_MAX_LENGTH = 200
+MESSAGE_BODY_MAX_LENGTH = 50000
+
+
 @autostrip_form_charfields
 class MessageComposeForm(AbstractGameForm):
     """
@@ -39,11 +44,17 @@ class MessageComposeForm(AbstractGameForm):
     mask_recipients = forms.BooleanField(label=gettext_lazy("Mask recipients"), initial=False, required=False)
 
     subject = forms.CharField(
-        label=gettext_lazy("Subject"), widget=forms.TextInput(attrs={"size": "35"}), required=True
+        label=gettext_lazy("Subject"),
+        widget=forms.TextInput(attrs={"size": "35"}),
+        required=True,
+        max_length=MESSAGE_SUBJECT_MAX_LENGTH,
     )
 
     body = forms.CharField(
-        label=gettext_lazy("Body"), widget=forms.Textarea(attrs={"rows": "8", "cols": "35"}), required=False
+        label=gettext_lazy("Body"),
+        widget=forms.Textarea(attrs={"rows": "8", "cols": "35"}),
+        required=False,
+        max_length=MESSAGE_BODY_MAX_LENGTH,
     )
 
     attachment = Select2TagsField(label=gettext_lazy("Attachment"), required=False)
@@ -683,6 +694,22 @@ def ajax_permanently_delete_message(request):
     # in case of error, an HTTP error code will be returned
 
 
+def _get_refused_post_data(request):
+    """
+    When the game isn't writable (paused game, read-only impersonation...), the game view system
+    empties request.POST and turns the request into a GET, before calling the view.
+
+    We retrieve here the fields which were submitted in that case (or None), so that the text
+    typed by the user can be redisplayed instead of being lost.
+    """
+    if request.method == "GET" and request.META.get("REQUEST_METHOD") == "POST":
+        try:
+            return QueryDict(request.body, encoding=request.encoding) or None
+        except RawPostDataException:
+            pass  # body not available anymore (eg. multipart data), too bad
+    return None
+
+
 @register_view(attach_to=standard_conversations, title=gettext_lazy("Compose Message"))
 def compose_message(request, template_name="messaging/compose.html"):
     user = request.datamanager.user
@@ -752,7 +779,8 @@ def compose_message(request, template_name="messaging/compose.html"):
         else:
             user.add_error(_("Errors in message fields."))
     else:
-        form = MessageComposeForm(request)
+        # if a submission has just been refused (game not writable), we redisplay its content
+        form = MessageComposeForm(request, data=_get_refused_post_data(request))
 
     if latest_sent_msg_id:
         # we redirect towards the most probable view

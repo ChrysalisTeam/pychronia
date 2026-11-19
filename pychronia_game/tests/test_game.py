@@ -6386,6 +6386,108 @@ class TestHttpRequests(BaseGameTestCase):
         assert msg["transferred_msg"] == foreign_id
         assert msg["group_id"] == self.dm.get_dispatched_message_by_id(foreign_id)["group_id"]
 
+    def test_message_composition_length_limits(self):
+        from pychronia_game.views.messaging_views import MESSAGE_SUBJECT_MAX_LENGTH, MESSAGE_BODY_MAX_LENGTH
+
+        self._reset_messages()
+        self._player_auth("guy1")
+
+        url = neutral_url_reverse(views.compose_message)
+        params = dict(
+            _ability_form="pychronia_game.views.messaging_views.MessageComposeForm",
+            body="Ceci est le body!",
+            recipients=["guy2@pangea.com"],
+            subject="Sujet de test",
+        )
+
+        for field, max_length in (("subject", MESSAGE_SUBJECT_MAX_LENGTH), ("body", MESSAGE_BODY_MAX_LENGTH)):
+            _bad_params = dict(params, **{field: "S" * (max_length + 1)})
+            response = self.client.post(url, data=_bad_params, follow=True)
+            assert response.status_code == 200
+            assert "Errors in message fields" in response.content.decode("utf8")
+            assert not self.dm.get_all_dispatched_messages()
+
+        long_subject = "S" * MESSAGE_SUBJECT_MAX_LENGTH
+        long_body = "\n".join(["B" * 99] * (MESSAGE_BODY_MAX_LENGTH // 100)) + "B"  # docutils limits line lengths
+        assert len(long_body) == MESSAGE_BODY_MAX_LENGTH
+        _good_params = dict(params, subject=long_subject, body=long_body)
+        response = self.client.post(url, data=_good_params, follow=True)
+        assert response.status_code == 200
+        html = response.content.decode("utf8")
+        assert "Errors in message fields" not in html
+        (msg,) = self.dm.get_all_dispatched_messages()
+        assert msg["subject"] == long_subject
+        assert len(msg["body"]) == MESSAGE_BODY_MAX_LENGTH
+
+        # we're on the conversations page: subject is complete in message header, truncated in sidebar
+        assert long_subject in html
+        assert ">" + "S" * 99 + "…</a>" in html
+
+    def test_message_composition_page_without_parent_message(self):
+
+        self._reset_messages()
+        parent_id = self.dm.post_message(
+            "guy3@pangea.com", recipient_emails=["guy1@pangea.com"], subject="PARENT_SUBJECT", body="some body"
+        )
+
+        self._player_auth("guy1")
+        url = neutral_url_reverse(views.compose_message)
+
+        response = self.client.get(url, follow=True)
+        assert response.status_code == 200
+        html = response.content.decode("utf8")
+        assert "Send Message" in html
+        assert "<h2>Parent Message</h2>" not in html  # no orphan title
+
+        response = self.client.get(url + "?parent_id=%s" % parent_id, follow=True)
+        assert response.status_code == 200
+        html = response.content.decode("utf8")
+        assert "<h2>Parent Message</h2>" in html
+        assert "PARENT_SUBJECT" in html
+
+    def test_message_composition_refused_when_game_paused_keeps_content(self):
+        from urllib.parse import urlencode
+
+        self._reset_messages()
+        self._player_auth("guy1")
+        self.dm.set_game_state(False)  # PAUSE GAME
+
+        url = neutral_url_reverse(views.compose_message)
+        params = dict(
+            _ability_form="pychronia_game.views.messaging_views.MessageComposeForm",
+            body="Texte important à ne pas perdre",
+            recipients=["guy2@pangea.com", "guy3@pangea.com"],
+            subject="Sujet en pause",
+        )
+        urlencoded = dict(data=urlencode(params, doseq=True), content_type="application/x-www-form-urlencoded")
+
+        # browsers submit that form as urlencoded data
+        response = self.client.post(url, follow=True, **urlencoded)
+        assert response.status_code == 200
+        html = response.content.decode("utf8")
+        assert "You are not allowed to submit changes to that page" in html
+        assert not self.dm.get_all_dispatched_messages()
+        assert not self.dm.get_all_queued_messages()
+
+        # submitted content is redisplayed in the form, without validation errors
+        assert "Errors in message fields" not in html
+        assert "Texte important à ne pas perdre" in html
+        assert 'value="Sujet en pause"' in html
+        assert "guy2@pangea.com" in html and "guy3@pangea.com" in html
+
+        # multipart submissions can't be recovered, but they mustn't break the page
+        response = self.client.post(url, data=params, follow=True)
+        assert response.status_code == 200
+        html = response.content.decode("utf8")
+        assert "You are not allowed to submit changes to that page" in html
+        assert "Texte important à ne pas perdre" not in html
+        assert not self.dm.get_all_dispatched_messages()
+
+        self.dm.set_game_state(True)
+        response = self.client.post(url, follow=True, **urlencoded)
+        assert response.status_code == 200
+        assert len(self.dm.get_all_dispatched_messages()) == 1
+
 
 class TestGameViewSystem(BaseGameTestCase):
     def test_instantiation_proxy_singleton(self):
