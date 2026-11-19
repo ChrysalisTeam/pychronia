@@ -68,6 +68,9 @@ function restore_saved_content() {
 
 function save_current_content() {
     var content = $("#id_default_body").val().trim();
+    if (content === mylocalStorage.getItem(message_sent_content_id)) {
+        return; // body of an already sent message, redisplayed by the "Back" button of the browser: not a draft
+    }
     if (content.length > 20) { // we don't save ridiculous texts
         mylocalStorage.setItem(message_content_id, content);
         $.jnotify("{{ _("Body content has been saved.")|escapejs }}", "success")
@@ -215,11 +218,13 @@ if(!block_autosave) {
 
         <br/><br/>
 
+        {% if parent_messages %}
         <h2>{% trans "Parent Message" %}</h2>
 
         {% for ctx, message in parent_messages reversed %}
             {% include "messaging/single_message.html" with ctx=ctx message=message is_first=forloop.first %}
         {% endfor %}
+        {% endif %}
 
         </form>
 

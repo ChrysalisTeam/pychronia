@@ -118,7 +118,17 @@
     /* common setup of localstorage stuffs */
 
     var message_content_id = 'anthropia_saved_message.real={{game_real_username}}.eff={{game_username}}';
+    var message_sent_content_id = message_content_id + '.sent';  // body of the latest message really sent
     var mylocalStorage = $.localStorage();
+
+    function remember_sent_content() {
+        // the body autosaved when submitting is now known as SENT: the compose page must not save it as a
+        // draft again, if the user comes back to it with the "Back" button of the browser
+        var saved_content = mylocalStorage.getItem(message_content_id); // may be null
+        if (saved_content) {
+            mylocalStorage.setItem(message_sent_content_id, saved_content);
+        }
+    }
 
     function clear_saved_content() {
         mylocalStorage.removeItem(message_content_id);
@@ -132,6 +142,7 @@
 
 {% addtoblock "onload_js" %}
     {% if message_sent %}
+        remember_sent_content();
         clear_saved_content();  // we do cleanup localstorage, since email was sent
     {% endif %}
 {% endaddtoblock %}
