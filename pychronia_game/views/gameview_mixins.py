@@ -59,7 +59,8 @@ class TestCaptcha(AbstractCaptchaProtectedView):
     TITLE = gettext_lazy("Security Captcha")
     NAME = "test_captcha"
     TEMPLATE = "utilities/view_media.html"
-    ACCESS = UserAccess.anonymous
+    ACCESS = UserAccess.master  # debug page, players must not use it to freely train on captchas
+    REQUIRES_CHARACTER_PERMISSION = False
     REQUIRES_GLOBAL_PERMISSION = False
 
     def get_template_vars(self, previous_form_data=None):

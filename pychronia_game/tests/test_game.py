@@ -5942,6 +5942,25 @@ class TestHttpRequests(BaseGameTestCase):
         assert response.status_code == 200
         assert '/login/?next="' in response.content.decode("utf8")  # empty "next" in action of login form
 
+    def test_debug_captcha_page_is_reserved_to_master(self):
+
+        url = neutral_url_reverse(views.gameview_mixins.test_captcha)
+
+        response = self.client.get(url)  # anonymous
+        assert response.status_code == 302
+
+        self._player_auth("guy1")
+        response = self.client.get(url, follow=True)
+        assert response.status_code == 200
+        html = response.content.decode("utf8")
+        assert "Access denied to page" in html
+        assert "captcha_id" not in html
+
+        self._master_auth()
+        response = self.client.get(url)
+        assert response.status_code == 200
+        assert "captcha_id" in response.content.decode("utf8")
+
     def test_secret_question_change_by_player(self):
 
         self._player_auth("guy1")
