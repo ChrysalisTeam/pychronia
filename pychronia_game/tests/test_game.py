@@ -651,6 +651,22 @@ class TestUtilities(BaseGameTestCase):
                                 """).strip()
         )
 
+    def test_format_enriched_text_escapes_raw_text(self):
+        raw_format = self.dm.AVAILABLE_TEXT_FORMATS.raw
+        payload = "Hello <script>alert(1)</script> & <b>bold?</b>\nnext line, write to guy1@pangea.com"
+
+        html = format_enriched_text(self.dm, payload, text_format=raw_format)
+        assert "<script" not in html and "<b>" not in html
+        assert "&lt;script&gt;alert(1)&lt;/script&gt; &amp; &lt;b&gt;bold?&lt;/b&gt;<br/>next line" in html
+        assert html.startswith("<p>Hello ")  # raw text only gets paragraphs and line breaks...
+        assert "?recipient=guy1%40pangea.com" in html  # ...and the usual game links
+
+        # restructuredtext format (the default one) keeps escaping html by itself, without double escaping
+        for text_format in (None, self.dm.AVAILABLE_TEXT_FORMATS.rst):
+            html = format_enriched_text(self.dm, payload, text_format=text_format)
+            assert "<script" not in html and "<b>" not in html
+            assert "&lt;script&gt;alert(1)&lt;/script&gt; &amp; &lt;b&gt;bold?&lt;/b&gt;" in html
+
     def test_format_enriched_text_behaviour(self):
         """
         We only test here that dependencies are well triggered, we don't test them precisely.

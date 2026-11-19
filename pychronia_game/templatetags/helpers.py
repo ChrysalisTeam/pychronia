@@ -391,7 +391,7 @@ def format_enriched_text(
         html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
     else:
         assert text_format in (None, datamanager.AVAILABLE_TEXT_FORMATS.raw)
-        html = linebreaks(content)  # only adds <p> and <br> tags
+        html = linebreaks(content, autoescape=True)  # only adds <p> and <br> tags, raw text is NOT html
 
     # print(">>>format_enriched_text>>>>>", html)
     with exception_swallower():
