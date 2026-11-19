@@ -5863,6 +5863,39 @@ class TestHttpRequests(BaseGameTestCase):
         assert response.status_code == 200
         assert response.context["signal_chatting_users"] is True
 
+    def test_ajax_chat_errors_are_clean_responses(self):
+        self._player_auth("guy1")
+        chat_url = neutral_url_reverse(views.ajax_chat)
+        ajax = dict(HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        initial_messages_count = len(self.dm.data["chatroom_messages"])
+
+        response = self.client.get(chat_url, **ajax)  # no slice_index
+        assert response.status_code == 400
+        response = self.client.get(chat_url, data=dict(slice_index="abc"), **ajax)
+        assert response.status_code == 400
+        response = self.client.get(chat_url, data=dict(slice_index="0"), **ajax)
+        assert response.status_code == 200
+        assert "slice_index" in json.loads(response.content.decode("utf8"))
+
+        response = self.client.post(chat_url, data=dict(message="hello all"), **ajax)
+        assert response.status_code == 200
+        assert len(self.dm.data["chatroom_messages"]) == initial_messages_count + 1
+
+        self.dm.set_game_state(False)  # game paused, thus read-only for players
+
+        response = self.client.post(chat_url, data=dict(message="hello again"), **ajax)
+        assert response.status_code == 403  # refused, and not reinterpreted as a GET without slice_index
+        assert "not allowed to submit changes" in response.content.decode("utf8")
+        assert len(self.dm.data["chatroom_messages"]) == initial_messages_count + 1
+
+        # the refusal was answered to the ajax request, so it's not queued for the next page too
+        response = self.client.get(neutral_url_reverse(views.homepage))
+        assert response.status_code == 200
+        assert "not allowed to submit changes" not in response.content.decode("utf8")
+
+        response = self.client.get(chat_url, data=dict(slice_index="0"), **ajax)
+        assert response.status_code == 200  # reading still works
+
     def test_usage_error_transformation(self):
 
         # user is initially anonymous, we have a special redirection for access denials in this case

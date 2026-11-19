@@ -115,11 +115,12 @@ function processResponse(payload) {
 
 
 
-function InitChatWindow(ChatMessagesUrl, CanChat, ProcessResponseCallback){
+function InitChatWindow(ChatMessagesUrl, CanChat, ProcessResponseCallback, ForbiddenPostMessage){
     /**   The args to provide are:
 	- the URL to call for AJAX calls.
 	- A callback function that handles any data in the JSON payload other than the basic messages.
-	  For example, it is used in the example below to handle changes to the room's description. */
+	  For example, it is used in the example below to handle changes to the room's description.
+	- Optionally, the message to display when posting is refused (HTTP 403, eg. game paused meanwhile). */
 
 	$("#loading").remove(); // Remove the dummy 'loading' message.
 
@@ -158,7 +159,13 @@ function InitChatWindow(ChatMessagesUrl, CanChat, ProcessResponseCallback){
                                         $("#msg").val(""); // clean out contents of input field.
                                         $("#errordiv").css("visibility", "hidden");
                                         },
-              error: PropagateChatError,
+              error: function(jqXHR, extStatus, errorThrown){
+                                        if (jqXHR.status == 403 && ForbiddenPostMessage) {
+                                            $.jnotify(ForbiddenPostMessage, "error"); // the line stays in the input field
+                                        } else {
+                                            PropagateChatError(jqXHR, extStatus, errorThrown);
+                                        }
+                                        },
               complete: function(){ post_request_in_progress = false; // always called
                                     callServer(); }
               });

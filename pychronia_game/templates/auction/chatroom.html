@@ -15,7 +15,8 @@
 {% addtoblock "onload_js" %}
     InitChatWindow("{% game_view_url "pychronia_game.views.ajax_chat" %}",
                     {% if is_master %}false{% else %}true{% endif %},
-                    HandleChattersList);
+                    HandleChattersList,
+                    "{{ _("Chat messaging is currently disabled.")|escapejs }}");
 {% endaddtoblock %}
 
 {% endblock %}

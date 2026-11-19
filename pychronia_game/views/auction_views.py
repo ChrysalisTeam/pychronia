@@ -1,6 +1,6 @@
 from pychronia_game.common import *
 from pychronia_game.datamanager import AbstractGameView, register_view, transaction_watcher
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseBadRequest
 import json
 from pychronia_game.forms import MoneyTransferForm, GemsTransferForm, ArtefactTransferForm
 
@@ -367,7 +367,10 @@ def ajax_chat(request):
         return HttpResponse("OK")
 
     else:
-        slice_index = int(request.GET["slice_index"])  # may raise exceptions
+        try:
+            slice_index = int(request.GET["slice_index"])
+        except (KeyError, ValueError):
+            return HttpResponseBadRequest("Missing or invalid slice_index")
 
         (new_slice_index, previous_msg_timestamp, new_messages) = request.datamanager.get_chatroom_messages(slice_index)
         msg_format = "<b>%(official_name)s</b> - %(message)s"

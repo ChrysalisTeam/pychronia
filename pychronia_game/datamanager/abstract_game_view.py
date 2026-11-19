@@ -366,13 +366,15 @@ class AbstractGameView(metaclass=GameViewMetaclass):
 
         user = self.datamanager.user
         if self.request.POST and not self.datamanager.is_game_writable() and not self.ALWAYS_ALLOW_POST:
+            if utilities.is_ajax_request(self.request):
+                # an ajax caller would misinterpret the GET fallback below, so we refuse it explicitly (HTTP 403)
+                self.logger.warning(
+                    "Forbidden ajax POST request on non-writable game at url %s", self.request.get_full_path()
+                )
+                raise AccessDeniedError(_("You are not allowed to submit changes to that page"))
             self.request.POST.clear()  # thanks to our middleware that made it mutable...
             self.request.method = "GET"  # whooo ugly
             user.add_error(_("You are not allowed to submit changes to that page"))
-            if utilities.is_ajax_request(self.request):
-                self.logger.critical(
-                    "Forbidden ajax POST request on non-writable game at url %s", self.request.get_full_path
-                )
         assert (
             (user.has_write_access and (user.is_master or self.datamanager.is_game_started()))
             or self.ALWAYS_ALLOW_POST
