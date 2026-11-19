@@ -633,6 +633,24 @@ def is_absolute_url(string):
     return string.startswith(("http://", "https://"))
 
 
+SAFE_URL_SCHEMES = ("http", "https", "mailto", "ftp", "tel")
+
+
+def has_safe_url_scheme(url, allowed_schemes=SAFE_URL_SCHEMES):
+    """
+    Returns False if the url has a scheme which is not in *allowed_schemes* (eg. "javascript:",
+    "data:" or "vbscript:" urls, which would execute code when put in links or media tags).
+
+    Urls without scheme (relative ones, or starting with "/", "?" or "#") are considered as safe.
+    """
+    # browsers ignore leading spaces/control characters, and tabs/newlines located anywhere in urls
+    cleaned_url = re.sub(r"[\x00-\x20]+", "", url)
+    match_obj = re.match(r"([^/?#:]*):", cleaned_url)
+    if not match_obj:
+        return True  # no scheme
+    return match_obj.group(1).lower() in allowed_schemes
+
+
 def find_game_file(*rel_path_glob):
     """
     Returns the SINGLE file called filename, in the glob path join(*rel_path_glob) and its subdirs.

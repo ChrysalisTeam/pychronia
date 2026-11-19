@@ -394,7 +394,9 @@ def view_media(request, template_name="utilities/view_media.html"):
     fileurl = utilities.get_request_param(request, "url", None)
     autostart = utilities.get_request_param(request, "autostart", "false") == "true"
 
-    if fileurl:
+    # this url comes straight from the query string, so we only accept game files of our own site,
+    # with a valid security hash (else: links running javascript, embedding of external contents...)
+    if fileurl and mediaplayers.is_own_game_file_url(fileurl):
         media_player = mediaplayers.build_proper_viewer(fileurl, autostart=autostart)
     else:
         media_player = "<p>" + _("You must provide a valid media url.") + "</p>"

@@ -457,6 +457,47 @@ class TestUtilities(BaseGameTestCase):
         html = mediaplayers.build_proper_viewer("")
         assert "mediaplayer_fallback" in html
 
+    def test_media_players_refuse_unsafe_urls(self):
+
+        from pychronia_game.utilities import mediaplayers
+        from pychronia_game.templatetags.helpers import mediaplayer
+
+        unsafe_urls = (
+            "javascript:alert(1)//x.png",
+            "javascript:alert(1)//x.mp3",
+            "javascript:alert(1)//x.mp4",
+            "javascript:alert(1)//x.txt",
+            " JavaScript:alert(1)",
+            "data:text/html;base64,AAAA",
+            "vbscript:alert(1)",
+            "mailto:guy1@pangea.com",  # safe as a link, but not a medium
+        )
+        for unsafe_url in unsafe_urls:
+            for html in (
+                mediaplayers.build_proper_viewer(unsafe_url, autostart=True),
+                mediaplayers.generate_media_player(unsafe_url),
+                mediaplayers.generate_audio_player([unsafe_url]),
+                mediaplayers.generate_image_viewer(unsafe_url),
+            ):
+                assert "mediaplayer_fallback" in html, html
+                for forbidden in ("script:", "data:", "mailto:", "alert", "<a ", "src="):
+                    assert forbidden not in html.lower(), html
+
+        html = mediaplayers.generate_media_player("/files/dummy/video.mp4", image="javascript:alert(1)")
+        assert '<source src="/files/dummy/video.mp4"' in html
+        assert "poster" not in html and "alert" not in html
+
+        # urls without scheme never crash the players, even when they're not complete
+        html = mediaplayers.build_proper_viewer("abc")
+        assert 'class="medialink"' in html and 'href="abc"' in html
+        html = mediaplayers.build_proper_viewer("abc.mp4")
+        assert '<source src="abc.mp4" type="video/mp4" />' in html
+
+        # the template filter turns relative urls into game file urls, so these "schemes" end up in a path
+        html = mediaplayer("javascript:alert(1)//x.txt")
+        assert 'href="%s' % config.GAME_FILES_URL in html
+        assert 'href="javascript:' not in html
+
     def test_file_server_backends(self):
 
         path = os.path.join(config.GAME_FILES_ROOT, "README.txt")
@@ -666,6 +707,118 @@ class TestUtilities(BaseGameTestCase):
             html = format_enriched_text(self.dm, payload, text_format=text_format)
             assert "<script" not in html and "<b>" not in html
             assert "&lt;script&gt;alert(1)&lt;/script&gt; &amp; &lt;b&gt;bold?&lt;/b&gt;" in html
+
+    def test_url_scheme_safety_check(self):
+        from pychronia_game.utilities import has_safe_url_scheme
+
+        for url in (
+            "",
+            "#anchor",
+            "?search=a:b",
+            "/files/abcd/my:file.png",
+            "images/my:file.png",
+            "//otherdomain/file.png",
+            "http://otherdomain/file.png",
+            "HTTPS://otherdomain/file.png",
+            "mailto:guy1@pangea.com",
+        ):
+            assert has_safe_url_scheme(url), url
+
+        for url in (
+            "javascript:alert(1)",
+            " JaVaScript:alert(1)",
+            "java\tscr\nipt:alert(1)",
+            "\x01javascript:alert(1)",
+            "data:text/html,<script>alert(1)</script>",
+            "vbscript:msgbox(1)",
+            "file:///etc/passwd",
+            "unknown:stuff",
+        ):
+            assert not has_safe_url_scheme(url), url
+
+        assert not has_safe_url_scheme("mailto:guy1@pangea.com", allowed_schemes=("http", "https"))
+
+    def test_rst_unsafe_urls_neutralization(self):
+        rst = dedent("""
+                    Click `my label <javascript:alert(1)>`_ or `other label`_ or logo_ or |subst| please.
+
+                    .. _other label: JaVaScript:alert(2)
+
+                    .. _logo: data:text/html,<script>alert(3)</script>
+
+                    .. |subst| image:: data:image/svg+xml;base64,AAAA
+
+                    .. image:: javascript:alert(4)
+                        :alt: my alt text
+
+                    .. image:: /files/dummy/image.png
+                        :target: vbscript:alert(5)
+
+                    .. figure:: javascript:alert(6)
+
+                        My caption
+
+                    .. embed_image:: javascript:alert(7)//image.png
+
+                    .. embed_audio:: javascript:alert(8)//sound.mp3
+
+                    .. embed_video:: javascript:alert(9)//video.mp4
+
+                    .. embed_video:: data:video/mp4;base64,AAAA
+
+                    .. embed_video:: not_a_complete_url.mp4
+                    """)
+        for html in (
+            advanced_restructuredtext(rst, report_level=5),
+            format_enriched_text(self.dm, rst, report_level=5),
+        ):
+            # print("------->", html)
+            for forbidden in ("javascript:", "data:", "vbscript:", "alert", "<script>alert"):
+                assert forbidden not in html.lower(), forbidden
+            assert html.count("<a ") == 1  # only the download link of the last video
+            assert "<img " in html and 'src="/files/dummy/image.png"' in html  # image kept without its unsafe target
+            for label in ("my label", "other label", "logo", "my alt text", "My caption"):
+                assert label in html  # contents are kept, as plain text
+            assert html.count("mediaplayer_fallback") == 4
+            assert '<source src="not_a_complete_url.mp4"' in html  # just a broken player
+
+        # legitimate urls are left untouched
+        rst = dedent("""
+                    Click `relative <my/page:1.html>`_ or `rooted </my/page/?a=b#c>`_ or `anchor <#c>`_ or
+                    `external <https://www.example.com/page>`_ or `mail <mailto:guy1@example.com>`_ or `named`_
+                    or http://standalone.example.com/page please.
+
+                    .. _named: http://named.example.com/
+
+                    .. image:: [ GAME_FILE_URL "images/attachments/image1.png" ]
+                        :target: https://target.example.com/
+
+                    .. embed_image:: [ GAME_FILE_URL "images/attachments/image1.png" ]
+
+                    .. embed_audio:: http://mydomain.com/sound.mp3
+
+                    .. embed_video:: /files/dummy/video.mp4
+                    """)
+        html = format_enriched_text(self.dm, rst, report_level=1)
+        # print("------->", html)
+        assert "system-message" not in html
+        image_url = game_file_url("images/attachments/image1.png")
+        for expected in (
+            'href="my/page:1.html"',
+            'href="/my/page/?a=b#c"',
+            'href="#c"',
+            'href="https://www.example.com/page"',
+            'href="mailto:guy1@example.com"',
+            'href="http://named.example.com/"',
+            'href="http://standalone.example.com/page"',
+            'href="https://target.example.com/"',
+            'src="%s"' % image_url,
+            'href="%s"' % image_url,
+            '<source src="http://mydomain.com/sound.mp3"',
+            '<source src="/files/dummy/video.mp4"',
+        ):
+            assert expected in html, expected
+        assert "mediaplayer_fallback" not in html
 
     def test_format_enriched_text_behaviour(self):
         """
@@ -5994,6 +6147,42 @@ class TestHttpRequests(BaseGameTestCase):
         assert "Secret question successfully removed." in html
         assert "My first teacher ?" not in html
         assert _get_secret_data() == ("", "")
+
+    def test_view_media_only_accepts_own_game_files(self):
+
+        self._player_auth("guy1")
+
+        url = ROOT_GAME_URL + "/guy1/view_media/"
+        error_message = "You must provide a valid media url."
+
+        valid_file_url = game_file_url("personal_files/_common_files_/graphs.gif")
+        for file_url in (valid_file_url, config.SITE_DOMAIN + valid_file_url):
+            response = self.client.get(url, data=dict(url=file_url, autostart="true"))
+            assert response.status_code == 200
+            html = response.content.decode("utf8")
+            assert error_message not in html
+            assert '<a href="%s"><img class="imageviewer' % file_url in html
+
+        valid_hash = valid_file_url.split("/")[2]
+        for file_url in (
+            "",
+            "abc",  # used to trigger an assertion error
+            "javascript:alert(1)//x.png",
+            "javascript:alert(1)//x.txt",
+            "javascript:alert(1)//%s" % valid_file_url,
+            "data:text/html,<script>alert(1)</script>",
+            "http://evil.example/x.mp4",
+            "http://evil.example" + valid_file_url,  # right path and hash, but on another site
+            "/" + valid_file_url,  # scheme-relative url, so another site too
+            valid_file_url.replace(valid_hash, "badhash"),
+            valid_file_url.replace("graphs.gif", "other_file.gif"),  # hash of another file
+        ):
+            response = self.client.get(url, data=dict(url=file_url))
+            assert response.status_code == 200, file_url
+            html = response.content.decode("utf8")
+            assert error_message in html, file_url
+            for forbidden in ("alert(1)", "evil.example", "<img", "<video", "<audio", "medialink"):
+                assert forbidden not in html, (file_url, forbidden)
 
     def test_message_composition(self):
 

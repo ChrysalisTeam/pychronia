@@ -46,6 +46,21 @@ _INIT_SCRIPT = mark_safe(
 )
 
 
+MEDIA_URL_SCHEMES = ("http", "https")  # urls without scheme (relative ones) are accepted too
+
+
+def is_safe_media_url(fileurl):
+    """
+    Returns False for urls like "javascript:..." or "data:...", which must never end up in links or media tags.
+    """
+    return utilities.has_safe_url_scheme(fileurl, allowed_schemes=MEDIA_URL_SCHEMES)
+
+
+def _render_unavailable_media():
+    message = _("No media file available")
+    return """<span class="mediaplayer_fallback">{%s}<i></i></span>""" % escape(message)
+
+
 def _get_extension(fileurl):
     """Returns the lowercased extension of the url path (without dot), maybe an empty string."""
     path = urlparse(fileurl).path
@@ -62,6 +77,15 @@ def _localize_url(fileurl):
     if site_domain and fileurl.startswith(site_domain + "/"):
         return fileurl[len(site_domain) :]
     return fileurl
+
+
+def is_own_game_file_url(fileurl):
+    """
+    Returns True only for urls targeting the game files of our own site, with a valid security hash.
+    """
+    if not checked_game_file_path(fileurl):
+        return False
+    return _localize_url(fileurl).startswith(config.GAME_FILES_URL)  # and not the same path on another domain
 
 
 def _get_game_file_abspath(rel_path):
@@ -142,7 +166,11 @@ def generate_media_player(fileurl, image="", autostart=False, width=None, height
     del height, kwargs  # unused, the player keeps the aspect ratio of the video
 
     # NOT ALWAYS ABSOLUTE URLS, eg. for personal documents these are "/my/file.mp4" URLs -
-    assert fileurl.startswith(("http", "/")), fileurl
+    # this url might come from user content (RST directives...), so no assertions here
+    if not is_safe_media_url(fileurl):
+        return _render_unavailable_media()
+    if image and not is_safe_media_url(image):
+        image = ""
 
     extension = _get_extension(fileurl)
 
@@ -204,6 +232,10 @@ def generate_audio_player(files, titles=None, artists=None, autostart=False, **k
         artist = artists[index] if artists and index < len(artists) else ""
         full_title = " - ".join(x for x in (artist, title) if x)
 
+        if not is_safe_media_url(fileurl):
+            players.append(_render_unavailable_media())
+            continue
+
         extension = _get_extension(fileurl)
         mimetype = AUDIO_MIMETYPES.get(extension)
         fileurl = _localize_url(fileurl)
@@ -235,6 +267,8 @@ def generate_image_viewer(imageurl, width=500, height=400, preset=None, align=""
 
     Align, if not empty, can be center/left/right.
     """
+    if not is_safe_media_url(imageurl):
+        return _render_unavailable_media()
 
     md5 = hashlib.md5()
     md5.update(imageurl.encode("ascii", "ignore"))
@@ -298,8 +332,7 @@ def build_proper_viewer(fileurl, **kwargs):  # interesting kwarg : "autostart"
     # we try to provide the best player for this media type
 
     if not fileurl:
-        message = _("No media file available")
-        return """<span class="mediaplayer_fallback">{%s}<i></i></span>""" % escape(message)
+        return _render_unavailable_media()
 
     title = kwargs.pop("title", "") or get_medium_title_from_url(fileurl)
     extension = _get_extension(fileurl)

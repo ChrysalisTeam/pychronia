@@ -8,6 +8,7 @@ from pychronia_game.utilities import (
     autolinker,
     rst_directives,  # noqa: F401
     is_absolute_url,
+    has_safe_url_scheme,
 )  # important to register RST extensions
 from pychronia_game.common import (
     exception_swallower,
@@ -19,6 +20,7 @@ from pychronia_game.common import (
 
 import django.template
 from django.template.defaulttags import url as default_url_tag
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.core.serializers import serialize
 from django.db.models.query import QuerySet
@@ -314,6 +316,37 @@ DOCUTILS_RENDERER_SETTINGS_DEFAULTS = {
 }
 
 
+def _build_safe_html_writer():
+    """
+    Returns a docutils HTML writer which neutralizes the links and images having dangerous
+    url schemes (javascript:, data:, vbscript:...), since docutils itself doesn't filter them.
+    """
+    from docutils import nodes
+    from docutils.transforms import Transform
+    from docutils.writers import html4css1
+
+    class UnsafeUrlsNeutralizer(Transform):
+        default_priority = 950  # AFTER the resolution of all kinds of references and substitutions
+
+        def apply(self):
+            for node in list(self.document.findall(nodes.image)):
+                if not has_safe_url_scheme(node.get("uri", "")):
+                    alt_text = nodes.Text(node.get("alt", ""))
+                    if isinstance(node.parent, nodes.TextElement):
+                        node.replace_self(alt_text)
+                    else:
+                        node.replace_self(nodes.paragraph("", "", alt_text))
+            for node in list(self.document.findall(nodes.reference)):
+                if not has_safe_url_scheme(node.get("refuri", "")):
+                    node.replace_self(node.children)  # we only keep the label of the link
+
+    class SafeHtmlWriter(html4css1.Writer):
+        def get_transforms(self):
+            return super().get_transforms() + [UnsafeUrlsNeutralizer]
+
+    return SafeHtmlWriter()
+
+
 def advanced_restructuredtext(
     value, initial_header_level=None, report_level=None, warning_stream=None
 ):  # sys.stderr by default
@@ -361,7 +394,9 @@ def advanced_restructuredtext(
             docutils_settings.update(warning_stream=warning_stream)
 
         # print(">><<", docutils_settings, value, file=sys.stderr)
-        parts = publish_parts(source=smart_str(value), writer_name="html4css1", settings_overrides=docutils_settings)
+        parts = publish_parts(
+            source=smart_str(value), writer=_build_safe_html_writer(), settings_overrides=docutils_settings
+        )
         return mark_safe(force_str(parts["html_body"]))
 
 
@@ -607,7 +642,9 @@ def mediaplayer(properties, autostart="false"):
         return mark_safe(res)
     except Exception:
         logging.error("mediaplayer filter failed", exc_info=True)
-        return mark_safe("<a href=" + fileurl + ">" + fileurl + "</a>")
+        if not mediaplayers.is_safe_media_url(fileurl):
+            return ""
+        return format_html('<a href="{}">{}</a>', fileurl, fileurl)
 
 
 mediaplayer.is_safe = True
