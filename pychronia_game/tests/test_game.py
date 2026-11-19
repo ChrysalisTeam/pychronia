@@ -4794,10 +4794,11 @@ class TestDatamanager(BaseGameTestCase):
 
         with pytest.raises(NormalUsageError):
             self.dm.process_password_change_attempt("guy1", "badpwd", "newpwd")
-        with pytest.raises(AbnormalUsageError):
-            self.dm.process_password_change_attempt("guy1", "badpwd", "new pwd")  # wrong new pwd
-        with pytest.raises(AbnormalUsageError):
-            self.dm.process_password_change_attempt("guy1", "elixir", "newpwd\n")  # wrong new pwd
+        # whitespaces and too long values are refused with an explanation of the rule
+        for bad_new_password in ("new pwd", "newpwd\n", "new\tpwd", "a" * 61):
+            with raises_with_content(NormalUsageError, "must not contain spaces"):
+                self.dm.process_password_change_attempt("guy1", random.choice(("badpwd", "elixir")), bad_new_password)
+        assert self.dm.get_character_properties("guy1")["password"] == "elixir"  # untouched
         with pytest.raises(AbnormalUsageError):
             self.dm.process_password_change_attempt("guy1", "elixir", "")  # wrong new pwd
         with pytest.raises(AbnormalUsageError):

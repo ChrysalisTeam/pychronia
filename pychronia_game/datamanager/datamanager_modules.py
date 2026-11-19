@@ -1154,13 +1154,24 @@ class PlayerAuthentication(BaseDataManager):
 
         raise AssertionError()
 
+    PASSWORD_MAX_LENGTH = 60  # only enforced on NEW passwords chosen by players
+
     @transaction_watcher  # requires game started mode
     def process_password_change_attempt(self, username, old_password, new_password):
 
         user_properties = self.get_character_properties(username)
 
-        if not new_password or " " in new_password or "\n" in new_password or len(new_password) > 60:
-            raise AbnormalUsageError(_("Invalid new password submitted"))
+        if not new_password or not isinstance(new_password, str):
+            raise AbnormalUsageError(_("Invalid new password submitted"))  # prevented by forms
+        if any(c.isspace() for c in new_password) or len(new_password) > self.PASSWORD_MAX_LENGTH:
+            # whitespaces would be a trap, since credentials are stripped on login
+            raise NormalUsageError(
+                _(
+                    "Invalid new password: it must not contain spaces or line breaks,"
+                    " nor exceed %(max_length)s characters"
+                )
+                % SDICT(max_length=self.PASSWORD_MAX_LENGTH)
+            )
 
         if old_password != user_properties["password"]:
             raise NormalUsageError(_("Wrong current password submitted"))

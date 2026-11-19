@@ -470,6 +470,15 @@ msgstr "Mauvais mot de passe"
 msgid "Invalid new password submitted"
 msgstr "Mauvais nouveau mot de passe soumis"
 
+#: .\datamanager\datamanager_modules.py:1187
+#, python-format
+msgid ""
+"Invalid new password: it must not contain spaces or line breaks, nor exceed "
+"%(max_length)s characters"
+msgstr ""
+"Nouveau mot de passe invalide : il ne doit contenir ni espaces ni retours à "
+"la ligne, ni dépasser %(max_length)s caractères"
+
 #: .\datamanager\datamanager_modules.py:1087
 msgid "Wrong current password submitted"
 msgstr "Mauvais mot de passe actuel soumis"
