@@ -498,8 +498,12 @@ msgstr "Cet utilisateur n'a pas de question secrète configurée."
 
 #: .\datamanager\datamanager_modules.py:1124
 #, python-format
-msgid "Right answer, but invalid email address %s."
-msgstr "Bonne réponse, mais mauvaise adresse email %s."
+msgid ""
+"Right answer, but invalid email address %s: only existing addresses of the "
+"game messaging are accepted."
+msgstr ""
+"Bonne réponse, mais mauvaise adresse email %s : seules les adresses "
+"existantes de la messagerie du jeu sont acceptées."
 
 #: .\datamanager\datamanager_modules.py:1132
 msgid "<Password Recovery System>"
@@ -931,6 +935,10 @@ msgstr "Réponse"
 #: .\forms.py:229
 msgid "Email"
 msgstr "Email"
+
+#: .\forms.py:274
+msgid "Must be an existing address of the game messaging."
+msgstr "Doit être une adresse existante de la messagerie du jeu."
 
 #: .\forms.py:237
 msgid "Radio Frequency"

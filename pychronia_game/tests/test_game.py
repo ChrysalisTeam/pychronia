@@ -4742,6 +4742,9 @@ class TestDatamanager(BaseGameTestCase):
         self.assertRaises(
             dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "MiLoU", "bademail@sciences.com"
         )
+        # even with the right answer, only existing addresses of the game messaging are accepted, and it's explained
+        with raises_with_content(UsageError, "only existing addresses of the game messaging"):
+            self.dm.process_secret_answer_attempt("guy3", "FluFFy", "real.person@example.com")
         self.assertEqual(len(self.dm.get_all_queued_messages()), 1)  # untouched
 
         self.assertRaises(
@@ -5961,6 +5964,29 @@ class TestHttpRequests(BaseGameTestCase):
         response = self.client.get(url)
         assert response.status_code == 200
         assert "captcha_id" in response.content.decode("utf8")
+
+    def test_password_recovery_page_messages(self):
+
+        self.dm.set_game_state(True)
+        url = neutral_url_reverse(views.secret_question, concerned_username="guy3")
+
+        response = self.client.get(url)
+        assert response.status_code == 200
+        assert "Must be an existing address of the game messaging" in response.content.decode("utf8")
+
+        data = dict(recover="1", secret_answer="Fluffy", target_email="real.person@example.com")
+        response = self.client.post(url, data=data)
+        assert response.status_code == 200
+        assert "only existing addresses of the game messaging are accepted" in response.content.decode("utf8")
+        assert not self.dm.get_all_queued_messages()
+
+        # by game design, the password can be sent to ANY mailbox of the game (that's how accounts get "hacked")
+        data["target_email"] = "guy2@pangea.com"
+        response = self.client.post(url, data=data)
+        assert response.status_code == 200
+        assert "Your password will be emailed" in response.content.decode("utf8")
+        (msg,) = self.dm.get_all_queued_messages()
+        assert msg["recipient_emails"] == ["guy2@pangea.com"]
 
     def test_secret_question_change_by_player(self):
 

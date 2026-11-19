@@ -274,7 +274,11 @@ class SecretQuestionForm(SimpleForm):
     secret_answer = forms.CharField(
         label=gettext_lazy("Answer"), max_length=50, widget=forms.TextInput(attrs={"autocomplete": "off"})
     )
-    target_email = forms.EmailField(label=gettext_lazy("Email"), max_length=50)
+    target_email = forms.EmailField(
+        label=gettext_lazy("Email"),
+        max_length=50,
+        help_text=gettext_lazy("Must be an existing address of the game messaging."),
+    )
 
     def __init__(self, username, *args, **kwargs):
         super().__init__(*args, **kwargs)
