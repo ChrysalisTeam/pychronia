@@ -228,7 +228,18 @@ class MessageComposeForm(AbstractGameForm):
 
     def clean_attachment(self):
         data = self.cleaned_data["attachment"]
-        return data[0] if data else None  # MUST exist if we're here
+        attachment = data[0].strip() if data else None
+        if not attachment:
+            return None
+        if self._datamanager.user.is_master:
+            # game master can attach any game file (as a relative path) or external http(s) url
+            if not utilities.has_safe_url_scheme(attachment, allowed_schemes=("http", "https")):
+                raise ValidationError(_("Attachment must be a game file path or an http(s) url"))
+        elif attachment not in self.fields["attachment"].choice_tags:
+            # relative paths are turned into valid game file urls on display, so players
+            # must be restricted to their own files, else they could access any game file
+            raise ValidationError(_("Attachment must be one of your personal files"))
+        return attachment
 
     def clean_transferred_msg(self):
         transferred_msg = self.cleaned_data["transferred_msg"]

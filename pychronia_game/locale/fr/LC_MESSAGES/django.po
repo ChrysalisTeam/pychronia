@@ -3858,6 +3858,14 @@ msgstr "Délai d'envoi en heures (ex. 2.4)"
 msgid "Placeholder remaining in text"
 msgstr "Marqueur de substitution restant dans le texte"
 
+#: .\views\messaging_views.py:236
+msgid "Attachment must be a game file path or an http(s) url"
+msgstr "La pièce jointe doit être un chemin de fichier du jeu ou une url http(s)"
+
+#: .\views\messaging_views.py:240
+msgid "Attachment must be one of your personal files"
+msgstr "La pièce jointe doit être l'un de vos fichiers personnels"
+
 #: .\views\messaging_views.py:321
 msgid "Dispatched Messages"
 msgstr "Messages Expédiés"

@@ -6374,7 +6374,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         base_parameters = dict(
             _ability_form="pychronia_game.views.messaging_views.MessageComposeForm",
-            attachment="personal_files/_common_files_/Ninja-cat.mp4",
+            attachment="personal_files/_common_files_/graphs.gif",  # players can only attach their own files
             body="sdfsdfsdfsdf",
             delay_h="-1",
             parent_id=str(parent_msg_id),
@@ -6424,6 +6424,82 @@ class TestHttpRequests(BaseGameTestCase):
             expected_url=game_view_url("pychronia_game.views.standard_conversations", datamanager=self.dm)
             + "?message_sent=1",
         )
+
+    def test_message_attachment_restrictions(self):
+
+        self._reset_messages()
+
+        def _post_message(attachment):
+            params = dict(
+                _ability_form="pychronia_game.views.messaging_views.MessageComposeForm",
+                attachment=attachment,
+                body="Ceci est le body!",
+                delay_h=0,  # only used for master
+                recipients=["guy3@pangea.com"],
+                sender="guy1@pangea.com",  # only used for master
+                subject="Sujet de test",
+            )
+            url = game_view_url("pychronia_game.views.compose_message", datamanager=self.dm)
+            response = self.client.post(url, data=params, follow=True)
+            assert response.status_code == 200
+            html = response.content.decode("utf8")
+            is_sent = "Errors in message fields" not in html
+            msgs = self.dm.get_all_dispatched_messages()
+            self._reset_messages()
+            if is_sent:
+                assert len(msgs) == 1, msgs
+                return (True, msgs[0]["attachment"], html)
+            assert len(msgs) == 0, msgs
+            return (False, None, html)
+
+        # players can only attach their personal files (including the common ones)
+
+        self._set_user("guy2")
+        self._player_auth("guy2")
+
+        own_files = self.dm.get_personal_files(absolute_urls=False)
+        assert "personal_files/guy2/1236637123369.jpg" in own_files
+        assert "personal_files/_common_files_/graphs.gif" in own_files
+        for attachment in own_files:
+            assert _post_message(attachment)[0:2] == (True, attachment)
+
+        assert _post_message("")[0:2] == (True, None)
+
+        for attachment in (
+            "javascript:alert(1)//x.mp3",
+            "javascript:void(0)",
+            "data:text/html,hello",
+            "http://example.com/evil.exe",
+            "https://example.com/image.png",
+            "personal_files/guy1/1252393230647.jpg",  # file of another player
+            "personal_files/master/auction_manual_v0.1.pdf",
+            "attachments/image1.png",  # other game file
+            "/personal_files/guy2/1236637123369.jpg",
+            game_file_url("personal_files/guy2/1236637123369.jpg"),
+        ):
+            (is_sent, _attachment, html) = _post_message(attachment)
+            assert not is_sent, attachment
+            assert "Attachment must be one of your personal files" in html
+
+        # game master can attach any game file or external url, but no unsafe url
+
+        self._logout()
+        self._set_user(self.dm.master_login)
+        self._master_auth()
+
+        for attachment in (
+            "personal_files/guy1/1252393230647.jpg",
+            "attachments/image1.png",
+            "/attachments/image1.png",
+            "http://example.com/image.png",
+            "https://example.com/image.png",
+        ):
+            assert _post_message(attachment)[0:2] == (True, attachment)
+
+        for attachment in ("javascript:alert(1)//x.mp3", "data:text/html,hello", "ftp://example.com/file.png"):
+            (is_sent, _attachment, html) = _post_message(attachment)
+            assert not is_sent, attachment
+            assert "Attachment must be a game file path or an http(s) url" in html
 
 
 class TestGameViewSystem(BaseGameTestCase):
