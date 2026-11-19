@@ -1286,7 +1286,7 @@ msgid "Create New Game"
 msgstr "Créer une Nouvelle Partie"
 
 #: .\templates\abilities\house_locking.html:32
-msgid "Security is current DISABLED."
+msgid "Security is currently DISABLED."
 msgstr "La sécurité est actuellement DÉSACTIVÉE."
 
 #: .\templates\abilities\house_locking.html:36
@@ -1294,7 +1294,7 @@ msgid "Lock Doors"
 msgstr "Verrouillage des Portes"
 
 #: .\templates\abilities\house_locking.html:41
-msgid "Security is current ACTIVATED."
+msgid "Security is currently ACTIVATED."
 msgstr "La sécurité est actuellement ACTIVÉE."
 
 #: .\templates\abilities\house_locking.html:63
@@ -1521,7 +1521,7 @@ msgid "No encrypted folders are currently configured."
 msgstr "Aucun dossier chiffré n'est actuellement configuré."
 
 #: .\templates\administration\character_management.html:11
-msgid "Frienships sealed"
+msgid "Friendships sealed"
 msgstr "Amitiés scellées"
 
 #: .\templates\administration\character_management.html:16
@@ -1534,7 +1534,7 @@ msgid "accepted on"
 msgstr "accepté le"
 
 #: .\templates\administration\character_management.html:25
-msgid "Frienship proposals"
+msgid "Friendship proposals"
 msgstr "Propositions d'amitié"
 
 #: .\templates\administration\character_management.html:39
@@ -2676,7 +2676,7 @@ msgid "Change Password"
 msgstr "Changer le mot de passe"
 
 #: .\templates\profile\friendship_management.html:16
-msgid "You're are currently in a blind friendship with:"
+msgid "You are currently in a blind friendship with:"
 msgstr "Vous êtes actuellement en amitié aveugle avec :"
 
 #: .\templates\profile\friendship_management.html:17
@@ -2748,8 +2748,8 @@ msgstr "Annuler"
 
 #: .\templates\utilities\captcha_check.html:11
 msgid ""
-"Sorry, we need to check your that you're neither a robot, nor a zombie, "
-"thanks to this captcha."
+"Sorry, we need to check that you're neither a robot, nor a zombie, thanks "
+"to this captcha."
 msgstr ""
 "Désolé, nous devons vérifier que vous n'êtes ni un robot, ni un zombie, "
 "grâce à ce captcha."

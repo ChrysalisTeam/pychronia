@@ -29,7 +29,7 @@
 
         {% if are_doors_open %}
 
-            <br/><p><b>{% trans "Security is current DISABLED." %}</b></p><br/>
+            <br/><p><b>{% trans "Security is currently DISABLED." %}</b></p><br/>
 
             <form id="locking_form" action="" method="post">{% csrf_token %}
                 <input type="hidden" name="_action_" value="lock"/>
@@ -38,7 +38,7 @@
 
         {% else %}
 
-            <br/><p><b></b>{% trans "Security is current ACTIVATED." %}</b></p><br/>
+            <br/><p><b>{% trans "Security is currently ACTIVATED." %}</b></p><br/>
 
             <div id="password_display"></div>
             <br/>
