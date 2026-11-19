@@ -143,13 +143,20 @@ See "config/settings/game_dev.py" for more information.
 Launching game tests
 =======================
 
-Tests are run with py.test against fake databases stored in temp directories::
+Tests are run with pytest and pytest-django (both in the "dev" dependency group of uv), against throwaway databases: an in-memory sqlite test DB, and a ZODB file in a temp folder. From the repository root::
 
-    cd pychronia_game/tests/ ; pytest -vl 
+    uv run pytest                                  # unit tests of pychronia_game/tests/ (the e2e/ subfolder is excluded)
+    uv run pytest pychronia_game/tests/test_game.py -k TestDatamanager -vl
 
-See http://pytest.org/latest/usage.html#usage for more usage info
+pytest-django sets Django up with "config.settings.game_test", via the "--ds" option of [tool.pytest.ini_options] in pyproject.toml, which has precedence over a DJANGO_SETTINGS_MODULE environment variable. The SQL test DB is created once per run, and each test of BaseGameTestCase (a django.test.TestCase) runs in a rolled back SQL transaction, while its setUp() wipes and recreates the ZODB. Other tests needing SQL access must use the "django_db" mark (pytest-django blocks DB access otherwise).
 
-WARNING - if you use a virtualenv, "python -m pytest" might be safer to use, so that you're sure to use the proper python executable.
+The Playwright end-to-end tests have their own settings ("config.settings.e2e") and pytest.ini, so they must be launched separately (see pychronia_game/tests/e2e/README.md)::
+
+    uv run pytest pychronia_game/tests/e2e
+
+As a safety net, both suites refuse to start (in pytest_configure() of their conftest.py) if their settings use non-throwaway databases, eg. if given "--ds=config.settings.game_dev": tests wipe the ZODB and the SQL DB.
+
+See https://docs.pytest.org/en/stable/how-to/usage.html and https://pytest-django.readthedocs.io for more usage info.
 
 
 Managing games as a super admin

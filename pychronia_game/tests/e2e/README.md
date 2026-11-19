@@ -7,6 +7,13 @@ from any real database (MariaDB/RelStorage) or `../Chrysalis` fixture data. It i
 **excluded from the default `pytest` run** at the repo root (see `norecursedirs` /
 `markers` in `pyproject.toml`) -- you must target this folder explicitly.
 
+This folder has its own `pytest.ini`, which pytest uses instead of the root `pyproject.toml`
+whenever it's only given paths inside this folder: it makes pytest-django set Django up with
+`config.settings.e2e` (via `--ds`, which beats any `DJANGO_SETTINGS_MODULE` environment
+variable). So don't mix e2e paths with other test paths in a single pytest command (the
+conftest refuses to run with other settings). As for unit tests, the conftest also refuses to
+run if the settings use non-throwaway databases.
+
 ## Install
 
 ```bash
@@ -44,6 +51,15 @@ PYCHRONIA_E2E_HEADED=1 PYCHRONIA_E2E_SLOWMO=500 uv run pytest pychronia_game/tes
 
 Headed runs should not be parallelized (single visible browser window, and the
 in-process live server + ZODB file are shared process-global state).
+
+## How SQL DB isolation works
+
+The SQL DB is a pytest-django test DB, created and migrated once per session (see the
+`django_db_setup` override in `conftest.py`) as a sqlite FILE of the temp work dir rather
+than Django's default in-memory sqlite test DB, so that the in-process live server threads
+see the same DB as the main thread (which creates the superuser). Tests aren't marked
+`django_db`: the DB isn't rolled back nor flushed between tests (that couldn't undo the
+commits of the live server anyway), and DB access stays unblocked for the whole session.
 
 ## How ZODB isolation works
 
@@ -99,8 +115,8 @@ string, inspectable from any test using the `game` fixture).
 
 ```
 pychronia_game/tests/e2e/
-    conftest.py              # bootstrap, session ZODB init, live server, fixtures (game/player_page/superuser_page/...)
-    e2e_settings.py          # dedicated Django settings module (sqlite + ZODB FileStorage, never MariaDB/../Chrysalis)
+    pytest.ini               # pytest config of this suite (pytest-django with config.settings.e2e: sqlite + ZODB FileStorage, never MariaDB/../Chrysalis)
+    conftest.py              # bootstrap, SQL test DB + session ZODB init, live server, fixtures (game/player_page/superuser_page/...)
     _server.py                # in-process live server thread + request-idleness tracking
     _zodb_snapshot.py          # close/reset ZODB_INSTANCE, snapshot/restore pristine <-> active gamedata.fs
     _configs.py                # GAME_ID/credentials/apply_baseline_tweaks(dm)/apply_config(dm, config_id)
