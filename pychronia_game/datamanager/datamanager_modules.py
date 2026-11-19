@@ -976,6 +976,23 @@ class PlayerAuthentication(BaseDataManager):
 
         is_observer = session_ticket.get("is_observer", False)
 
+        _available_logins = self.get_available_logins()
+
+        # an unknown target submitted by the CLIENT (typo or obsolete username in URL, forged form...) is not a threat,
+        # so we just ignore that impersonation request, instead of resetting the whole session of the user
+        is_impersonation_requested_by_client = bool(requested_impersonation_target)
+        if is_impersonation_requested_by_client:
+            requested_impersonation_target = requested_impersonation_target.lower()  # logins are case-insensitive
+            if requested_impersonation_target not in _available_logins:
+                self.logger.warning(
+                    "Ignoring invalid requested impersonation target %r for user %r",
+                    requested_impersonation_target,
+                    game_username,
+                )
+                self.user.add_error(_("Invalid requested impersonation target: %s") % requested_impersonation_target)
+                requested_impersonation_target = requested_impersonation_writability = None  # use legacy ones
+                is_impersonation_requested_by_client = False
+
         # first, we compute the impersonation we REALLY want #
         if requested_impersonation_target is None:  # means "use legacy one"
             requested_impersonation_target = session_ticket.get("impersonation_target", None)
@@ -998,14 +1015,12 @@ class PlayerAuthentication(BaseDataManager):
             else session_ticket.get("impersonation_writability", None)
         )
 
-        # we reset session if session/request data is abnormal
-        _available_logins = self.get_available_logins()
+        # we reset session if session data is abnormal
         if game_username is not None and game_username not in _available_logins:
             raise AbnormalUsageError(_("Invalid instance username: '%s'") % game_username)
         if requested_impersonation_target and requested_impersonation_target not in _available_logins:
-            raise AbnormalUsageError(
-                _("Invalid requested impersonation target: %s") % requested_impersonation_target
-            )  # might be typos when manipulating URLs
+            # can only come from the session ticket, since unknown targets coming from the client were ignored above
+            raise AbnormalUsageError(_("Invalid requested impersonation target: %s") % requested_impersonation_target)
 
         if requested_impersonation_target is not None:
             # we filter out forbidden impersonation choices #
@@ -1013,7 +1028,12 @@ class PlayerAuthentication(BaseDataManager):
                 pass  # OK, impersonation granted
             else:
                 # here we don't erase the session data, but this stops impersonation completely
-                self.user.add_error(_("Unauthorized user impersonation detected: %s") % requested_impersonation_target)
+                if game_username or is_superuser or not is_impersonation_requested_by_client:
+                    self.user.add_error(
+                        _("Unauthorized user impersonation detected: %s") % requested_impersonation_target
+                    )
+                else:
+                    pass  # anonymous visitor following a link containing a username: he'll just be asked to log in
                 requested_impersonation_target = requested_impersonation_writability = (
                     None  # TODO FIXME TEST THAT CURRENT GAME USERNAME REMAINS
                 )

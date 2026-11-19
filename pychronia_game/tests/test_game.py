@@ -4166,11 +4166,9 @@ class TestDatamanager(BaseGameTestCase):
             assert not self.dm.user.is_impersonation
             assert self.dm.user.real_username == anonymous_login
 
-            must_have_notifications = bool(
-                requested_impersonation_target and requested_impersonation_target != anonymous_login
-            )
-            assert self.dm.user.has_notifications() == must_have_notifications
-            self.dm.user.discard_notifications()
+            # impersonation is silently refused to anonymous visitors (eg. logged-out player opening
+            # one of his own URLs), restricted pages will just ask them to log in
+            assert not self.dm.user.has_notifications()
 
             # ANONYMOUS CASE
             expected_capabilities = dict(
@@ -4348,21 +4346,42 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.user.username == player_login
             assert not self.dm.user.has_notifications()
 
-            # Unexisting impersonation target leads to bad exception (should never happen)
-            with pytest.raises(AbnormalUsageError):
-                self.dm.authenticate_with_session_data(
-                    session_ticket,
-                    requested_impersonation_target="dsfsdfkjsqodsd",
-                    requested_impersonation_writability=not writability,
-                    django_user=django_user,
-                )
-            # untouched - upper layers must reset that ticket in session
+            # Unexisting impersonation target (eg. typo in URL) is just ignored, with an error notification
+            self.dm.authenticate_with_session_data(
+                session_ticket,
+                requested_impersonation_target="dsfsdfkjsqodsd",
+                requested_impersonation_writability=not writability,
+                django_user=django_user,
+            )
+            # untouched - the whole impersonation request was ignored
             assert session_ticket == {
                 "game_instance_id": TEST_GAME_INSTANCE_ID,
                 "impersonation_target": player_login,
                 "impersonation_writability": writability,
                 "game_username": master_login,
             }
+            assert self.dm.user.username == player_login
+            assert self.dm.user.real_username == master_login
+            assert self.dm.user.has_notifications()
+            self.dm.user.discard_notifications()
+
+            # But an unexisting impersonation target stored in SESSION is abnormal (should never happen)
+            _corrupted_session_ticket = dict(session_ticket, impersonation_target="dsfsdfkjsqodsd")
+            with pytest.raises(AbnormalUsageError):
+                self.dm.authenticate_with_session_data(
+                    _corrupted_session_ticket,
+                    requested_impersonation_target=None,
+                    requested_impersonation_writability=None,
+                    django_user=django_user,
+                )  # upper layers must reset that ticket in session
+            self.dm.authenticate_with_session_data(
+                session_ticket,
+                requested_impersonation_target=None,
+                requested_impersonation_writability=None,
+                django_user=django_user,
+            )
+            assert self.dm.user.username == player_login
+            assert not self.dm.user.has_notifications()
 
             # Impersonate anonymous
             self.dm.authenticate_with_session_data(
@@ -4648,6 +4667,63 @@ class TestDatamanager(BaseGameTestCase):
         else:
             assert not _special_session_ticket["impersonation_target"]
             assert not _special_session_ticket["impersonation_writability"]
+
+    @for_core_module(PlayerAuthentication)
+    def test_invalid_impersonation_requests_keep_session(self):
+        """
+        Bad usernames in URLs or forged impersonation forms must not log the user out.
+        """
+        master_login = self.dm.get_global_parameter("master_login")
+        anonymous_login = self.dm.get_global_parameter("anonymous_login")
+        player_login = "guy1"
+
+        request = self.request
+        try_authenticating_with_credentials(request, player_login, "elixir")
+        original_ticket = request.session[SESSION_TICKET_KEY].copy()
+        assert original_ticket["game_username"] == player_login
+        self.dm.user.discard_notifications()
+
+        # unknown usernames, or valid ones that the player has no right to impersonate
+        for bad_target in ("nobody", "<b>x</b>", master_login, anonymous_login, "guy2"):
+            self._set_user(None)
+            try_authenticating_with_session(request, url_game_username=bad_target)
+            assert request.session[SESSION_TICKET_KEY] == original_ticket, bad_target
+            assert self.dm.user.username == player_login
+            assert not self.dm.user.is_impersonation
+            assert self.dm.user.has_notifications()  # the bad target is signaled though
+            self.dm.user.discard_notifications()
+
+            # same when forging the form of the impersonation selector
+            self._set_user(None)
+            request.POST = QueryDict(mutable=True)
+            request.POST[IMPERSONATION_TARGET_POST_VARIABLE] = bad_target
+            request.POST[IMPERSONATION_WRITABILITY_POST_VARIABLE] = "true"
+            try_authenticating_with_session(request, url_game_username=player_login)
+            assert request.session[SESSION_TICKET_KEY] == original_ticket, bad_target
+            assert self.dm.user.username == player_login
+            assert not self.dm.user.is_impersonation
+            assert self.dm.user.has_notifications()
+            self.dm.user.discard_notifications()
+
+        # usernames are case-insensitive in URLs too, like in the login form
+        self._set_user(None)
+        try_authenticating_with_session(request, url_game_username="GUY1")
+        assert request.session[SESSION_TICKET_KEY] == original_ticket
+        assert self.dm.user.username == player_login
+        assert not self.dm.user.has_notifications()
+
+        # a logged-out visitor opening an URL with a username is not accused of hacking
+        logout_session(request)
+        for target in (player_login, "GUY1", master_login):
+            try_authenticating_with_session(request, url_game_username=target)
+            assert self.dm.user.username == anonymous_login
+            assert not self.dm.user.is_impersonation
+            assert not self.dm.user.has_notifications(), target
+
+        try_authenticating_with_session(request, url_game_username="nobody")
+        assert self.dm.user.username == anonymous_login
+        assert self.dm.user.has_notifications()  # unknown usernames are still signaled
+        self.dm.user.discard_notifications()
 
     @for_core_module(PlayerAuthentication)
     def test_master_credentials_reset(self):
@@ -5945,6 +6021,30 @@ class TestHttpRequests(BaseGameTestCase):
         response = self.client.get(login_page + "?next=https://example.invalid/phish")
         assert response.status_code == 200
         assert '/login/?next="' in response.content.decode("utf8")  # empty "next" in action of login form
+
+    def test_bad_url_usernames_handling(self):
+
+        self._player_auth("guy1")
+        ticket = dict(self.client.session[SESSION_TICKET_KEY])
+
+        # unknown, miscased or forbidden usernames in URL don't log the player out
+        for bad_username in ("nobody", "GUY1", "master", "guy2"):
+            response = self.client.get(ROOT_GAME_URL + "/%s/profile/" % bad_username)
+            self.assertRedirects(response, ROOT_GAME_URL + "/guy1/profile/")
+            assert self.client.session[SESSION_TICKET_KEY] == ticket, bad_username
+
+        response = self.client.get(ROOT_GAME_URL + "/guy1/profile/")
+        assert response.status_code == 200
+
+        self._logout()
+
+        # a logged-out player opening his own URL is just asked to log in
+        response = self.client.get(ROOT_GAME_URL + "/guy1/profile/", follow=True)
+        assert response.status_code == 200
+        assert response.redirect_chain[-1][0].startswith(ROOT_GAME_URL + "/guest/login/?next=")
+        html = response.content.decode("utf8")
+        assert "Unauthorized user impersonation" not in html
+        assert "Access denied to page" in html
 
     def test_debug_captcha_page_is_reserved_to_master(self):
 
