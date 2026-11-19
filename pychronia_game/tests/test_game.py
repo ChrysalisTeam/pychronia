@@ -6317,10 +6317,10 @@ class TestHttpRequests(BaseGameTestCase):
 
         response = self.client.get(ROOT_GAME_URL + "/badusername/", follow=False)
         self.assertRedirects(
-            response, expected_url=ROOT_GAME_URL + "/guest/"
-        )  # error - unrecognized username leads to ession reset (anti-cheat)
+            response, expected_url=ROOT_GAME_URL + "/guy3/"
+        )  # unrecognized username is ignored, WITHOUT session reset (else any link could log players out)
+        assert self.client.session[SESSION_TICKET_KEY]["game_username"] == "guy3"
 
-        self._player_auth("guy3")
         self.dm.propose_friendship("guy1", "guy3")
         self.dm.propose_friendship("guy3", "guy1")  # sealed!
         response = self.client.get(ROOT_GAME_URL + "/guy1/", follow=False)
