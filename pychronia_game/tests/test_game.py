@@ -2147,6 +2147,52 @@ class TestDatamanager(BaseGameTestCase):
             self.dm.credit_character_gems("guy3", gems_choices=gems_given)
 
     @for_core_module(MoneyItemsOwnership)
+    def test_item_and_gem_events_are_readable(self):
+        """
+        Item and gem events are shown to players on their System Events page: they must show
+        item titles and readable gem descriptions, not internal keys or python reprs.
+        """
+        self._reset_messages()
+
+        def _last_event_text():
+            event = self.dm.data["events_log"][-1]
+            return event["message"] % utilities.SDICT(**event["substitutions"])
+
+        assert self.dm.get_item_properties("statue")["title"] == "Antic Statue"
+        assert self.dm.get_item_properties("several_misc_gems")["title"] == "Gems"
+
+        # an item without owner (eg. auction lot) is assigned by the game master
+        self.dm.transfer_object_to_character("statue", "guy2")
+        assert _last_event_text() == "Item Antic Statue assigned to guy2."
+
+        self.dm.transfer_object_to_character("statue", "guy3", previous_owner="guy2")
+        assert _last_event_text() == "Item Antic Statue transferred from guy2 to guy3."
+
+        self.dm.transfer_object_to_character("statue", None)
+        assert _last_event_text() == "Item Antic Statue withdrawn from guy3."
+
+        self.dm.transfer_object_to_character("several_misc_gems", "guy3")  # 5 gems of 200 kashes
+        assert _last_event_text() == "Item Gems assigned to guy3."
+
+        self.dm.transfer_gems_between_characters("guy3", "guy2", [(200, "several_misc_gems")] * 2)
+        assert _last_event_text() == (
+            "Gems transferred from guy3 to guy2: 2 gems worth 400¤ in total (2 x 200¤ from lot 'Gems')."
+        )
+
+        guy1_gems = list(self.dm.get_character_properties("guy1")["gems"])
+        assert sorted(guy1_gems, key=lambda gem: gem[0]) == [(12, None), (200, "several_misc_gems")]
+        self.dm.transfer_gems_between_characters("guy1", "guy2", guy1_gems)
+        assert _last_event_text() == (
+            "Gems transferred from guy1 to guy2: 2 gems worth 212¤ in total (1 x 12¤, 1 x 200¤ from lot 'Gems')."
+        )
+
+        self.dm.debit_character_gems("guy2", gems_choices=[(12, None)])
+        assert _last_event_text() == "Gems debited from guy2: 1 gem worth 12¤ (1 x 12¤)."
+
+        self.dm.credit_character_gems("guy2", gems_choices=[(12, None)])
+        assert _last_event_text() == "Gems credited to guy2: 1 gem worth 12¤ (1 x 12¤)."
+
+    @for_core_module(MoneyItemsOwnership)
     def test_available_items_listing(self):
         self._reset_messages()
 
@@ -8061,13 +8107,15 @@ class TestSpecialAbilities(BaseGameTestCase):
         ][0]
 
         with translation.override("fr"):
-            assert _("no one") == "personne"  # the interface really is in French
+            assert _("Gems") == "Gemmes"  # the interface really is in French
 
             house_reports.fetch_house_report(period="10h-12h")
 
             self._set_user("master")
             self.dm.transfer_object_to_character(free_item, "guy2")
             item_event = self.dm.data["events_log"][-1]
+            self.dm.transfer_gems_between_characters("guy1", "guy2", [(12, None)])
+            gems_event = self.dm.data["events_log"][-1]
             self.dm.transfer_money_between_characters("guy1", "guy2", 10, reason="a debt")
             money_event = self.dm.data["events_log"][-1]
 
@@ -8076,7 +8124,8 @@ class TestSpecialAbilities(BaseGameTestCase):
         (response_msg,) = self.dm.get_all_queued_messages()
         assert response_msg["subject"] == "<Manor surveillance response for period 10h-12h>"
 
-        assert item_event["substitutions"]["from_name"] == "no one"
+        assert item_event["message"] == "Item %(item_name)s assigned to %(char_name)s."
+        assert gems_event["substitutions"]["gems_choices"] == "1 gem worth 12¤ (1 x 12¤)"
 
         # the reason belongs to the translatable message, instead of being glued to it before translation
         assert (

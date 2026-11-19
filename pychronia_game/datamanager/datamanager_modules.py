@@ -4212,8 +4212,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         ## FIXME - make this a character-method too !!!
         item = self.get_item_properties(item_name)
-        with self.game_language_override():  # stored in the game event log
-            from_name = item["owner"] if item["owner"] else _("no one")  # must be done IMMEDIATELY
+        from_name = item["owner"]  # must be done IMMEDIATELY
         visible_by = []
 
         if previous_owner is not None and previous_owner != item["owner"]:
@@ -4230,9 +4229,17 @@ class MoneyItemsOwnership(BaseDataManager):
             visible_by.append(char_name)
             self._assign_free_item_to_character(item_name=item_name, item=item, char_name=char_name)
 
+        # players see these events, so we show the item title, and no fake "no one" owner
+        if from_name and char_name:
+            msg = gettext_noop("Item %(item_name)s transferred from %(from_name)s to %(char_name)s.")
+        elif char_name:
+            msg = gettext_noop("Item %(item_name)s assigned to %(char_name)s.")  # eg. auction lot given by master
+        else:
+            msg = gettext_noop("Item %(item_name)s withdrawn from %(from_name)s.")
+
         self.log_game_event(
-            gettext_noop("Item %(item_name)s transferred from %(from_name)s to %(char_name)s."),
-            PersistentMapping(item_name=item_name, from_name=from_name, char_name=char_name),
+            msg,
+            PersistentMapping(item_name=item["title"], from_name=from_name, char_name=char_name),
             url=None,
             visible_by=visible_by,
         )  # characters involved thus see the transaction in events
@@ -4302,6 +4309,32 @@ class MoneyItemsOwnership(BaseDataManager):
             ]
         )
 
+    @readonly_method
+    def get_gems_description(self, gems):
+        """
+        Human-readable summary of a list of (value, origin) gems, eg. "3 gems worth 412¤ in total
+        (1 x 12¤, 2 x 200¤ from lot '7 rubies')", in the game language since it's meant for event logs.
+        """
+        gems = [tuple(gem) for gem in gems]
+        all_items = self.get_all_items()
+        with self.game_language_override():
+            details = []
+            for (value, origin), count in sorted(
+                Counter(gems).items(), key=lambda pair: (pair[0][0], pair[0][1] or "")
+            ):
+                if origin:
+                    origin_title = all_items[origin]["title"] if origin in all_items else origin
+                    details.append(
+                        _("%(count)s x %(value)s¤ from lot '%(origin)s'")
+                        % SDICT(count=count, value=value, origin=origin_title)
+                    )
+                else:
+                    details.append(_("%(count)s x %(value)s¤") % SDICT(count=count, value=value))
+            summary = translation.ngettext(
+                "%(count)s gem worth %(total)s¤", "%(count)s gems worth %(total)s¤ in total", len(gems)
+            ) % SDICT(count=len(gems), total=sum(gem[0] for gem in gems))
+            return "%s (%s)" % (summary, ", ".join(details))
+
     @transaction_watcher
     def transfer_gems_between_characters(self, from_name, to_name, gems_choices):
         sender_char = self.data["character_properties"][from_name]  # may raise key error
@@ -4325,7 +4358,9 @@ class MoneyItemsOwnership(BaseDataManager):
 
         self.log_game_event(
             gettext_noop("Gems transferred from %(from_name)s to %(to_name)s: %(gems_choices)s."),
-            PersistentMapping(from_name=from_name, to_name=to_name, gems_choices=gems_choices),
+            PersistentMapping(
+                from_name=from_name, to_name=to_name, gems_choices=self.get_gems_description(gems_choices)
+            ),
             url=None,
             visible_by=[from_name, to_name],
         )  # event visible by both characters
@@ -4348,7 +4383,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         self.log_game_event(
             gettext_noop("Gems debited from %(username)s: %(gems_choices)s."),
-            PersistentMapping(username=username, gems_choices=gems_choices),
+            PersistentMapping(username=username, gems_choices=self.get_gems_description(gems_choices)),
             url=None,
             visible_by=[username],
         )
@@ -4372,7 +4407,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         self.log_game_event(
             gettext_noop("Gems credited to %(username)s: %(gems_choices)s."),
-            PersistentMapping(username=username, gems_choices=gems_choices),
+            PersistentMapping(username=username, gems_choices=self.get_gems_description(gems_choices)),
             url=None,
             visible_by=[username],
         )

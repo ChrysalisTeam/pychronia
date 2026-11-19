@@ -735,6 +735,16 @@ msgstr ""
 msgid "Item %(item_name)s transferred from %(from_name)s to %(char_name)s."
 msgstr "Objet %(item_name)s transféré de %(from_name)s à %(char_name)s."
 
+#: .\datamanager\datamanager_modules.py:4236
+#, python-format
+msgid "Item %(item_name)s assigned to %(char_name)s."
+msgstr "Objet %(item_name)s attribué à %(char_name)s."
+
+#: .\datamanager\datamanager_modules.py:4238
+#, python-format
+msgid "Item %(item_name)s withdrawn from %(from_name)s."
+msgstr "Objet %(item_name)s retiré à %(from_name)s."
+
 #: .\datamanager\datamanager_modules.py:4075
 msgid "You must transfer at least one gem"
 msgstr "Vous devez transférer au moins une gemme"
@@ -743,6 +753,23 @@ msgstr "Vous devez transférer au moins une gemme"
 #: .\datamanager\datamanager_modules.py:4102
 msgid "Sender doesn't possess these gems"
 msgstr "L'émetteur ne possède pas ces gemmes"
+
+#: .\datamanager\datamanager_modules.py:4326
+#, python-format
+msgid "%(count)s x %(value)s¤ from lot '%(origin)s'"
+msgstr "%(count)s x %(value)s¤ du lot '%(origin)s'"
+
+#: .\datamanager\datamanager_modules.py:4329
+#, python-format
+msgid "%(count)s x %(value)s¤"
+msgstr "%(count)s x %(value)s¤"
+
+#: .\datamanager\datamanager_modules.py:4331
+#, python-format
+msgid "%(count)s gem worth %(total)s¤"
+msgid_plural "%(count)s gems worth %(total)s¤ in total"
+msgstr[0] "%(count)s gemme d'une valeur de %(total)s¤"
+msgstr[1] "%(count)s gemmes d'une valeur totale de %(total)s¤"
 
 #: .\datamanager\datamanager_modules.py:4086
 #, python-format
