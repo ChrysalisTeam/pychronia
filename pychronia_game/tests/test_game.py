@@ -43,6 +43,7 @@ from pychronia_game.templatetags.helpers import (
     _contrast_ratio,
     _PARCHMENT_RGB,
 )
+import urllib.parse
 from django.http import QueryDict
 from pychronia_game import views, utilities, authentication
 from pychronia_game.utilities import autolinker, to_snake_case, load_yaml_fixture
@@ -5902,6 +5903,44 @@ class TestHttpRequests(BaseGameTestCase):
 
         finally:
             AbstractGameView._process_standard_request = oldie
+
+    def test_login_next_url_sanitization(self):
+
+        login_page = neutral_url_reverse("pychronia_game.views.login")
+        credentials = dict(secret_username="guy1", secret_password="elixir")
+        profile_url = ROOT_GAME_URL + "/guy1/profile/"
+
+        def _login_with_next(next_url, via_post):
+            self.client.get(login_page)  # to set preliminary cookies
+            if via_post:
+                response = self.client.post(login_page, data=dict(credentials, next=next_url))
+            else:
+                response = self.client.post(
+                    login_page + "?" + urllib.parse.urlencode(dict(next=next_url)), data=credentials
+                )
+            assert response.status_code == 302
+            assert self.client.session[SESSION_TICKET_KEY]["game_username"] == "guy1"
+            self._logout()
+            return response["Location"]
+
+        for via_post in (True, False):
+            # relative and same-host targets are followed
+            assert _login_with_next(profile_url, via_post) == profile_url
+            assert _login_with_next("http://testserver" + profile_url, via_post) == "http://testserver" + profile_url
+
+            # external targets are replaced by the game homepage
+            for bad_next_url in (
+                "https://example.invalid/phish",
+                "http://example.invalid" + profile_url,
+                "//example.invalid/phish",
+                "javascript:alert(1)",
+            ):
+                assert _login_with_next(bad_next_url, via_post) == ROOT_GAME_URL + "/guy1/"
+
+        # the external target is not kept in the login form either
+        response = self.client.get(login_page + "?next=https://example.invalid/phish")
+        assert response.status_code == 200
+        assert '/login/?next="' in response.content.decode("utf8")  # empty "next" in action of login form
 
     def test_secret_question_change_by_player(self):
 

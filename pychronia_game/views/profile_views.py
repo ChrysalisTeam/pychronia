@@ -2,6 +2,7 @@ from pychronia_game.common import *
 from pychronia_game.datamanager import AbstractGameView, register_view, AbstractGameForm, transaction_watcher
 from pychronia_game.authentication import try_authenticating_with_credentials, logout_session
 from django.http import HttpResponseRedirect
+from django.utils.http import url_has_allowed_host_and_scheme
 from pychronia_game import forms
 from django import forms as django_forms
 from pychronia_game.utilities.select2_extensions import Select2TagsField
@@ -27,6 +28,10 @@ def login(request, template_name="profile/login.html"):
     form = None
     user = request.datamanager.user
     next_url = utilities.get_request_param(request, "next", "")
+    if next_url and not url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        next_url = ""  # no open redirect to external sites, we'll go to the game homepage instead
 
     if request.method == "POST":
         if not request.session.test_cookie_worked():
