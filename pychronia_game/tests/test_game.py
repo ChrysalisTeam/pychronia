@@ -36,6 +36,7 @@ from pychronia_game.templatetags.helpers import (
     _generate_messaging_links,
     _generate_site_links,
     format_enriched_text,
+    escape_rst,
     _generate_game_file_links,
     _generate_game_image_thumbnails,
     rich_text,
@@ -8853,8 +8854,8 @@ class TestSpecialAbilities(BaseGameTestCase):
         print("---conversation_summary-->\n")
         print(conversation_summary)
 
-        self.assertTrue("test_1" in conversation_summary)
-        self.assertTrue("test_2" in conversation_summary)
+        self.assertTrue("test\\_1" in conversation_summary)  # subjects are escaped for restructuredtext
+        self.assertTrue("test\\_2" in conversation_summary)
         self.assertTrue("Participants" in conversation_summary)
         self.assertTrue("guy4\\@pangea.com" in conversation_summary)
         self.assertTrue("guy3\\@pangea.com" in conversation_summary)
@@ -8876,7 +8877,7 @@ class TestSpecialAbilities(BaseGameTestCase):
             for conversation in conversations_by_character:
                 for message in conversation:
                     self.assertTrue(
-                        message["subject"] in conversation_summary
+                        escape_rst(message["subject"]) in conversation_summary
                     )  # watch out with response emails that have "RE" in subject; assert becomes false
                     self.assertTrue(message["sender_email"].replace("@", "\\@") in conversation_summary)
                     self.assertTrue(
@@ -8920,6 +8921,42 @@ class TestSpecialAbilities(BaseGameTestCase):
             response_msg_checker=response_msg_checker,
             ability_breaker=None,
         )  # ALWAYS a response available for now!
+
+    def test_telecom_investigation_subject_escaping(self):
+
+        telecom = self.dm.instantiate_ability("telecom_investigation")
+        telecom.perform_lazy_initializations()
+        self._reset_messages()
+
+        email_guy1 = self.dm.get_character_email("guy1")
+        email_guy4 = self.dm.get_character_email("guy4")
+
+        subject = (
+            "Héllo <b>x</b> & *star* **strong** `link <http://evil.example.com/>`_ ``code`` |subst| ref_ "
+            '[1]_ :emphasis:`role` http://autolink.example.com/ back\\slash 日本 (it\'s 100% "literal")'
+        )
+        self.dm.post_message(sender_email=email_guy1, recipient_emails=email_guy4, subject=subject, body="test")
+
+        context_list = telecom.extract_conversation_summary("guy4")
+        assert [context["subject"] for context in context_list] == [subject]
+        conversation_summary = telecom.format_conversation_summary(context_list)
+        assert "&lt;" not in conversation_summary and "&amp;" not in conversation_summary  # it's NOT html
+
+        html = format_enriched_text(self.dm, conversation_summary, report_level=1)
+        # print("------->", html)
+        assert "system-message" not in html  # no RST errors
+        for forbidden in ("<b>", "<em>", "<tt", 'href="http', "<img", "&amp;lt;", "&amp;amp;"):
+            assert forbidden not in html, forbidden
+        assert html.count("<strong>") == 2  # only the "Subject" and "Participants" labels of the report
+        assert html.count("<a ") == 2  # only the messaging links of the 2 participants
+
+        from django.utils.html import strip_tags
+        import html as html_module
+
+        displayed_text = html_module.unescape(strip_tags(html))
+        assert "Subject - %s" % subject in displayed_text  # shown literally, like in conversation pages
+
+        assert escape_rst(" multi\n\n.. raw:: html\n\n    line ") == r"multi \.\. raw\:\: html line"
 
     def __OLD_test_telecom_investigations(self):
 

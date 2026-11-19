@@ -1,6 +1,6 @@
-{% load i18n replace %}
+{% load i18n replace helpers %}
 
-**{% trans "Subject" %}** - {{subject}}
+**{% trans "Subject" %}** - {% autoescape off %}{{subject|escape_rst}}{% endautoescape %}{# this is RST source, not HTML #}
 
 **{% trans "Participants" %}** - {% replace search="@" replacement="\\@" use_regexp=0 %}{{participants}}{% endreplace %}
 

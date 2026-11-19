@@ -549,6 +549,19 @@ def static_page(context, article_name, initial_header_level=None):
 '''
 
 
+@register.filter
+def escape_rst(value):
+    """
+    Escapes a (single-line) user text so that it gets displayed literally when inserted into
+    restructuredtext SOURCE: all its punctuation is backslash-escaped, so that it can't be RST markup.
+
+    Html escaping is NOT needed in addition (docutils does it when rendering), so in templates
+    generating RST contents, use this filter inside an {% autoescape off %} block.
+    """
+    text = " ".join(str(value).split())  # line breaks could start new RST blocks
+    return re.sub(r"([^\w\s]|_)", r"\\\1", text)
+
+
 def _do_corrupt_string(value):
     return "".join(
         ['&#%s;<span class="obfusk">%s</span>' % (ord(char), random.randint(10, 100)) for char in value]
