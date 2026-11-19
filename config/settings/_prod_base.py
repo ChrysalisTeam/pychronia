@@ -1,17 +1,16 @@
 """
 Overrides shared by the PROD settings of both sites (prod_cms.py and prod_game.py).
 
-Deployment-specific values come from environment variables, or from the untracked ".env" file at the root of the
-repository (see ".env.example"); a missing required value raises ImproperlyConfigured.
+Deployment-specific values come from environment variables, or from the untracked ".env.<site>" and ".env" files at
+the root of the repository (see ".env.example"), which the prod_*.py modules load BEFORE importing this one; a missing
+required value raises ImproperlyConfigured.
 """
 
 import os
 
 import django
 
-from config.settings._env import env, read_dotenv
-
-read_dotenv()
+from config.settings._env import env
 
 DEBUG = False
 

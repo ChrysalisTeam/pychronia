@@ -1,13 +1,17 @@
 """
-PROD settings of the CMS site; deployment-specific values come from the environment or the untracked ".env" file
-(see "_prod_base.py" and ".env.example"), Python-level overrides from the untracked "config/settings/local_cms.py".
+PROD settings of the CMS site; deployment-specific values come from the environment, or from the untracked
+".env.cms" and ".env" files (see "_prod_base.py" and ".env.example"); Python-level overrides go in the untracked
+"config/settings/local_cms.py".
 """
 
 import importlib.util
 
+from config.settings._env import env, read_dotenv
+
+read_dotenv("cms")  # BEFORE importing _prod_base, which reads these values
+
 from config.settings.cms import *
 from config.settings._prod_base import *
-from config.settings._env import env
 
 ROOT_URLCONF = "pychronia_cms.urls"
 

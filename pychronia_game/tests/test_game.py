@@ -819,6 +819,46 @@ class TestThrowawayDatabasesGuard(unittest.TestCase):
             assert get_non_throwaway_databases() == ["DATABASES['default'] django.db.backends.mysql 'mydb'"]
 
 
+class TestDotenvFiles(unittest.TestCase):
+    def test_precedence(self):
+        from unittest import mock
+        from config.settings import _env
+
+        tmp_dir = tempfile.mkdtemp()
+        try:
+            with open(os.path.join(tmp_dir, ".env"), "w") as f:
+                f.write("PYC_SHARED=shared\nPYC_BOTH=shared\nPYC_REAL=shared\n")
+                f.write("DJANGO_SETTINGS_MODULE=config.settings.prod_cms\n")
+            with open(os.path.join(tmp_dir, ".env.game"), "w") as f:
+                f.write("PYC_BOTH=game\nPYC_REAL=game\n")
+
+            with mock.patch.object(_env, "ROOT_PATH", tmp_dir), mock.patch.dict(os.environ, {"PYC_REAL": "real"}):
+                os.environ.pop("DJANGO_SETTINGS_MODULE")
+                _env.configure_settings_module(default="pychronia_settings")
+                assert os.environ["DJANGO_SETTINGS_MODULE"] == "config.settings.prod_cms"
+                assert "PYC_SHARED" not in os.environ  # the other values are left to the settings module
+
+                _env.read_dotenv("game")
+                assert os.environ["PYC_SHARED"] == "shared"
+                assert os.environ["PYC_BOTH"] == "game"  # site file wins over .env
+                assert os.environ["PYC_REAL"] == "real"  # real environment wins over all files
+
+            with mock.patch.object(_env, "ROOT_PATH", tmp_dir), mock.patch.dict(os.environ, {}):
+                os.environ.pop("DJANGO_SETTINGS_MODULE")
+                os.remove(os.path.join(tmp_dir, ".env"))
+                _env.configure_settings_module(default="pychronia_settings")
+                assert os.environ["DJANGO_SETTINGS_MODULE"] == "pychronia_settings"
+
+                _env.read_dotenv("cms")  # missing files are ignored
+                assert "PYC_SHARED" not in os.environ
+
+            assert (
+                "PYC_SHARED" not in os.environ and os.environ["DJANGO_SETTINGS_MODULE"] == "config.settings.game_test"
+            )
+        finally:
+            shutil.rmtree(tmp_dir)
+
+
 class TestReadableColors(unittest.TestCase):  # no django setup required
     def test_make_color_readable_on_parchment(self):
         from PIL import ImageColor

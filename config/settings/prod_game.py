@@ -1,16 +1,19 @@
 """
-PROD settings of the game site; deployment-specific values come from the environment or the untracked ".env" file
-(see "_prod_base.py" and ".env.example"), Python-level overrides (eg. PASSWORDS_POOL, ACAPELA_CLIENT_ARGS) from the
-untracked "config/settings/local_game.py".
+PROD settings of the game site; deployment-specific values come from the environment, or from the untracked
+".env.game" and ".env" files (see "_prod_base.py" and ".env.example"); Python-level overrides (eg. PASSWORDS_POOL,
+ACAPELA_CLIENT_ARGS) go in the untracked "config/settings/local_game.py".
 """
 
 import importlib.util
 
 from django.core.exceptions import ImproperlyConfigured
 
+from config.settings._env import env, read_dotenv
+
+read_dotenv("game")  # BEFORE importing _prod_base, which reads these values
+
 from config.settings.game import *
 from config.settings._prod_base import *
-from config.settings._env import env
 
 ROOT_URLCONF = "pychronia_game.urls"
 

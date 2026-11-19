@@ -58,7 +58,7 @@ The "pychronia-game" and "pychronia-cms" commands, installed by "uv sync", are d
     uv run pychronia-cms runserver 8001
     uv run pychronia-game check --settings=config.settings.game_test
 
-Machine-specific values of dev settings (eg. your local MariaDB DBs) go in an untracked ".env" file at the root of the repository, see ".env.example"; Python-level overrides go in untracked "config/settings/local_game.py" and "config/settings/local_cms.py" modules.
+Machine-specific values of dev settings (eg. your local MariaDB DBs) go in untracked env files at the root of the repository, see ".env.example": ".env" for values of both sites, and optionally ".env.game" / ".env.cms" for values of a single site (they take precedence over ".env"); Python-level overrides go in untracked "config/settings/local_game.py" and "config/settings/local_cms.py" modules.
 
 The "manage.py" scripts of "tests/" folders are equivalent to these commands, and the former settings modules ("pychronia_game.common_settings", "pychronia_game.tests.persistent_mode_settings"...) are deprecated aliases of the new ones.
 
@@ -113,7 +113,10 @@ When dev server is launched, the test game instance (created by "reset_zodb") ca
 Production deployment
 ========================
 
-Each production site (game or CMS) runs from its own checkout, installed with "uv sync" ("uv sync --extra cms" for the CMS), and configured by an untracked ".env" file at its root (see the "PROD SERVERS ONLY" section of ".env.example"), whose DJANGO_SETTINGS_MODULE picks the site: "config.settings.prod_game" or "config.settings.prod_cms".
+Production sites are installed with "uv sync" ("uv sync --extra cms" for the CMS), and configured by untracked env files at the root of the checkout (see the "PROD SERVERS ONLY" section of ".env.example"). DJANGO_SETTINGS_MODULE picks the site: "config.settings.prod_game" or "config.settings.prod_cms".
+
+- With one checkout per site, everything can go in its ".env" file, DJANGO_SETTINGS_MODULE included.
+- With both sites in the same checkout, site-specific values (SECRET_KEY, ALLOWED_HOSTS, SITE_DOMAIN...) go in ".env.game" and ".env.cms", shared ones (emails, cache...) in ".env", and DJANGO_SETTINGS_MODULE must be set by the web server config and the crontab (eg. "DJANGO_SETTINGS_MODULE=config.settings.prod_game bin/daily_game_maintenance.sh").
 
 - The WSGI application is "config.wsgi:application" (the legacy "pychronia_launcher.wsgi" file is equivalent).
 - The root "manage.py" and the "bin/daily_*_maintenance.sh" scripts (to be launched from the root of the checkout) use the same settings.

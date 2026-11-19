@@ -1,6 +1,6 @@
 """
 DEV settings of the CMS site, with a persistent SQL DB: by default a local MySQL "chrysaliscms_dev" DB, unless the
-untracked ".env" file (see ".env.example") provides CMS_DATABASE_URL. Python-level overrides go in the untracked
+untracked ".env.cms" or ".env" file (see ".env.example") provides CMS_DATABASE_URL. Python-level overrides go in the untracked
 "config/settings/local_cms.py".
 
 Used by the "pychronia-cms" command and by pychronia_cms/tests/manage.py.
@@ -13,7 +13,7 @@ from config.settings.cms import *
 from config.settings._dev_base import *
 from config.settings._env import env, read_dotenv
 
-read_dotenv()
+read_dotenv("cms")
 
 ROOT_URLCONF = "pychronia_cms.tests._test_urls"
 

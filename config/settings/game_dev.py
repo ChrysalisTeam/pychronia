@@ -1,6 +1,6 @@
 """
 DEV settings of the game site, with persistent DBs: by default a sqlite "django.db" and a ZODB "gamedata.fs"
-in pychronia_game/tests/, unless the untracked ".env" file (see ".env.example") provides GAME_DATABASE_URL
+in pychronia_game/tests/, unless the untracked ".env.game" or ".env" file (see ".env.example") provides GAME_DATABASE_URL
 and ZODB_URL. Python-level overrides go in the untracked "config/settings/local_game.py".
 
 Used by the "pychronia-game" command and by pychronia_game/tests/manage.py.
@@ -15,7 +15,7 @@ from config.settings._game_dev_base import *
 from config.settings._game_dev_base import _game_tests_dir
 from config.settings._env import env, read_dotenv
 
-read_dotenv()
+read_dotenv("game")
 
 if "GAME_DATABASE_URL" in os.environ:
     DATABASES = {"default": env.db_url("GAME_DATABASE_URL")}

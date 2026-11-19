@@ -7,11 +7,13 @@ Settings modules of the two Pychronia sites:
 - game_test.py / cms_test.py: unit tests, with throwaway DBs in a temp folder
 - e2e.py: Playwright end-to-end tests of the game site
 - prod_game.py / prod_cms.py: PROD servers, with deployment-specific values (secrets, DBs...) read from the
-  environment or from the untracked ".env" file, which also picks the site via DJANGO_SETTINGS_MODULE
-  (see the root manage.py and config/wsgi.py)
+  environment or from the untracked env files below; the site is picked by DJANGO_SETTINGS_MODULE, taken from the
+  environment or the ".env" file (see the root manage.py and config/wsgi.py)
 
-Machine-specific values of DEV settings (DB urls...) are read from the untracked ".env" file at the root of
-the repository (see ".env.example"), and Python-level overrides from the untracked "local_game.py" and
+Machine-specific values of DEV and PROD settings (DB urls...) are read from untracked env files at the root of
+the repository (see ".env.example"): ".env.game" or ".env.cms" for the values of a single site, then ".env" for
+values shared by both sites (eg. the DB urls of all DEV sites); real environment variables take precedence over
+the site file, which takes precedence over ".env". Python-level overrides come from the untracked "local_game.py" and
 "local_cms.py" modules of this folder (used by both DEV and PROD settings). Test settings ignore all of these,
 to never touch real DBs.
 
