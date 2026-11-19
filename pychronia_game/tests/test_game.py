@@ -9060,6 +9060,14 @@ class TestGameViews(BaseGameTestCase):
 
         with pytest.raises(AbnormalUsageError):
             assert "Unexisting friendship" in view.do_cancel_friendship("guy2")
+        for canceler in (view.do_cancel_friendship, view.do_cancel_proposal):
+            with raises_with_content(AbnormalUsageError, "Unexisting friendship: guy1<->guy2"):
+                canceler("guy2")
+            for bad_username in ("nobody", "master"):  # no more AssertionError
+                with raises_with_content(NormalUsageError, "Invalid username"):
+                    canceler(bad_username)
+        with pytest.raises(UsageError):
+            view.do_accept_friendship("nobody")
 
         assert "friendship proposal" in view.do_propose_friendship("guy2")
         assert "friendship proposal" in view.do_cancel_friendship("guy2")  # cancel proposal only

@@ -553,8 +553,8 @@ msgstr "%(username)s a déjà demandé l'amitié de %(recipient)s"
 
 #: .\datamanager\datamanager_modules.py:1444
 #, python-format
-msgid "Unexisting friendship: %(username1)s<->%(username1)s"
-msgstr "Amitié inexistante: %(username1)s<->%(username1)s"
+msgid "Unexisting friendship: %(username1)s<->%(username2)s"
+msgstr "Amitié inexistante: %(username1)s<->%(username2)s"
 
 #: .\datamanager\datamanager_modules.py:1531
 msgid ""

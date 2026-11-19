@@ -1563,7 +1563,9 @@ class FriendshipHandling(BaseDataManager):
 
     @readonly_method
     def get_friendship_params(self, username1, username2):
-        assert self.is_character(username1) and self.is_character(username2)
+        for username in (username1, username2):
+            if not self.is_character(username):
+                raise NormalUsageError(_("Invalid username '%s'") % username)
         friendships = self.data["friendships"]["sealed"]
         try:
             return (username1, username2), friendships[(username1, username2)]
@@ -1572,7 +1574,7 @@ class FriendshipHandling(BaseDataManager):
                 return (username2, username1), friendships[(username2, username1)]
             except KeyError:
                 raise AbnormalUsageError(
-                    _("Unexisting friendship: %(username1)s<->%(username1)s")
+                    _("Unexisting friendship: %(username1)s<->%(username2)s")
                     % SDICT(username1=username1, username2=username2)
                 )
 
