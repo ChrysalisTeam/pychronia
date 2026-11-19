@@ -83,6 +83,16 @@ msgstr "Entrée '%s' introuvable"
 msgid "Entry '%s' properly deleted"
 msgstr "Entrée '%s' correctement détruite"
 
+#: .\utilities\__init__.py:620
+#, python-format
+msgid "Game file '%s' not found"
+msgstr "Fichier de jeu '%s' introuvable"
+
+#: .\utilities\__init__.py:633
+#, python-format
+msgid "'%s' is neither an existing game file nor an http(s) URL"
+msgstr "'%s' n'est ni un fichier de jeu existant, ni une URL http(s)"
+
 #: .\datamanager\abstract_form.py:11
 msgid "Hints for Game Master"
 msgstr "Indices pour Maître de Jeu"

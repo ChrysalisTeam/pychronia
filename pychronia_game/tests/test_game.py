@@ -339,6 +339,25 @@ class TestUtilities(BaseGameTestCase):
         assert real_img in code  # as target only
         assert "thumbs/" in code
 
+    def test_check_is_game_file_errors_dont_leak_server_paths(self):
+        assert utilities.check_is_game_file("personal_files/master/1236637123369.jpg")
+        assert utilities.check_is_game_file_or_url("https://otherdomain/myimage.jpg")
+
+        bad_values = [
+            "javascript:alert(1)",
+            "unexisting/img.jpg",
+            os.path.join(config.GAME_FILES_ROOT, "README.txt"),  # absolute paths are refused
+        ]
+        for bad_value in bad_values:
+            for checker in (utilities.check_is_game_file, utilities.check_is_game_file_or_url):
+                with pytest.raises(NormalUsageError) as exc_info:
+                    checker(bad_value)
+                message = str(exc_info.value)
+                assert "Check failed" not in message
+                assert bad_value in message
+                if not os.path.isabs(bad_value):
+                    assert config.GAME_FILES_ROOT not in message
+
     def test_type_conversions(self):
 
         # test 1 #

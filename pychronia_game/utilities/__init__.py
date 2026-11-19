@@ -608,10 +608,16 @@ def check_is_restructuredtext(value, strict):
     return True
 
 
+def _is_existing_game_file(filename):
+    return not os.path.isabs(filename) and os.path.isfile(os.path.join(config.GAME_FILES_ROOT, filename))
+
+
 def check_is_game_file(filename):
-    assert not os.path.isabs(filename)
-    fullpath = os.path.join(config.GAME_FILES_ROOT, filename)
-    usage_assert(os.path.isfile(fullpath), fullpath)
+    from pychronia_game.common import NormalUsageError, _
+
+    # the error is shown to the game master in forms: only the relative path, never the server's GAME_FILES_ROOT
+    if not _is_existing_game_file(filename):
+        raise NormalUsageError(_("Game file '%s' not found") % filename)
     return True
 
 
@@ -619,9 +625,13 @@ def check_is_game_file_or_url(filename):
     """
     Used for field that allow either RELATIVE local game files, or absolute (external) urls.
     """
+    from pychronia_game.common import NormalUsageError, _
+
     if is_absolute_url(filename):
         return filename
-    return check_is_game_file(filename)
+    if not _is_existing_game_file(filename):
+        raise NormalUsageError(_("'%s' is neither an existing game file nor an http(s) URL") % filename)
+    return True
 
 
 def is_email(email):
