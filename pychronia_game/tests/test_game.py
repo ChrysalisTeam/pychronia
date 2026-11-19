@@ -6220,6 +6220,172 @@ class TestHttpRequests(BaseGameTestCase):
             + "?message_sent=1",
         )
 
+    def test_single_message_view_access_control(self):
+
+        self._reset_messages()
+
+        secret_id = self.dm.post_message(
+            "guy3@pangea.com", recipient_emails=["guy4@pangea.com"], subject="SECRET_SUBJECT", body="secret body"
+        )
+        queued_id = self.dm.post_message(
+            "guy3@pangea.com",
+            recipient_emails=["guy1@pangea.com"],
+            subject="QUEUED_SUBJECT",
+            body="queued body",
+            date_or_delay_mn=get_utc_now() + timedelta(hours=2),
+        )
+        assert self.dm.get_queued_message_by_id(queued_id)
+
+        assert self.dm.is_dispatched_message_viewable(secret_id, username="guy3")  # sender
+        assert self.dm.is_dispatched_message_viewable(secret_id, username="guy4")  # recipient
+        assert self.dm.is_dispatched_message_viewable(secret_id, username=self.dm.master_login)
+        assert not self.dm.is_dispatched_message_viewable(secret_id, username="guy1")
+        assert not self.dm.is_dispatched_message_viewable(queued_id, username="guy1")  # not dispatched yet
+        assert not self.dm.is_dispatched_message_viewable("UNEXISTING_MSG", username="guy1")
+        assert not self.dm.is_dispatched_message_viewable("UNEXISTING_MSG", username=self.dm.master_login)
+
+        def _get_html(msg_id, popup=False):
+            url = neutral_url_reverse(views.view_single_message, msg_id=msg_id)
+            response = self.client.get(url + ("?popup=1" if popup else ""), follow=True)
+            assert response.status_code == 200
+            return response.content.decode("utf8")
+
+        self._player_auth("guy1")  # neither sender, recipient nor interceptor of these messages
+
+        for msg_id, subject in ((secret_id, "SECRET_SUBJECT"), (queued_id, "QUEUED_SUBJECT")):
+            html = _get_html(msg_id)
+            assert subject not in html
+            assert "The requested message doesn&#x27;t exist." in html  # same answer as for unexisting ids
+            html = _get_html(msg_id, popup=True)
+            assert subject not in html
+            assert "Message couldn't be found." in html
+
+        self._player_auth("guy3")  # sender (guy4, the recipient, has a disabled account)
+        assert "SECRET_SUBJECT" in _get_html(secret_id)
+        assert "SECRET_SUBJECT" in _get_html(secret_id, popup=True)
+
+        # a message transferring the secret one gives access to it, even to non-recipients of the original
+        transferring_id = self.dm.post_message(
+            "guy4@pangea.com",
+            recipient_emails=["guy2@pangea.com"],
+            subject="TRANSFER_SUBJECT",
+            body="look at this",
+            transferred_msg=secret_id,
+        )
+        assert self.dm.is_dispatched_message_viewable(secret_id, username="guy2")
+        assert not self.dm.is_dispatched_message_viewable(secret_id, username="guy1")
+
+        self._player_auth("guy2")
+        assert "SECRET_SUBJECT" in _get_html(secret_id)
+        assert "SECRET_SUBJECT" in _get_html(secret_id, popup=True)
+        assert "QUEUED_SUBJECT" not in _get_html(queued_id)
+
+        self._player_auth("guy1")
+        assert "SECRET_SUBJECT" not in _get_html(secret_id)
+        assert "TRANSFER_SUBJECT" not in _get_html(transferring_id)
+
+        self.dm.set_wiretapping_targets("guy1", ["guy2"])  # only applies to messages sent from now on
+        self.dm.post_message(
+            "guy2@pangea.com",
+            recipient_emails=["guy3@pangea.com"],
+            subject="INTERCEPTED_SUBJECT",
+            body="transferring again",
+            transferred_msg=secret_id,
+        )
+        assert "SECRET_SUBJECT" in _get_html(secret_id)  # interceptors can follow the transfer link too
+
+        self._master_auth()  # game master sees everything, even queued messages
+        assert "SECRET_SUBJECT" in _get_html(secret_id)
+        assert "QUEUED_SUBJECT" in _get_html(queued_id)
+        assert "QUEUED_SUBJECT" in _get_html(queued_id, popup=True)
+        assert "The requested message doesn&#x27;t exist." in _get_html("UNEXISTING_MSG")
+
+    def test_message_composition_refuses_forged_message_references(self):
+
+        self._reset_messages()
+
+        foreign_id = self.dm.post_message(
+            "guy3@pangea.com", recipient_emails=["guy4@pangea.com"], subject="FOREIGN_SUBJECT", body="secret body"
+        )
+        own_id = self.dm.post_message(
+            "guy3@pangea.com", recipient_emails=["guy1@pangea.com"], subject="OWN_SUBJECT", body="some body"
+        )
+        self.dm.set_wiretapping_targets("guy1", ["guy2"])
+        intercepted_id = self.dm.post_message(
+            "guy2@pangea.com", recipient_emails=["guy4@pangea.com"], subject="INTERCEPTED_SUBJECT", body="some body"
+        )
+        assert self.dm.get_dispatched_message_by_id(intercepted_id)["visible_by"]["guy1"] == "interceptor"
+
+        url = neutral_url_reverse(views.compose_message)
+        base_params = dict(
+            _ability_form="pychronia_game.views.messaging_views.MessageComposeForm",
+            body="Ceci est le body!",
+            recipients=["guy2@pangea.com"],
+            subject="Sujet de test",
+        )
+
+        def _post(expected_success, **params):
+            previous_count = len(self.dm.get_all_dispatched_messages())
+            response = self.client.post(url, data=dict(base_params, **params), follow=True)
+            assert response.status_code == 200
+            html = response.content.decode("utf8")
+            msgs = sorted(self.dm.get_all_dispatched_messages(), key=lambda msg: int(msg["id"].split("_")[0]))
+            if expected_success:
+                assert "Errors in message fields" not in html
+                assert len(msgs) == previous_count + 1
+                return msgs[-1]
+            assert "Errors in message fields" in html
+            assert len(msgs) == previous_count
+            return None
+
+        self._player_auth("guy1")
+
+        # forged hidden fields targeting a message that guy1 can't see
+        assert _post(False, transferred_msg=foreign_id) is None
+        assert _post(False, parent_id=foreign_id) is None
+
+        # the transfer link of the compose page isn't offered either, for such a message
+        response = self.client.get(url + "?transferred_msg=%s" % foreign_id, follow=True)
+        assert response.status_code == 200
+        html = response.content.decode("utf8")
+        assert "message_transfer_link" not in html
+        assert "Access to transferred message forbidden." in html
+
+        # intercepted messages can be transferred, but not answered (like in the GET workflow)
+        msg = _post(True, transferred_msg=intercepted_id)
+        assert msg["transferred_msg"] == intercepted_id
+        assert _post(False, parent_id=intercepted_id) is None
+
+        # normal workflows keep working
+        response = self.client.get(url + "?transferred_msg=%s" % own_id, follow=True)
+        assert "message_transfer_link" in response.content.decode("utf8")
+        msg = _post(True, transferred_msg=own_id, parent_id=own_id)
+        assert msg["transferred_msg"] == own_id
+        assert msg["group_id"] == self.dm.get_dispatched_message_by_id(own_id)["group_id"]
+
+        # a message received through a transfer can be transferred again
+        self.dm.post_message(
+            "guy4@pangea.com",
+            recipient_emails=["guy1@pangea.com"],
+            subject="TRANSFER_SUBJECT",
+            body="look at this",
+            transferred_msg=foreign_id,
+        )
+        msg = _post(True, transferred_msg=foreign_id)
+        assert msg["transferred_msg"] == foreign_id
+        assert _post(False, parent_id=foreign_id) is None  # but still not answered
+
+        # references to deleted messages are silently dropped, as before
+        msg = _post(True, transferred_msg="UNEXISTING_MSG", parent_id="UNEXISTING_MSG")
+        assert msg["transferred_msg"] is None
+        assert msg["group_id"] == msg["id"]
+
+        # the game master keeps full freedom
+        self._master_auth()
+        msg = _post(True, transferred_msg=foreign_id, parent_id=foreign_id, sender="guy1@pangea.com", delay_h="0")
+        assert msg["transferred_msg"] == foreign_id
+        assert msg["group_id"] == self.dm.get_dispatched_message_by_id(foreign_id)["group_id"]
+
 
 class TestGameViewSystem(BaseGameTestCase):
     def test_instantiation_proxy_singleton(self):

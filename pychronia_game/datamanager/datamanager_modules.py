@@ -2977,6 +2977,28 @@ class TextMessagingForCharacters(BaseDataManager):  # TODO REFINE
         return res
 
     @readonly_method
+    def is_dispatched_message_viewable(self, msg_id, username=CURRENT_USER):
+        """
+        Returns True if *username* is allowed to read the dispatched message *msg_id*.
+
+        Game master can read any dispatched message. Other users can read the messages which are
+        visible by them (as sender, recipient, interceptor...), and also the messages which have been
+        TRANSFERRED by a message visible by them (else "message transferred" links would be useless
+        for users not concerned by the original message).
+
+        Unknown message ids, and messages which are still queued, are never viewable here.
+        """
+        username = self._resolve_username(username)
+        dispatched_messages = self.messaging_data["messages_dispatched"]
+
+        msgs = [msg for msg in dispatched_messages if msg["id"] == msg_id]
+        if not msgs:
+            return False
+        if username == self.master_login or username in msgs[0]["visible_by"]:
+            return True
+        return any(msg["transferred_msg"] == msg_id and username in msg["visible_by"] for msg in dispatched_messages)
+
+    @readonly_method
     def sort_messages_by_conversations(self, messages):
         """
         Returns groups of conversation-relation messages, sorted by "most recent first".

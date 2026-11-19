@@ -3846,6 +3846,10 @@ msgstr "Re:"
 msgid "Access to initial message forbidden."
 msgstr "Accès au message initial interdit."
 
+#: .\views\messaging_views.py:155 .\views\messaging_views.py:254
+msgid "Access to transferred message forbidden."
+msgstr "Accès au message transféré interdit."
+
 #: .\views\messaging_views.py:156
 msgid "Use markup language (RestructuredText)"
 msgstr "Utiliser des balises (RestructuredText)"

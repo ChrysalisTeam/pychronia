@@ -149,6 +149,11 @@ class MessageComposeForm(AbstractGameForm):
             except UsageError:
                 datamanager.logger.warning("Unknown transferred_msg id %r encountered in url", transferred_msg)
                 transferred_msg = ""
+            else:
+                if not datamanager.is_dispatched_message_viewable(transferred_msg):
+                    self.logger.warning("Transfer of forbidden message %s was attempted", transferred_msg)
+                    user.add_error(_("Access to transferred message forbidden."))
+                    transferred_msg = ""
 
         # we build dynamic fields from the data we gathered #
 
@@ -241,7 +246,35 @@ class MessageComposeForm(AbstractGameForm):
                     "Unknown transferred_msg id %r encountered in post data", transferred_msg
                 )
                 transferred_msg = None
+            else:
+                # only messages that the user can read may be transferred (hidden fields can be forged)
+                if not self._datamanager.is_dispatched_message_viewable(transferred_msg):
+                    self._datamanager.logger.warning(
+                        "Transfer of forbidden message %s was attempted in post data", transferred_msg
+                    )
+                    raise ValidationError(_("Access to transferred message forbidden."))
         return transferred_msg or None
+
+    def clean_parent_id(self):
+        parent_id = self.cleaned_data["parent_id"]
+        user = self._datamanager.user
+        if parent_id and not user.is_master:  # game master can attach his messages to any conversation
+            try:
+                msg = self._datamanager.get_dispatched_message_by_id(msg_id=parent_id)
+            except UsageError:
+                # parent message might have been deleted meanwhile, we just start a new conversation
+                self._datamanager.logger.warning("Unknown parent_id %r encountered in post data", parent_id)
+                parent_id = None
+            else:
+                # same rule as when prefilling the form in __init__: players only reply to (or recontact
+                # the recipients of) their own messages, the hidden field can't be trusted for that
+                visibility_reason = msg["visible_by"].get(user.username, None)
+                if visibility_reason not in (VISIBILITY_REASONS.sender, VISIBILITY_REASONS.recipient):
+                    self._datamanager.logger.warning(
+                        "Access to forbidden message parent_id %s was attempted in post data", parent_id
+                    )
+                    raise ValidationError(_("Access to initial message forbidden."))
+        return parent_id or None
 
 
 def _check_message_display_context(ctx, msg):
@@ -849,8 +882,12 @@ def view_single_message(
     """
     Meant to be used in event logging or for message transfer.
 
-    On purpose, NO PERMISSION CHECK is done here (msg_ids are random enough),
-    however user must be authenticated (required by some messaging utilities like for "message display context").
+    Message ids are NOT secrets (sequential index + short hash), so access is checked here: apart from
+    the game master, a user can only display the dispatched messages that he can see by himself, or
+    that have been transferred by a message he can see (see is_dispatched_message_viewable()).
+    Queued messages are only for the game master.
+
+    Forbidden messages are reported exactly like unexisting ones.
     """
     user = request.datamanager.user
     message = None
@@ -862,17 +899,20 @@ def view_single_message(
     messages = [msg for msg in request.datamanager.get_all_dispatched_messages() if msg["id"] == msg_id]
     if messages:
         assert len(messages) == 1
-        message = messages[0]
-        is_queued = False
-    else:
+        if request.datamanager.is_dispatched_message_viewable(msg_id):
+            message = messages[0]
+            is_queued = False
+        else:
+            request.datamanager.logger.warning("Access to forbidden message %s was attempted", msg_id)
+    elif user.is_master:
         messages = [msg for msg in request.datamanager.get_all_queued_messages() if msg["id"] == msg_id]
         if messages:
             assert len(messages) == 1
             message = messages[0]
             is_queued = True
-        else:
-            if not popup_mode:
-                user.add_error(_("The requested message doesn't exist."))
+
+    if not message and not popup_mode:
+        user.add_error(_("The requested message doesn't exist."))
 
     if message:
         ctx = _determine_message_display_context(request.datamanager, message, is_pending=is_queued)
