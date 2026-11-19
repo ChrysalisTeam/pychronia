@@ -114,7 +114,7 @@ def pychronia_template_context(request):
                 "display_admin_tips": display_admin_tips,
                 "menus": menus.submenus if menus else [],  # we ignore root entry
                 "online_users": online_users,
-                "signal_chatting_users": bool(dm.get_chatting_users()),
+                "signal_chatting_users": bool(dm.get_chatting_users(exclude_current=True)),  # like the menu
                 "signal_new_menu_entries": signal_new_menu_entries,
                 "signal_new_help_page": signal_new_help_page,
                 "signal_new_radio_messages": signal_new_radio_messages,

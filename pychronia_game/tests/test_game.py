@@ -5828,6 +5828,22 @@ class TestHttpRequests(BaseGameTestCase):
         self.dm.static_pages["qa_article3"] = _new_article()  # any update of static pages cleans up
         assert self.dm.get_character_known_article_ids("guy1") == ["lokon"]
 
+    def test_chatting_users_header_signal_ignores_current_user(self):
+        self._player_auth("guy1")
+        home_url = neutral_url_reverse(views.homepage)
+
+        self.dm._set_chatting_status("guy1")
+        self.dm.commit()
+        response = self.client.get(home_url)
+        assert response.status_code == 200
+        assert response.context["signal_chatting_users"] is False  # alone in the chatroom
+
+        self.dm._set_chatting_status("guy2")
+        self.dm.commit()
+        response = self.client.get(home_url)
+        assert response.status_code == 200
+        assert response.context["signal_chatting_users"] is True
+
     def test_usage_error_transformation(self):
 
         # user is initially anonymous, we have a special redirection for access denials in this case
