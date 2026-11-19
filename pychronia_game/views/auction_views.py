@@ -55,6 +55,14 @@ class CharactersView(AbstractGameView):
 
     EXTRA_PERMISSIONS = ["view_others_belongings"]
 
+    def _process_html_post_data(self):
+        res = super()._process_html_post_data()
+        if res["result"]:
+            # Post/Redirect/Get: refreshing the resulting page mustn't transfer the same assets again (the success
+            # notification survives the redirection, and the forms are redisplayed empty after a success anyway)
+            self._setup_http_redirect_on_success(self.request.get_full_path())
+        return res
+
     def get_template_vars(self, previous_form_data=None):
 
         ## All of these forms might be None ##

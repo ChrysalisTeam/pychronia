@@ -5923,6 +5923,37 @@ class TestHttpRequests(BaseGameTestCase):
         assert not guy1["secret_question"] and not guy1["secret_answer"]
         assert "view_others_belongings" in self.dm.get_character_properties("guy2")["permissions"]
 
+    def test_successful_transfers_redirect_to_avoid_resubmissions(self):
+        bank_name = self.dm.get_global_parameter("bank_name")
+        self.dm.transfer_money_between_characters(bank_name, "guy1", amount=100)
+        self._master_auth()  # players use the same view and form (without sender_name)
+        url = neutral_url_reverse(views.view_characters)
+
+        def _post(amount):
+            data = dict(
+                _ability_form="pychronia_game.forms.MoneyTransferForm",
+                sender_name="guy1",
+                recipient_name="guy2",
+                amount=amount,
+                reason="double-post test",
+            )
+            return self.client.post(url, data=data)
+
+        initial_account = self.dm.get_character_properties("guy1")["account"]
+
+        response = _post(amount=5)
+        # Post/Redirect/Get: refreshing the resulting page in the browser doesn't transfer the money again
+        self.assertRedirects(response, expected_url=url, fetch_redirect_response=False)
+        assert self.dm.get_character_properties("guy1")["account"] == initial_account - 5
+        response = self.client.get(url)
+        assert response.status_code == 200
+        assert "Money transfer successful" in response.content.decode("utf8")  # notification survived
+
+        response = _post(amount=10000000)  # invalid: the form is redisplayed with its errors, no redirection
+        assert response.status_code == 200
+        assert "Submitted data is invalid" in response.content.decode("utf8")
+        assert self.dm.get_character_properties("guy1")["account"] == initial_account - 5
+
     def test_ajax_chat_errors_are_clean_responses(self):
         self._player_auth("guy1")
         chat_url = neutral_url_reverse(views.ajax_chat)
