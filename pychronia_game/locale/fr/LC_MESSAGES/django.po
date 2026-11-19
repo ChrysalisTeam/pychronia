@@ -1914,6 +1914,10 @@ msgstr "Total"
 msgid "Owner"
 msgstr "Propriétaire"
 
+#: .\templates\base_main.html:106
+msgid "Please describe the bug in more detail (at least 10 characters)."
+msgstr "Merci de décrire le bug plus en détail (au moins 10 caractères)."
+
 #: .\templates\base_main.html:108
 msgid "Bug report properly sent."
 msgstr "Rapport d'erreur correctement envoyé."
