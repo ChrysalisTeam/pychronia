@@ -6,8 +6,8 @@ import traceback
 
 ## TEST CONFIGURATION ##
 
-os.environ["DJANGO_SETTINGS_MODULE"] = "config.settings.game_test"
-import setup_pychronia_env  # only AFTER setting this DJANGO_SETTINGS_MODULE
+# Django is already set up by pytest-django, with the test settings given in [tool.pytest.ini_options] of
+# pyproject.toml (ie. config.settings.game_test, see also pychronia_game/tests/conftest.py)
 
 from pychronia_game.common import *
 from pychronia_game.datamanager.datamanager_administrator import (
@@ -32,11 +32,7 @@ import pychronia_game.middlewares
 import pychronia_game.views
 from pychronia_game.datamanager.abstract_game_view import AbstractGameView, register_view
 
-# we want django-specific checker methods
-# do NOT use the django.test.TestCase version, with SQL session management
-# from django.utils.unittest.case import TestCase
-# from django.test.testcases import TransactionTestCase as TestCase
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django.test.client import Client, RequestFactory
 import django.utils.translation
 
@@ -45,9 +41,9 @@ if not config.ZODB_RESET_ALLOWED:
 
 from pychronia_game.tests._safety import ensure_throwaway_databases
 
-ensure_throwaway_databases()  # tests wipe the ZODB and flush the SQL DB, they must never touch real DBs
-
-ORIGINAL_CONFIG_INSTALLED_APPS = config.INSTALLED_APPS[:]
+# tests wipe the ZODB and use the SQL DB, they must never touch real DBs; conftest.py already checked that,
+# this second check covers runs which bypass it (eg. "pytest --noconftest")
+ensure_throwaway_databases()
 
 DJANGO_TEST_CLIENT = Client()
 
@@ -200,22 +196,17 @@ def temp_datamanager(game_instance_id, request=None):
     dm.close()
 
 
-class BaseGameTestCase(TransactionTestCase):  # one day, use pytest-django module to make it cleaner
+class BaseGameTestCase(TestCase):
     """
     WARNING - when directly modifying "self.dm.data" content,
     don't forget to commit() after that !!
+
+    The SQL test DB (only used for Django sessions, users and thumbnails - game data lives in the ZODB) is created
+    once per session by pytest-django, and each test runs in a SQL transaction rolled back afterwards, like any
+    django.test.TestCase. The ZODB, which has its own transactions, is wiped and recreated in setUp().
     """
 
     SHARED_DM_INITIAL_DATA_TREE = None  # optimization, duplicated for each testcase
-
-    def __call__(self, *args, **kwds):
-        # self._reset_django_db()
-        # print("USING CONF", config.DATABASES, config.INSTALLED_APPS)
-        ##return super(BaseGameTestCase, self).__call__(*args, **kwds)
-        self._reset_django_db(really=True)
-        return unittest.TestCase.run(
-            self, *args, **kwds
-        )  # we bypass test setups from django's TestCase, to use py.test instead
 
     def setUp(self):
 
@@ -317,12 +308,3 @@ class BaseGameTestCase(TransactionTestCase):  # one day, use pytest-django modul
         self.dm.messaging_data["messages_dispatched"] = PersistentList()
         self.dm.messaging_data["messages_queued"] = PersistentList()
         self.dm.commit()
-
-    def _reset_django_db(self, really=False):
-        if not really:
-            return  # PASCAL HACK TODO BEWARE
-        from django.core import management
-
-        management.call_command("migrate", verbosity=1, interactive=False)
-        management.call_command("flush", verbosity=0, interactive=False)  # we try to empty tables, if already created
-        config.INSTALLED_APPS[:] = ORIGINAL_CONFIG_INSTALLED_APPS[:]  # SOUTH might nastily monkey patch settings...

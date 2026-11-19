@@ -1,21 +1,30 @@
+"""
+Bootstrap of the e2e suite.
+
+Django is already set up by pytest-django, with the e2e settings given by the pytest.ini of this folder
+(config.settings.e2e: sqlite + ZODB FileStorage in a temp work dir).
+"""
+
 import os
 import shutil
-import tempfile
 
 import pytest
 
-# DJANGO_SETTINGS_MODULE must be set, and the work dir must exist, BEFORE `setup_pychronia_env`
-# is imported anywhere (it calls django.setup() at import time, which freezes settings).
-E2E_WORK_DIR = tempfile.mkdtemp(prefix="pychronia_e2e_")
-os.environ["PYCHRONIA_E2E_WORK_DIR"] = E2E_WORK_DIR
-os.environ["DJANGO_SETTINGS_MODULE"] = "config.settings.e2e"
+from django.conf import settings as django_settings
+from django.contrib.auth.models import User
+
+from pychronia_game.tests._safety import ensure_throwaway_databases
+
+E2E_SETTINGS_MODULE = "config.settings.e2e"
+
+if django_settings.SETTINGS_MODULE != E2E_SETTINGS_MODULE:
+    # eg. this folder was given to pytest along with paths outside of it, so the root pyproject.toml was used
+    raise pytest.UsageError(
+        "The e2e suite must run with %r settings, not %r: launch it separately, eg. 'pytest pychronia_game/tests/e2e', "
+        "so that its own pytest.ini is used" % (E2E_SETTINGS_MODULE, django_settings.SETTINGS_MODULE)
+    )
+
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"  # Playwright's sync API runs an event loop in the main thread
-
-import setup_pychronia_env  # noqa: E402, F401  (import order is load-bearing, see above)
-
-from django.conf import settings as django_settings  # noqa: E402
-from django.contrib.auth.models import User  # noqa: E402
-from django.core.management import call_command  # noqa: E402
 
 from pychronia_game.datamanager.datamanager_administrator import (  # noqa: E402
     reset_zodb_structure,
@@ -24,10 +33,8 @@ from pychronia_game.datamanager.datamanager_administrator import (  # noqa: E402
 )
 
 from pychronia_game.tests.e2e import _configs, _pages, _server, _zodb_snapshot  # noqa: E402
-from pychronia_game.tests._safety import ensure_throwaway_databases  # noqa: E402
 
-ensure_throwaway_databases()  # the e2e session wipes the ZODB and migrates the SQL DB, they must never be real DBs
-
+E2E_WORK_DIR = django_settings.E2E_WORK_DIR
 ACTIVE_DIR = os.path.join(E2E_WORK_DIR, "active")
 PRISTINE_DIR = os.path.join(E2E_WORK_DIR, "pristine")
 
@@ -37,6 +44,13 @@ def pytest_addoption(parser):
 
 
 def pytest_configure(config):
+    # As early as possible: before tests are collected, before pytest-django creates its SQL test DB,
+    # and before the session fixture wipes the ZODB
+    try:
+        ensure_throwaway_databases()
+    except RuntimeError as exc:
+        raise pytest.UsageError(str(exc)) from exc
+
     config.addinivalue_line("markers", "e2e: Playwright browser end-to-end tests")
 
     headed = config.option.e2e_debug or bool(os.environ.get("PYCHRONIA_E2E_HEADED"))
@@ -50,16 +64,46 @@ def pytest_configure(config):
         config.option.slowmo = float(slowmo)
 
 
+def pytest_unconfigure(config):
+    # after all fixtures are torn down, including pytest-django's django_db_setup which deletes the SQL test DB file
+    shutil.rmtree(E2E_WORK_DIR, ignore_errors=True)
+
+
 def pytest_collection_modifyitems(config, items):
     for item in items:
         item.add_marker(pytest.mark.e2e)
 
 
+@pytest.fixture(scope="session")
+def django_db_setup(django_test_environment, django_db_blocker):
+    """
+    Overrides the fixture of pytest-django, which only creates the test DBs used by collected tests (via
+    "django_db" marks etc.), ie. none here: the "default" test DB is always created (and migrated) here.
+    """
+    from django.test.utils import setup_databases, teardown_databases
+
+    with django_db_blocker.unblock():
+        db_cfg = setup_databases(verbosity=0, interactive=False, aliases={"default"}, serialized_aliases=set())
+    yield
+    with django_db_blocker.unblock():
+        teardown_databases(db_cfg, verbosity=0)
+
+
 @pytest.fixture(scope="session", autouse=True)
-def e2e_environment():
+def e2e_environment(django_db_setup, django_db_blocker):
+    """
+    The SQL DB is pytest-django's test DB (a file, see config/settings/e2e.py), created and migrated once
+    by django_db_setup, and shared by the whole session like the live server: tests aren't marked "django_db"
+    (a per-test rollback or flush couldn't undo the commits of the live server thread anyway, and would delete
+    the superuser), so DB access stays unblocked for the whole session, in the live server threads too.
+    """
+    with django_db_blocker.unblock():
+        yield from _setup_e2e_environment()
+
+
+def _setup_e2e_environment():
     os.makedirs(ACTIVE_DIR, exist_ok=True)
 
-    call_command("migrate", run_syncdb=True, verbosity=0)
     User.objects.create_superuser(_configs.SUPERUSER_USERNAME, "e2e_admin@example.com", _configs.SUPERUSER_PASSWORD)
 
     reset_zodb_structure()
@@ -89,7 +133,7 @@ def e2e_environment():
     yield server.base_url
 
     server.stop()
-    shutil.rmtree(E2E_WORK_DIR, ignore_errors=True)
+    _zodb_snapshot.close_active_zodb()  # releases the gamedata.fs file, for the final cleanup of E2E_WORK_DIR
 
 
 @pytest.fixture(scope="session")

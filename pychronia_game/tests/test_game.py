@@ -85,8 +85,6 @@ class TestUtilities(BaseGameTestCase):
 
     def test_restructuredtext_handling(self):
 
-        self._reset_django_db()  # to have thumbnails tables
-
         restructuredtext = advanced_restructuredtext  # we use our own version
 
         assert restructuredtext("""aaaa*aaa""")  # star is ignored
@@ -327,8 +325,6 @@ class TestUtilities(BaseGameTestCase):
 
     def test_generate_image_viewer(self):
 
-        self._reset_django_db()
-
         code = generate_image_viewer("http://otherdomain/myimage.jpg")
         assert 'src="http://otherdomain/myimage.jpg"' in code  # untouched
 
@@ -560,8 +556,6 @@ class TestUtilities(BaseGameTestCase):
         assert checked_game_file_path(config.GAME_FILES_URL + "bad/stuffs.mpg") is None
 
     def test_rst_game_file_url_tags_handling(self):
-
-        self._reset_django_db()  # for thumbnails
 
         rst = dedent(r"""
         
@@ -1243,8 +1237,20 @@ class TestMetaAdministration(unittest.TestCase):  # no django setup required ATM
             body="qsdqsd",
         )
 
+        from smtplib import SMTPException
+        from unittest import mock
+        from django.core import mail
+
+        with mock.patch.object(notify_novelties_by_email, "send_mail", side_effect=SMTPException("no smtp server")):
+            (idx, successes, errors) = notify_novelties_by_email.execute()
+        assert (idx, successes, errors) == (1, 0, 1)
+        assert not mail.outbox
+
+        # the test environment of Django sends emails to the in-memory outbox
         (idx, successes, errors) = notify_novelties_by_email.execute()
-        assert (idx, successes, errors) == (1, 0, 1)  # no smtp server, so exception!
+        assert (idx, successes, errors) == (1, 1, 0)
+        assert len(mail.outbox) == 1
+        assert mail.outbox[0].to == ["dummy@hotmail.com", "master@administration.com"]
 
 
 class TestDatamanager(BaseGameTestCase):
@@ -2254,7 +2260,6 @@ class TestDatamanager(BaseGameTestCase):
 
     @for_core_module(PersonalFiles)
     def test_personal_files(self):
-        self._reset_django_db()
         self._reset_messages()
 
         files1 = self.dm.get_personal_files("guy2", absolute_urls=True)
@@ -2300,7 +2305,6 @@ class TestDatamanager(BaseGameTestCase):
 
     @for_core_module(PersonalFiles)
     def test_encrypted_folders(self):
-        self._reset_django_db()
         self._reset_messages()
 
         assert self.dm.get_all_encrypted_folders_info() == dict(guy2_report=["evans", "schamaalamoktuhg"])
@@ -3782,7 +3786,6 @@ class TestDatamanager(BaseGameTestCase):
         Here we use frontend methods from authentication.py instead of
         directly datamanager methods.
         """
-        self._reset_django_db()
 
         OTHER_SESSION_TICKET_KEY = SESSION_TICKET_KEY_TEMPLATE % "my_other_test_game_id"
 
@@ -4234,8 +4237,6 @@ class TestDatamanager(BaseGameTestCase):
     def test_impersonation_by_master(self):
 
         # FIXME - test for django super user, for friendship................
-
-        self._reset_django_db()
 
         master_login = self.dm.get_global_parameter("master_login")
         master_password = self.dm.get_global_parameter("master_password")
@@ -5448,7 +5449,6 @@ class TestHttpRequests(BaseGameTestCase):
             self.assertNotContains(response, "shockwave")
 
     def _test_special_pages(self):
-        self._reset_django_db()
 
         self.dm.data["global_parameters"]["online_presence_timeout_s"] = 1
         self.dm.data["global_parameters"]["chatroom_presence_timeout_s"] = 1
@@ -5563,8 +5563,6 @@ class TestHttpRequests(BaseGameTestCase):
                 results.append(1)
             return results
 
-        self._reset_django_db()
-
         # we activate ALL views
         old_state = self.dm.is_game_started()
         self.dm.set_game_state(True)
@@ -5621,8 +5619,6 @@ class TestHttpRequests(BaseGameTestCase):
     def _test_player_multistate_get_requests(self):
 
         # FIXME - currently not testing abilities
-
-        self._reset_django_db()
 
         self.dm.data["global_parameters"]["online_presence_timeout_s"] = 1
         self.dm.data["global_parameters"]["chatroom_presence_timeout_s"] = 1
@@ -5706,7 +5702,6 @@ class TestHttpRequests(BaseGameTestCase):
 
     def test_specific_help_pages_behaviour(self):
 
-        self._reset_django_db()
         self.dm.set_game_state(True)
 
         # TODO FIXME - use Http403 exceptions instead, when new django version is out !!
@@ -5735,8 +5730,6 @@ class TestHttpRequests(BaseGameTestCase):
     def test_encyclopedia_index_knowledge(self):
 
         ok = 0
-
-        self._reset_django_db()
 
         url_base = neutral_url_reverse(views.view_encyclopedia)
 
@@ -5788,8 +5781,6 @@ class TestHttpRequests(BaseGameTestCase):
         assert ok == 2  # coherence of test method
 
     def test_usage_error_transformation(self):
-
-        self._reset_django_db()
 
         # user is initially anonymous, we have a special redirection for access denials in this case
         response = self.client.get(
@@ -5990,7 +5981,6 @@ class TestHttpRequests(BaseGameTestCase):
 
     def test_message_composition(self):
 
-        self._reset_django_db()
         self._reset_messages()
 
         self._player_auth("guy1")
@@ -6080,7 +6070,6 @@ class TestHttpRequests(BaseGameTestCase):
 
     def test_game_homepage_without_username(self):
 
-        self._reset_django_db()
         url = ROOT_GAME_URL + "/"  # homepage without game username in it
 
         response = self.client.get(url, follow=False)
@@ -6099,8 +6088,6 @@ class TestHttpRequests(BaseGameTestCase):
         self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/master/")
 
     def test_game_username_embedded_in_url(self):
-
-        self._reset_django_db()
 
         self._player_auth("guy3")
 
@@ -6169,8 +6156,6 @@ class TestHttpRequests(BaseGameTestCase):
         self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guest/login/", fetch_redirect_response=True)
 
     def test_http_complex_message_posting(self):
-
-        self._reset_django_db()
 
         self._set_user(self.dm.master_login)  # for local DM
         self._master_auth()  # for client cookies
@@ -8406,7 +8391,6 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         assert not self.dm.get_global_parameter("disable_automated_ability_responses")
 
-        self._reset_django_db()
         self._reset_messages()
 
         assert self.dm.data["abilities"]["world_scan"]["settings"]["result_delay"]

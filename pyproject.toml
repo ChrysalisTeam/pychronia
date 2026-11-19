@@ -110,6 +110,7 @@ dev = [
     "pyscss==1.4.0",
     "pytest-playwright>=0.10.0",
     "ruff>=0.17.5",
+    "pytest-django>=4.14.0",
 ]
 
 
@@ -144,6 +145,12 @@ django-request = { git = "https://github.com/django-request/django-request.git" 
 
 
 [tool.pytest.ini_options]
+# pytest-django settings: "--ds" has precedence over a DJANGO_SETTINGS_MODULE environment variable (eg. set by an IDE
+# or a shell for the dev server), unlike the "DJANGO_SETTINGS_MODULE" ini option; another "--ds" on the command line
+# still overrides it. The e2e/ subfolder has its own pytest.ini, with its own settings.
+addopts = ["--ds=config.settings.game_test"]
+django_debug_mode = "keep"  # DEBUG of settings, ie. True, required by reset_zodb_structure() (pytest-django forces False by default)
+django_find_project = false  # the project is installed in the venv, no sys.path tweak needed (nor pychronia_game/tests/manage.py)
 testpaths = ["pychronia_game/tests"]
 norecursedirs = ["e2e", "____backup", "test_game_files", ".*", "__pycache__"]
 markers = ["e2e: Playwright browser end-to-end tests (run with: pytest pychronia_game/tests/e2e)"]

@@ -1,6 +1,7 @@
 """Settings of the Playwright end-to-end tests of the game site (see pychronia_game/tests/e2e/conftest.py)."""
 
 import os
+import tempfile
 
 from config.settings.game import *
 
@@ -8,9 +9,17 @@ from config.settings._dev_base import *  # DEBUG, SITE_DOMAIN, SECRET_KEY...
 
 from config.settings._game_dev_base import *  # ROOT_URLCONF, GAME_FILES_ROOT, ZODB_RESET_ALLOWED...
 
-E2E_WORK_DIR = os.environ["PYCHRONIA_E2E_WORK_DIR"]
+E2E_WORK_DIR = tempfile.mkdtemp(prefix="pychronia_e2e_")  # removed by pytest_unconfigure() of conftest.py
 
-DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": os.path.join(E2E_WORK_DIR, "django.db")}}
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": os.path.join(E2E_WORK_DIR, "django.db"),  # unused, pytest-django creates and uses the test DB below
+        # A FILE, not the default in-memory sqlite test DB: the in-process live server thread (and its per-request
+        # threads) must see the same DB as the main thread, which creates the superuser at session start
+        "TEST": {"NAME": os.path.join(E2E_WORK_DIR, "django_test.db")},
+    }
+}
 ZODB_URL = None
 ZODB_FILE = os.path.join(E2E_WORK_DIR, "active", "gamedata.fs")
 
