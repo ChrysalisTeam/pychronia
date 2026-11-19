@@ -92,6 +92,13 @@ def manage_characters(request, template_name="administration/character_managemen
                 assert official_name == official_name.strip()  # auto-stripping
                 assert official_role == official_role.strip()
 
+                # we only write the fields that the game master changed, compared to the values initially displayed
+                # to him, so that this big stale form doesn't overwrite changes made meanwhile by players
+                changed_fields = set(form.changed_data)
+
+                def _if_changed(field_name, value, changed_fields=changed_fields):
+                    return value if field_name in changed_fields else None  # None means "unchanged" for updaters
+
                 with action_failure_handler(request, success_message=None):
                     assert not dm.is_in_writing_transaction()  # each call below will be separately atomic
 
@@ -99,22 +106,33 @@ def manage_characters(request, template_name="administration/character_managemen
 
                     dm.update_official_character_data(
                         username=target_username,
-                        official_name=official_name,
-                        official_role=official_role,
-                        gamemaster_hints=gamemaster_hints,
-                        extra_goods=extra_goods,
-                        is_npc=is_npc,
+                        official_name=_if_changed("official_name", official_name),
+                        official_role=_if_changed("official_role", official_role),
+                        gamemaster_hints=_if_changed("gamemaster_hints", gamemaster_hints),
+                        extra_goods=_if_changed("extra_goods", extra_goods),
+                        is_npc=_if_changed("is_npc", is_npc),
                     )
 
-                    dm.update_secret_question_and_answer(
-                        username=target_username, secret_question=secret_question, secret_answer=secret_answer
-                    )
+                    if changed_fields & {"secret_question", "secret_answer"}:  # these must stay consistent
+                        current_data = dm.get_character_properties(username=target_username)
+                        if "secret_question" not in changed_fields:
+                            secret_question = current_data["secret_question"] or ""
+                        if "secret_answer" not in changed_fields:
+                            secret_answer = current_data["secret_answer"] or ""
+                        dm.update_secret_question_and_answer(
+                            username=target_username, secret_question=secret_question, secret_answer=secret_answer
+                        )
 
-                    dm.update_allegiances(username=target_username, allegiances=allegiances)
+                    if "allegiances" in changed_fields:
+                        dm.update_allegiances(username=target_username, allegiances=allegiances)
 
-                    dm.update_permissions(username=target_username, permissions=permissions)
+                    if "permissions" in changed_fields:
+                        dm.update_permissions(username=target_username, permissions=permissions)
+
                     dm.update_real_life_data(
-                        username=target_username, real_life_identity=real_life_identity, real_life_email=real_life_email
+                        username=target_username,
+                        real_life_identity=_if_changed("real_life_identity", real_life_identity),
+                        real_life_email=_if_changed("real_life_email", real_life_email),
                     )
 
                     new_data = dm.get_character_properties(username=target_username)

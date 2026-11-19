@@ -189,6 +189,12 @@ class CharacterProfileForm(AbstractGameForm):
         self.fields["allegiances"].choices = allegiances_choices
         self.fields["permissions"].choices = permissions_choices
 
+        # the initially displayed values are submitted along, so that changed_data only lists the fields
+        # really modified by the game master, not those modified by players since the page was loaded
+        for field_name, field in self.fields.items():
+            if field_name not in ("target_username", self._ability_field_name):
+                field.show_hidden_initial = True
+
 
 class CleartextPasswordForm(SimpleForm):
     simple_password = forms.CharField(

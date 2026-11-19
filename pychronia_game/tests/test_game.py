@@ -5863,6 +5863,66 @@ class TestHttpRequests(BaseGameTestCase):
         assert response.status_code == 200
         assert response.context["signal_chatting_users"] is True
 
+    def test_manage_characters_only_writes_fields_changed_by_master(self):
+        import lxml.html
+
+        self._master_auth()
+        url = neutral_url_reverse(views.manage_characters)
+
+        def _get_form_values():
+            response = self.client.get(url)
+            assert response.status_code == 200
+            forms = lxml.html.fromstring(response.content.decode("utf8")).forms
+            form = next(f for f in forms if "manage_characters" in (f.action or ""))
+            return form.form_values()  # (name, value) pairs as submitted by a browser
+
+        def _set_value(form_values, username, field_name, values):
+            prefix = next(name[: -len("-target_username")] for (name, value) in form_values if value == username)
+            html_name = "%s-%s" % (prefix, field_name)
+            return [(k, v) for (k, v) in form_values if k != html_name] + [(html_name, v) for v in values]
+
+        def _post(form_values):
+            data = {}
+            for k, v in form_values:
+                data.setdefault(k, []).append(v)
+            return self.client.post(url, data=data)
+
+        form_values = _get_form_values()  # the game master opens the page...
+
+        # ... meanwhile, players and other admin pages change some characters
+        self.dm.update_secret_question_and_answer("guy1", secret_question="My new question?", secret_answer="Answer")
+        self.dm.set_permission("guy2", permission="view_others_belongings", is_present=True)
+        self.dm.update_official_character_data("guy2", official_role="Concurrently changed role")
+
+        # ... then the game master submits the (stale) page, after changing one field of guy3
+        guy1_domains = list(self.dm.get_character_properties("guy1")["domains"])
+        form_values = _set_value(form_values, "guy3", "official_role", ["Role set by master"])
+        form_values = _set_value(form_values, "guy1", "allegiances", guy1_domains + ["sciences"])
+        response = _post(form_values)
+        assert response.status_code == 200
+        assert "Characters were properly updated." in response.content.decode("utf8")
+
+        guy1 = self.dm.get_character_properties("guy1")
+        assert guy1["secret_question"] == "My new question?"  # concurrent changes are kept
+        assert guy1["secret_answer"] == "Answer"
+        assert set(guy1["domains"]) == set(guy1_domains + ["sciences"])  # change of master applied
+        guy2 = self.dm.get_character_properties("guy2")
+        assert "view_others_belongings" in guy2["permissions"]
+        assert guy2["official_role"] == "Concurrently changed role"
+        assert self.dm.get_character_properties("guy3")["official_role"] == "Role set by master"
+
+        # fields really changed by the game master are written, even if a player changed them meanwhile
+        form_values = _get_form_values()
+        self.dm.update_secret_question_and_answer("guy1", secret_question="Other question?", secret_answer="Other")
+        form_values = _set_value(form_values, "guy1", "secret_question", [""])
+        form_values = _set_value(form_values, "guy1", "secret_answer", [""])
+        response = _post(form_values)
+        assert response.status_code == 200
+        assert "Characters were properly updated." in response.content.decode("utf8")
+        guy1 = self.dm.get_character_properties("guy1")
+        assert not guy1["secret_question"] and not guy1["secret_answer"]
+        assert "view_others_belongings" in self.dm.get_character_properties("guy2")["permissions"]
+
     def test_ajax_chat_errors_are_clean_responses(self):
         self._player_auth("guy1")
         chat_url = neutral_url_reverse(views.ajax_chat)
