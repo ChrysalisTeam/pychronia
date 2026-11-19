@@ -144,11 +144,13 @@ class EncyclopediaView(AbstractGameView):
     REQUIRES_GLOBAL_PERMISSION = False
 
     def _generate_articles_index(self, index_article_ids):
-        """index_article_ids might be None"""
-        _pages = self.datamanager.static_pages
+        """index_article_ids might be None, and contain ids of articles which don't exist anymore (ignored)"""
+        _pages = self.datamanager.get_static_pages_for_category(self.datamanager.ENCYCLOPEDIA_CATEGORY)
         index_article_ids = index_article_ids or []
         articles_index = [
-            (index_article_id, _pages[index_article_id].get("title")) for index_article_id in index_article_ids
+            (index_article_id, _pages[index_article_id].get("title"))
+            for index_article_id in index_article_ids
+            if index_article_id in _pages
         ]
         articles_index.sort(
             key=lambda x: x[1]
@@ -182,7 +184,8 @@ class EncyclopediaView(AbstractGameView):
             if not entry:
                 dm.user.add_error(_("Sorry, no encyclopedia article has been found for id '%s'") % current_article_id)
             else:
-                _conditionally_update_known_article_ids([current_article_id])
+                # we store the normalized id, since fetching of the entry is case-insensitive
+                _conditionally_update_known_article_ids([current_article_id.lower().strip()])
         else:
             search_string = utilities.get_request_param(
                 request, "search"

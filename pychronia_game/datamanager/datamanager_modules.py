@@ -4808,6 +4808,9 @@ class StaticPages(BaseDataManager):
         def _item_can_be_deleted(self, key, value):
             return not value["initial"]
 
+        def _callback_on_any_update(self):
+            self._inner_datamanager._prune_obsolete_known_article_ids()
+
     static_pages = LazyInstantiationDescriptor(StaticPagesManager)
 
     _static_page_novelty_category = "static_pages"
@@ -4960,6 +4963,14 @@ class Encyclopedia(BaseDataManager):
         for article_id in article_ids:
             if article_id not in known_article_ids:
                 known_article_ids.append(article_id)
+
+    def _prune_obsolete_known_article_ids(self):
+        """Forgets the ids of articles which were deleted/renamed, or moved out of the encyclopedia."""
+        article_ids = set(self.get_encyclopedia_article_ids())
+        for character in self.get_character_sets().values():
+            known_article_ids = character["known_article_ids"]
+            if not set(known_article_ids) <= article_ids:
+                known_article_ids[:] = [i for i in known_article_ids if i in article_ids]
 
     @transaction_watcher
     def reset_character_known_article_ids(self, username=CURRENT_USER):

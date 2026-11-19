@@ -5780,6 +5780,54 @@ class TestHttpRequests(BaseGameTestCase):
 
         assert ok == 2  # coherence of test method
 
+    def test_encyclopedia_survives_removal_of_known_articles(self):
+        """A renamed/deleted article must not break the encyclopedia of the characters who had read it."""
+        self.dm.set_encyclopedia_index_visibility(False)  # characters only see the articles they know
+        url_base = neutral_url_reverse(views.view_encyclopedia)
+
+        article = dict(
+            categories=["encyclopedia"],
+            content="Some temporary article.",
+            keywords=["qatemporary"],
+            title="QA temporary article",
+            clue_code="",
+            gamemaster_hints="",
+        )
+
+        def _new_article():
+            return utilities.convert_object_tree(article, type_mapping=utilities.python_to_zodb_types)
+
+        self.dm.static_pages["qa_article"] = _new_article()
+
+        self._player_auth("guy1")
+
+        response = self.client.get(neutral_url_reverse(views.view_encyclopedia, current_article_id="qa_article"))
+        assert response.status_code == 200
+        # the article id is stored normalized, whatever the case used in the url
+        response = self.client.get(neutral_url_reverse(views.view_encyclopedia, current_article_id="LOKON"))
+        assert response.status_code == 200
+        assert "animals" in response.content.decode("utf8")
+        assert set(self.dm.get_character_known_article_ids("guy1")) == {"qa_article", "lokon"}
+
+        # the game master renames the article (i.e. creates the new one and deletes the old one)
+        self.dm.static_pages["qa_article2"] = _new_article()
+        del self.dm.static_pages["qa_article"]
+        assert self.dm.get_character_known_article_ids("guy1") == ["lokon"]  # stale id pruned
+
+        response = self.client.get(url_base)
+        assert response.status_code == 200
+        assert "QA temporary article" not in response.content.decode("utf8")
+
+        # even stale ids left in the database (eg. by older versions) are ignored when reading
+        self.dm.get_character_properties("guy1")["known_article_ids"].append("unexisting_article")
+        self.dm.commit()
+        response = self.client.get(url_base)
+        assert response.status_code == 200
+        assert "lokon" in response.content.decode("utf8")
+
+        self.dm.static_pages["qa_article3"] = _new_article()  # any update of static pages cleans up
+        assert self.dm.get_character_known_article_ids("guy1") == ["lokon"]
+
     def test_usage_error_transformation(self):
 
         # user is initially anonymous, we have a special redirection for access denials in this case
