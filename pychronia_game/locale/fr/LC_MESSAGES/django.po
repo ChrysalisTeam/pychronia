@@ -219,11 +219,11 @@ msgstr "Ne peut être acheté avec des gemmes."
 #: .\datamanager\action_middlewares.py:329
 #, python-format
 msgid ""
-"A payment of %(cost)s¤ was issued with gems %(gems_list)s for service "
+"A payment of %(cost)s¤ was issued with %(gems_list)s, for service "
 "'%(service)s'"
 msgstr ""
-"Un paiement de %(cost)s¤ a été effectué avec les gemmes %(gems_list)s pour "
-"le service '%(service)s'"
+"Un paiement de %(cost)s¤ a été effectué avec %(gems_list)s, pour le service "
+"'%(service)s'"
 
 #: .\datamanager\action_middlewares.py:340
 #, python-format

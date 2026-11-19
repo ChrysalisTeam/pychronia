@@ -338,11 +338,14 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                 if use_gems or not middleware_settings["money_price"]:
                     gems_price = middleware_settings["gems_price"]
                     self._pay_with_gems(gems_price, use_gems)
+                    # all given gems are taken (no change), so we describe them, along with the price
                     self.log_game_event(
-                        gettext_noop(
-                            "A payment of %(cost)s¤ was issued with gems %(gems_list)s for service '%(service)s'"
+                        gettext_noop("A payment of %(cost)s¤ was issued with %(gems_list)s, for service '%(service)s'"),
+                        PersistentMapping(
+                            cost=gems_price,
+                            service=self._get_service_label_for_event_log(action_name),
+                            gems_list=self.get_gems_description(use_gems),
                         ),
-                        PersistentMapping(cost=gems_price, service=action_name, gems_list=str(use_gems)),
                         url=None,
                         visible_by=[self.user.username],
                     )
@@ -353,12 +356,22 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                     self._pay_with_money(character_properties, money_price)
                     self.log_game_event(
                         gettext_noop("A payment of %(cost)s¤ was issued with money, for service '%(service)s'"),
-                        PersistentMapping(cost=money_price, service=action_name),
+                        PersistentMapping(cost=money_price, service=self._get_service_label_for_event_log(action_name)),
                         url=None,
                         visible_by=[self.user.username],
                     )
 
         return super()._process_action_through_middlewares(action_name=action_name, method=method, params=params)
+
+    def _get_service_label_for_event_log(self, action_name):
+        """
+        Player-facing name of the paid service (ability title and action title, not internal identifiers),
+        in the game language since event logs are stored once for all.
+        """
+        action_title = self.GAME_ACTIONS.get(action_name, {}).get("title")  # test actions may be unregistered
+        with self.game_language_override():
+            labels = [str(title) for title in (self.TITLE, action_title) if title]
+        return " - ".join(labels) or action_name
 
     def _pay_with_gems(self, gems_price, gems_list):
         assert gems_price

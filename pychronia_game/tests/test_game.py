@@ -7437,6 +7437,47 @@ class TestActionMiddlewares(BaseGameTestCase):
             ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action")
         )
 
+    def test_costly_action_middleware_payment_events(self):
+        """
+        Payment events are shown to players: they must name the service with its ability/action titles
+        (not internal action ids), and describe the gems actually taken (no change is given).
+        """
+
+        def _last_event_text():
+            event = self.dm.data["events_log"][-1]
+            return event["message"] % utilities.SDICT(**event["substitutions"])
+
+        bank_name = self.dm.get_global_parameter("bank_name")
+        self.dm.transfer_money_between_characters(bank_name, "guy4", amount=1000)
+        self.dm.transfer_object_to_character("several_misc_gems", "guy4")  # 5 * 200 kashes
+
+        self._set_user("guy4")
+        ability = self.dm.instantiate_ability("dummy_ability")
+        ability.perform_lazy_initializations()
+
+        # registered game action: ability title and action title
+        ability.reset_test_settings(
+            "middleware_wrapped_other_test_action", CostlyActionMiddleware, dict(money_price=15, gems_price=150)
+        )
+        ability.middleware_wrapped_other_test_action("hello")  # pays with money
+        assert (
+            _last_event_text()
+            == "A payment of 15¤ was issued with money, for service 'Dummy Ability - my test title 2'"
+        )
+
+        ability.middleware_wrapped_other_test_action("hello", use_gems=[(200, "several_misc_gems")])
+        assert _last_event_text() == (
+            "A payment of 150¤ was issued with 1 gem worth 200¤ (1 x 200¤ from lot 'Gems'), "
+            "for service 'Dummy Ability - my test title 2'"
+        )
+
+        # action not registered in GAME_ACTIONS (possible in tests only): ability title alone
+        ability.reset_test_settings(
+            "middleware_wrapped_test_action", CostlyActionMiddleware, dict(money_price=15, gems_price=None)
+        )
+        ability.middleware_wrapped_callable1(use_gems=None)
+        assert _last_event_text() == "A payment of 15¤ was issued with money, for service 'Dummy Ability'"
+
     def test_count_limited_action_middleware(self):
 
         ability = self.dm.instantiate_ability("dummy_ability")
