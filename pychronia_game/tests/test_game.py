@@ -6007,6 +6007,18 @@ class TestHttpRequests(BaseGameTestCase):
         assert "must be both set or both empty" in response.content.decode("utf8")
         assert _get_secret_data() == ("", "")
 
+        # too long question only triggers the length error, not the misleading "both set or both empty" one
+        response = self.client.post(
+            url,
+            data=dict(_ability_form=form_id, current_password="elixir", secret_question="Q" * 2000, secret_answer="A"),
+            follow=True,
+        )
+        assert response.status_code == 200
+        html = response.content.decode("utf8")
+        assert "at most 200 characters" in html
+        assert "must be both set or both empty" not in html
+        assert _get_secret_data() == ("", "")
+
         # proper setup of the secret question
         response = self.client.post(
             url,

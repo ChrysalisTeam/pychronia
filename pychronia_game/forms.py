@@ -260,6 +260,9 @@ class SecretQuestionChangeForm(AbstractGameForm):
         secret_question = cleaned_data.get("secret_question")  # might be None
         secret_answer = cleaned_data.get("secret_answer")  # might be None
 
+        if "secret_question" in self.errors or "secret_answer" in self.errors:
+            return cleaned_data  # eg. too long value, which must not be mistaken for an empty one
+
         if bool(secret_question) != bool(secret_answer):
             raise forms.ValidationError(_("Secret question and secret answer must be both set or both empty"))
 
