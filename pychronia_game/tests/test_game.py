@@ -818,6 +818,30 @@ class TestThrowawayDatabasesGuard(unittest.TestCase):
         with override_settings(DATABASES=mysql_db):
             assert get_non_throwaway_databases() == ["DATABASES['default'] django.db.backends.mysql 'mydb'"]
 
+        sqlite_engine = "django.db.backends.sqlite3"
+        temp_sqlite_file = os.path.join(tempfile.gettempdir(), "django.db")
+        real_sqlite_file = os.path.join(os.path.dirname(__file__), "django.db")
+
+        with override_settings(DATABASES={"default": {"ENGINE": sqlite_engine, "NAME": real_sqlite_file}}):
+            assert get_non_throwaway_databases() == ["DATABASES['default'] %s %r" % (sqlite_engine, real_sqlite_file)]
+
+        # in-memory sqlite DBs are throwaway, eg. the default test DB of Django, once created by pytest-django
+        for in_memory_name in (":memory:", "file:memorydb_default?mode=memory&cache=shared"):
+            with override_settings(DATABASES={"default": {"ENGINE": sqlite_engine, "NAME": in_memory_name}}):
+                assert get_non_throwaway_databases() == []
+
+        # the explicit test DB, if any, is checked too
+        for test_name, expected_problems in (
+            (os.path.join(tempfile.gettempdir(), "test.db"), []),
+            (
+                real_sqlite_file,
+                ["DATABASES['default'] %s %r (test DB %r)" % (sqlite_engine, temp_sqlite_file, real_sqlite_file)],
+            ),
+        ):
+            db = {"default": {"ENGINE": sqlite_engine, "NAME": temp_sqlite_file, "TEST": {"NAME": test_name}}}
+            with override_settings(DATABASES=db):
+                assert get_non_throwaway_databases() == expected_problems
+
 
 class TestDotenvFiles(unittest.TestCase):
     def test_precedence(self):
