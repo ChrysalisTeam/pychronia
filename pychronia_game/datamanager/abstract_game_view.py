@@ -565,6 +565,11 @@ class AbstractGameView(metaclass=GameViewMetaclass):
                 % SDICT(action_name=action_name, actions=list(self.GAME_ACTIONS.keys()))
             )
 
+        if self.GAME_ACTIONS[action_name]["form_class"] is not None:
+            # such actions rely on their form for input validation (choices limited to the user's items, contacts...)
+            self.logger.warning("Refused formless call of form-backed action %r: %r", action_name, data)
+            raise AbnormalUsageError(_("Submitted data is invalid"))
+
         res = self.execute_game_action_callback(action_name=action_name, unfiltered_params=data)
 
         return res

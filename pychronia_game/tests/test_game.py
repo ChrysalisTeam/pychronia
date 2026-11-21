@@ -5873,7 +5873,7 @@ class TestHttpRequests(BaseGameTestCase):
         response = self.client.get(url)
         assert response.status_code == 200
         response = self.client.post(url, data=dict(_action_="purchase_wiretapping_slot"), **AJAX_HEADERS)
-        assert response.status_code == 200
+        assert response.status_code == 400  # access is OK, but this action can't be called without its form
 
         self.dm.set_activated_game_views([])
         assert not self.dm.is_game_view_activated("wiretapping")
@@ -6829,9 +6829,9 @@ class TestGameViewSystem(BaseGameTestCase):
             ),
         )  # form call
 
-        for username, request, error_msg in [
-            ("guy1", request1, "by unauthorized user"),
-            ("guy2", request2, "Submitted data is invalid"),
+        for username, request, error_msg, can_succeed in [
+            ("guy1", request1, "Submitted data is invalid", False),  # form-backed actions refuse direct calls
+            ("guy2", request2, "Submitted data is invalid", True),
         ]:
             request.datamanager._set_user(username)
 
@@ -6864,13 +6864,17 @@ class TestGameViewSystem(BaseGameTestCase):
             )
             assert wiretapping._instantiate_game_form(new_action_name="purchase_confidentiality_protection")
 
-            # SUCCESS #
+            # SUCCESS, except for direct calls #
             wiretapping.datamanager.user.discard_notifications()  # ugly stuffs might be left around
             response = wiretapping(request)
             # print(response.content)
             assert response.status_code == 200
-            assert error_msg not in response.content.decode("utf8")
-            assert wiretapping.datamanager.get_confidentiality_protection_status()  # ACQUIRED
+            if can_succeed:
+                assert error_msg not in response.content.decode("utf8")
+                assert wiretapping.datamanager.get_confidentiality_protection_status()  # ACQUIRED
+            else:
+                assert error_msg in response.content.decode("utf8")
+                assert not wiretapping.datamanager.get_confidentiality_protection_status()  # STILL NOT ACQUIRED
 
     def test_action_processing_basics(self):
 
@@ -6892,9 +6896,24 @@ class TestGameViewSystem(BaseGameTestCase):
         assert not request.datamanager.get_event_count("PROCESS_HTML_REQUEST")
         response = wiretapping(request)
         assert response.status_code == 200
-        assert wiretapping.get_wiretapping_slots_count() == 1
+        assert "Submitted data is invalid" in response.content.decode("utf8")
+        assert wiretapping.get_wiretapping_slots_count() == 0  # form-backed actions refuse direct calls
         assert request.datamanager.get_event_count("TRY_PROCESSING_FORMLESS_GAME_ACTION") == 1
         assert request.datamanager.get_event_count("PROCESS_HTML_REQUEST") == 1
+
+        # the slot purchase works through its form
+        request = self.request_factory.post(
+            view_url,
+            data=dict(
+                _ability_form="pychronia_game.views.abilities.wiretapping_management_mod.WiretappingSlotsPurchaseForm",
+                pay_with_money=True,
+            ),
+        )
+        request.datamanager._set_user("guy1")
+        wiretapping = request.datamanager.instantiate_ability("wiretapping")
+        response = wiretapping(request)
+        assert response.status_code == 200
+        assert wiretapping.get_wiretapping_slots_count() == 1
 
         # now in ajax
         request = self.request_factory.post(
@@ -6905,8 +6924,8 @@ class TestGameViewSystem(BaseGameTestCase):
         assert not request.datamanager.get_event_count("TRY_PROCESSING_FORMLESS_GAME_ACTION")
         assert not request.datamanager.get_event_count("PROCESS_AJAX_REQUEST")
         response = wiretapping(request)
-        assert response.status_code == 200
-        assert wiretapping.get_wiretapping_slots_count() == 2
+        assert response.status_code == 400  # form-backed actions refuse direct calls
+        assert wiretapping.get_wiretapping_slots_count() == 1  # unchanged
         assert request.datamanager.get_event_count("TRY_PROCESSING_FORMLESS_GAME_ACTION") == 1
         assert request.datamanager.get_event_count("PROCESS_AJAX_REQUEST") == 1
 
@@ -6927,7 +6946,7 @@ class TestGameViewSystem(BaseGameTestCase):
         assert request.datamanager.get_wiretapping_targets() == []
         response = wiretapping(request)
         assert response.status_code == 200
-        assert wiretapping.get_wiretapping_slots_count() == 2  # unchanged
+        assert wiretapping.get_wiretapping_slots_count() == 1  # unchanged
         assert request.datamanager.get_wiretapping_targets() == []  # unchanged
         assert request.datamanager.get_event_count("DO_PROCESS_FORM_SUBMISSION") == 1
         assert request.datamanager.get_event_count("PROCESS_HTML_REQUEST") == 1
@@ -6953,7 +6972,7 @@ class TestGameViewSystem(BaseGameTestCase):
         assert request.datamanager.get_wiretapping_targets() == []
         response = wiretapping(request)
         assert response.status_code == 200
-        assert wiretapping.get_wiretapping_slots_count() == 2  # unchanged
+        assert wiretapping.get_wiretapping_slots_count() == 1  # unchanged
         assert request.datamanager.get_wiretapping_targets() == ["guy3"]
         assert request.datamanager.get_event_count("DO_PROCESS_FORM_SUBMISSION") == 1
         assert request.datamanager.get_event_count("PROCESS_HTML_REQUEST") == 1
@@ -7734,10 +7753,12 @@ class TestActionMiddlewares(BaseGameTestCase):
     def test_action_middleware_rollback_on_error(self):
 
         self.dm.update_permissions("guy1", PersistentList(self.dm.PERMISSIONS_REGISTRY))
+        self.dm.transfer_object_to_character("statue", "guy1")
+        self.dm.transfer_object_to_character("sacred_chest", "guy1")
 
         view_url = neutral_url_reverse(views.world_scan)
         request = self.request_factory.post(
-            view_url, data=dict(_action_="scan_form", item_name="statue")
+            view_url, data=dict(_ability_form="pychronia_game.forms.ArtefactForm", item_name="statue", pay_with_money="1")
         )  # has no scanning settings
         request.datamanager._set_user("guy1")
 
@@ -7765,7 +7786,10 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert request.datamanager.get_character_properties("guy1")["account"] == old_account
 
         # now success case just to be sure
-        request = self.request_factory.post(view_url, data=dict(_action_="scan_form", item_name="sacred_chest"))
+        request = self.request_factory.post(
+            view_url,
+            data=dict(_ability_form="pychronia_game.forms.ArtefactForm", item_name="sacred_chest", pay_with_money="1"),
+        )
         request.datamanager._set_user("guy1")
         world_scan = request.datamanager.instantiate_ability("world_scan")
 
@@ -7775,6 +7799,29 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert "World scan submission in progress" in res.content.decode("utf8")
 
         assert request.datamanager.get_character_properties("guy1")["account"] < old_account
+
+    def test_formless_calls_of_form_backed_actions_are_refused(self):
+
+        self.dm.update_permissions("guy1", PersistentList(self.dm.PERMISSIONS_REGISTRY))
+        assert "sacred_chest" not in self.dm.get_user_artefacts("guy1")
+        old_account = self.dm.get_character_properties("guy1")["account"]
+
+        view_url = neutral_url_reverse(views.world_scan)
+        for extra in ({}, AJAX_HEADERS):
+            # a hand-made POST can't bypass the form, which only proposes the user's own artefacts
+            request = self.request_factory.post(
+                view_url, data=dict(_action_="scan_form", item_name="sacred_chest", pay_with_money="1"), **extra
+            )
+            request.datamanager._set_user("guy1")
+            world_scan = request.datamanager.instantiate_ability("world_scan")
+            res = world_scan(request)
+            if extra:
+                assert res.status_code == 400
+            else:
+                assert res.status_code == 200
+                assert "Submitted data is invalid" in res.content.decode("utf8")
+                assert "World scan submission in progress" not in res.content.decode("utf8")
+            assert request.datamanager.get_character_properties("guy1")["account"] == old_account  # nothing paid
 
     def test_action_settings_overrides(self):
 
@@ -8451,8 +8498,11 @@ class TestSpecialAbilities(BaseGameTestCase):
         res = scanner._compute_scanning_result_or_none("sacred_chest")
         self.assertEqual(res, ("Here are SPECIFIC SCANNER RESPONSE DETAILS", ["Alifir", "Baynon"]))
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(UsageError):
             scanner.process_world_scan_submission("several_misc_gems")  # no gems allowed here
+        with pytest.raises(UsageError):
+            scanner.process_world_scan_submission("sacred_chest")  # not owned by the user
+        self.dm.transfer_object_to_character("sacred_chest", "guy1")
 
         # ##self.assertEqual(self.dm.get_global_parameter("scanned_locations"), [])
 
@@ -8655,9 +8705,16 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         assert isinstance(telecom.process_telecom_investigation("guy2"), str)
 
+        known_characters = telecom.get_other_known_characters()
         for character in all_other_characters:
-            assert telecom.process_telecom_investigation(character)
-            self.assertTrue("in process" in telecom.process_telecom_investigation(character))
+            if character in known_characters:
+                assert telecom.process_telecom_investigation(character)
+                self.assertTrue("in process" in telecom.process_telecom_investigation(character))
+            else:
+                with pytest.raises(UsageError):
+                    telecom.process_telecom_investigation(character)  # unknown to the user
+        with pytest.raises(UsageError):
+            telecom.process_telecom_investigation("guy1")  # oneself
 
         # test automated messaging
 
@@ -8785,8 +8842,10 @@ class TestSpecialAbilities(BaseGameTestCase):
         res = analyser._compute_analysis_result_or_none("sacred_chest")
         self.assertEqual(res, "same, here stuffs about *sacred* chest")
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(UsageError):
             analyser.process_object_analysis("several_misc_gems")  # no gems allowed here
+        with pytest.raises(UsageError):
+            analyser.process_object_analysis("statue")  # not owned by the user
 
         def ability_action():
             analyser.process_object_analysis("sacred_chest")

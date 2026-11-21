@@ -89,6 +89,9 @@ class TelecomInvestigationAbility(AbstractPartnershipAbility):
     @transaction_watcher
     def process_telecom_investigation(self, target_username, use_gems=()):
 
+        if target_username not in self.get_other_known_characters():  # defence in depth, the form only proposes these
+            raise AbnormalUsageError(_("Submitted data is invalid"))
+
         target_official_name = self.get_official_name(target_username)
 
         with self.datamanager.game_language_override():  # exchanged messages are game content

@@ -69,6 +69,8 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
 
         # here input checking has already been done by form system (item_name is required=True)
         assert item_name, item_name
+        if item_name not in self.get_user_artefacts():  # defence in depth, the form only proposes these
+            raise AbnormalUsageError(_("Submitted data is invalid"))
 
         item_title = self.get_item_properties(item_name)["title"]
 
