@@ -276,8 +276,7 @@ msgstr "Unités que vous avez déjà consommées: %s."
 msgid ""
 "The global quota (%(max_per_game)s uses) for that asset has been exceeded"
 msgstr ""
-"Vous avez dépassé le quota global (%(max_per_game)s utilisations) pour ce "
-"bien"
+"Le quota global (%(max_per_game)s utilisations) de ce bien a été dépassé"
 
 #: .\datamanager\action_middlewares.py:498
 #, python-format
