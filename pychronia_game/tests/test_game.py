@@ -5787,6 +5787,26 @@ class TestHttpRequests(BaseGameTestCase):
         response = self.client.get(url)
         assert response.status_code == 404  # view always available, but no help text available for it
 
+    def test_activate_instance_signs_creator_in_without_enforced_login(self):
+        from django.urls import reverse
+        from pychronia_game.meta_administration_views import compute_game_activation_token
+
+        token = compute_game_activation_token("activatedgame", "ze_creator", None, "en", "default")
+        url = reverse("pychronia_game.meta_administration_views.activate_instance")
+
+        with override_settings(GAME_ALLOW_ENFORCED_LOGIN=False):  # default of production settings
+            response = self.client.get(url, data=dict(token=token))
+            assert response.status_code == 302
+            assert response["Location"] == "/activatedgame/master/"
+            assert "session_ticket" not in response["Location"]  # no login token in browser history
+
+            response = self.client.get(response["Location"])
+            assert response.status_code == 200
+            assert "Welcome to Anthropia, Master" in response.content.decode("utf8")
+
+        response = self.client.get(url, data=dict(token=token[:-2]))
+        assert response.status_code == 403
+
     def test_static_page_view_hides_hidden_clues(self):
         self.dm.set_game_state(True)
         clue_url = neutral_url_reverse(views.view_static_page, page_id="some_clue1")

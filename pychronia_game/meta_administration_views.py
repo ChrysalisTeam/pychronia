@@ -234,22 +234,25 @@ def activate_instance(request):
         )
         master_login = dm.get_global_parameter("master_login")
 
-        authentication_token = authentication.compute_enforced_login_token(
-            game_instance_id=game_instance_id, login=master_login, is_observer=False
+        # the creator is signed in as game master directly in his session, so that it works even without
+        # GAME_ALLOW_ENFORCED_LOGIN, and that no login token leaks through the browser history
+        request.session[authentication.instance_session_key(game_instance_id)] = dict(
+            game_instance_id=game_instance_id,
+            game_username=master_login,
+            impersonation_target=None,
+            impersonation_writability=None,
         )
-        session_token_display = urlencode({authentication.ENFORCED_SESSION_TICKET_NAME: authentication_token})
 
         import pychronia_game.views
 
-        target_url = config.SITE_DOMAIN + reverse(
+        target_path = reverse(
             pychronia_game.views.homepage, kwargs=dict(game_instance_id=game_instance_id, game_username=master_login)
-        )
-        target_url += "?" + session_token_display
+        )  # relative, to stay on the domain of the session cookie
 
         content = _(
             "In case you don't get properly redirected, please copy this link into our URL bar: %(target_url)s"
-        ) % SDICT(target_url=target_url)
-        return HttpResponseRedirect(target_url, content=content)
+        ) % SDICT(target_url=request.build_absolute_uri(target_path))
+        return HttpResponseRedirect(target_path, content=content)
 
     except (signing.BadSignature, ValueError, TypeError, LookupError, AttributeError, UnicodeError):
         logging.warning("Game activation key not recognized : %s", token, exc_info=True)
