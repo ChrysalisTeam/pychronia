@@ -5749,6 +5749,28 @@ class TestHttpRequests(BaseGameTestCase):
         response = self.client.get(url)
         assert response.status_code == 404  # view always available, but no help text available for it
 
+    def test_static_page_view_hides_hidden_clues(self):
+        self.dm.set_game_state(True)
+        clue_url = neutral_url_reverse(views.view_static_page, page_id="some_clue1")
+        normal_url = neutral_url_reverse(views.view_static_page, page_id="lokon")
+
+        for login in ("master", "guy1", None):
+            self._set_user(login)
+            if login == "guy1":
+                self._player_auth(login)
+            elif login == "master":
+                self._master_auth()
+            else:
+                self._logout()
+
+            assert self.client.get(normal_url).status_code == 200
+            response = self.client.get(clue_url)
+            if login == "master":
+                assert response.status_code == 200
+                assert "magic-clue" in response.content.decode("utf8")
+            else:
+                assert response.status_code == 404  # the clue code is needed
+
     def test_encyclopedia_index_knowledge(self):
 
         ok = 0

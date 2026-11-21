@@ -49,7 +49,8 @@ view_world_map_dynamic = DynamicWorldMapView.as_view
 class StaticPageView(AbstractGameView):
     """
     This view allows one to see ANY static page on its own, without any permission checking
-    (jsut a "private link" notion).
+    (just a "private link" notion), except hidden clues, which only the game master may see here
+    (others must find their clue code, see HiddenClueView).
     """
 
     TITLE = gettext_lazy("Article")
@@ -69,6 +70,9 @@ class StaticPageView(AbstractGameView):
             raise Http404  # unexisting static page
 
         entry = self.datamanager.static_pages[page_id]
+
+        if entry.get("clue_code") and not self.datamanager.is_master():
+            raise Http404  # hidden clue, only readable with its clue code
 
         return dict(entry=entry)
 
