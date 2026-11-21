@@ -1,11 +1,12 @@
 from pychronia_game.common import *
+from django.core import signing
 from django.db.utils import DatabaseError
-from pychronia_game.utilities import encryption
 
 SESSION_TICKET_KEY_TEMPLATE = "pychronia_session_ticket_%s"
 IMPERSONATION_TARGET_POST_VARIABLE = "_set_impersonation_target_"
 IMPERSONATION_WRITABILITY_POST_VARIABLE = "_set_impersonation_writability_"
 ENFORCED_SESSION_TICKET_NAME = "session_ticket"
+ENFORCED_LOGIN_TOKEN_SALT = "pychronia_game.enforced_login"  # tokens of other purposes can't be used as login tokens
 
 TEMP_URL_USERNAME = "redirect"  # with this as placeholder in URL, user will get redirected to proper URL without error
 UNIVERSAL_URL_USERNAME = (
@@ -61,46 +62,57 @@ def try_authenticating_with_credentials(request, username, password):
 
 
 def _lookup_enforced_session_or_none(request):
-    session_ticket = None
-    is_observer = False
+    if not config.GAME_ALLOW_ENFORCED_LOGIN:
+        return None
 
-    if config.GAME_ALLOW_ENFORCED_LOGIN:
-        login_data_encrypted = utilities.get_request_param(request, ENFORCED_SESSION_TICKET_NAME)
-        if login_data_encrypted:
-            try:
-                login_data = encryption.unicode_decrypt(login_data_encrypted)  # decode using site's SECRET_KEY
-            except (TypeError, ValueError, UnicodeError) as e:
-                logging.warning("Error when trying to decode enforced ticket: %r" % e)
-            else:
-                data_list = login_data.split("|")
-                if len(data_list) == 2:  # LEGACY
-                    enforced_instance_id, enforced_login = data_list
-                else:
-                    assert len(data_list) == 3, data_list
-                    enforced_instance_id, enforced_login, is_observer_str = data_list
-                    is_observer = bool(is_observer_str)  # should be "observer"
-                    del is_observer_str
-                if enforced_instance_id != request.datamanager.game_instance_id:
-                    logging.warning(
-                        "Wrong game instance id in enforced ticket: %s should contain %s instead",
-                        login_data,
-                        request.datamanager.game_instance_id,
-                    )
-                else:
-                    session_ticket = dict(
-                        game_instance_id=enforced_instance_id,
-                        game_username=enforced_login,
-                        impersonation_target=None,
-                        impersonation_writability=None,
-                        is_observer=is_observer,
-                    )
-    return session_ticket
+    login_token = utilities.get_request_param(request, ENFORCED_SESSION_TICKET_NAME)
+    login_data = _decode_enforced_login_token_or_none(login_token) if login_token else None
+    if not login_data:
+        return None
+
+    if login_data["i"] != request.datamanager.game_instance_id:
+        logging.warning(
+            "Wrong game instance id in enforced ticket: %s should contain %s instead",
+            login_data,
+            request.datamanager.game_instance_id,
+        )
+        return None
+
+    return dict(
+        game_instance_id=login_data["i"],
+        game_username=login_data["l"],
+        impersonation_target=None,
+        impersonation_writability=None,
+        is_observer=login_data["o"],
+    )
 
 
 def compute_enforced_login_token(game_instance_id, login, is_observer=False):
+    """
+    Returns a token signed with the site's SECRET_KEY (readable, but not forgeable), which logs in the given user.
+    """
     assert is_observer in (True, False)
-    login_data = "%s|%s|%s" % (game_instance_id, login, "observer" if is_observer else "")
-    return encryption.unicode_encrypt(login_data)
+    login_data = dict(i=game_instance_id, l=login, o=is_observer)
+    return signing.dumps(login_data, salt=ENFORCED_LOGIN_TOKEN_SALT)
+
+
+def _decode_enforced_login_token_or_none(login_token):
+    try:
+        login_data = signing.loads(
+            login_token, salt=ENFORCED_LOGIN_TOKEN_SALT, max_age=config.GAME_ENFORCED_LOGIN_TOKEN_MAX_AGE
+        )
+    except signing.BadSignature as e:  # tampered, expired, of another purpose, or a legacy token
+        logging.warning("Rejected enforced login ticket %r: %r", login_token, e)
+        return None
+    if not (
+        isinstance(login_data, dict)
+        and isinstance(login_data.get("i"), str)
+        and isinstance(login_data.get("l"), str)
+        and isinstance(login_data.get("o"), bool)
+    ):
+        logging.warning("Malformed enforced login ticket payload: %r", login_data)
+        return None
+    return login_data
 
 
 def try_authenticating_with_session(request, url_game_username=None):

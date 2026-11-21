@@ -19,6 +19,8 @@ GAME_SCENARIOS = None
 GAME_DEFAULT_SCENARIO = None  # scenario of instances created before scenarios existed; None means the first one
 
 GAME_ALLOW_ENFORCED_LOGIN = False
+GAME_ENFORCED_LOGIN_TOKEN_MAX_AGE = None  # in seconds; None for permanent login links (eg. of DEMO, or observers)
+GAME_ACTIVATION_TOKEN_MAX_AGE = 7 * 24 * 3600  # in seconds, validity of the links mailed to game creators
 ACTIVATE_AIML_BOTS = False
 ZODB_RESET_ALLOWED = False
 

@@ -9,6 +9,7 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.utils.translation import gettext as _, gettext_lazy
 from django import forms
+from django.core import signing
 from django.contrib.messages import get_messages
 from django.utils.http import urlencode
 
@@ -16,7 +17,6 @@ from pychronia_game.common import *
 from pychronia_game.datamanager import datamanager_administrator
 from pychronia_game.datamanager.datamanager_administrator import GAME_STATUSES
 from pychronia_game import authentication
-from pychronia_game.utilities import encryption
 from pychronia_game.datamanager.abstract_form import SimpleForm
 
 
@@ -69,24 +69,39 @@ The Chrysalis Team
 """)
 
 
+GAME_ACTIVATION_TOKEN_SALT = "pychronia_game.game_activation"  # activation tokens can't be used as login tokens
+
+
 def compute_game_activation_token(game_instance_id, creator_login, creator_email, game_language, game_scenario):
     assert game_instance_id
     assert creator_login
     assert game_language in config.GAME_LANGUAGES, game_language
     assert game_scenario in utilities.get_game_scenarios(), game_scenario
-    creator_email = creator_email or ""
-    activation_data = "%s|%s|%s|%s|%s" % (game_instance_id, creator_login, creator_email, game_language, game_scenario)
-    return encryption.unicode_encrypt(activation_data)
+    activation_data = dict(
+        game_instance_id=game_instance_id,
+        creator_login=creator_login,
+        creator_email=creator_email or None,
+        game_language=game_language,
+        game_scenario=game_scenario,
+    )
+    # signed with the site's SECRET_KEY: readable, but not forgeable
+    return signing.dumps(activation_data, salt=GAME_ACTIVATION_TOKEN_SALT)
 
 
 def decode_game_activation_token(activation_token):
-    activation_data = encryption.unicode_decrypt(activation_token)
-    parts = activation_data.split("|")
-    if len(parts) == 3:  # token emitted before game languages existed
-        parts.append(config.GAME_DEFAULT_LANGUAGE)
-    if len(parts) == 4:  # token emitted before game scenarios existed
-        parts.append(utilities.get_default_game_scenario())
-    (game_instance_id, creator_login, creator_email, game_language, game_scenario) = parts
+    """
+    Raises signing.BadSignature (or its subclass SignatureExpired), ValueError or LookupError if the token is invalid.
+    """
+    activation_data = signing.loads(
+        activation_token, salt=GAME_ACTIVATION_TOKEN_SALT, max_age=config.GAME_ACTIVATION_TOKEN_MAX_AGE
+    )
+    if not isinstance(activation_data, dict):
+        raise ValueError("Malformed activation token payload %r" % activation_data)
+    game_instance_id = activation_data["game_instance_id"]
+    creator_login = activation_data["creator_login"]
+    creator_email = activation_data["creator_email"]
+    game_language = activation_data["game_language"]
+    game_scenario = activation_data["game_scenario"]
     if game_language not in config.GAME_LANGUAGES:
         raise ValueError("Unknown game language %r in activation token" % game_language)
     if game_scenario not in utilities.get_game_scenarios():
@@ -236,7 +251,7 @@ def activate_instance(request):
         ) % SDICT(target_url=target_url)
         return HttpResponseRedirect(target_url, content=content)
 
-    except (ValueError, TypeError, LookupError, AttributeError, UnicodeError):
+    except (signing.BadSignature, ValueError, TypeError, LookupError, AttributeError, UnicodeError):
         logging.warning("Game activation key not recognized : %s", token, exc_info=True)
         return HttpResponseForbidden(_("Activation key not recognized"))
 

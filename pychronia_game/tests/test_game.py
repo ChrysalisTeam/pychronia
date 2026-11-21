@@ -1086,31 +1086,42 @@ class TestMetaAdministration(unittest.TestCase):  # no django setup required ATM
         with pytest.raises(AssertionError):
             compute_game_activation_token("myinstance", "mylogin", None, "fr", "unknownscenario")
 
-        # tokens emitted before game languages existed are still valid, for French games of default scenario
-        from pychronia_game.utilities import encryption
+        # tokens are signed: tampered ones, tokens of other purposes, expired and legacy (AES) ones are refused
+        from django.core import signing
+        from pychronia_game.meta_administration_views import GAME_ACTIVATION_TOKEN_SALT
 
-        data = encryption.unicode_encrypt("oldinstance|oldlogin|")
-        assert decode_game_activation_token(data) == ("oldinstance", "oldlogin", None, "fr", "default")
+        data = compute_game_activation_token("myinstance", "mylogin", None, "fr", "default")
+        tampered = data[:-1] + ("A" if data[-1] != "A" else "B")
+        with pytest.raises(signing.BadSignature):
+            decode_game_activation_token(tampered)
+        with pytest.raises(signing.BadSignature):
+            decode_game_activation_token(data[:-16])  # truncated
+        with pytest.raises(signing.BadSignature):
+            decode_game_activation_token(authentication.compute_enforced_login_token("myinstance", "mylogin"))
+        with pytest.raises(signing.BadSignature):
+            decode_game_activation_token("bb979152bcc0ad1d457ebdacf5b5cc5eedf4afe3")  # legacy AES token
+        with override_settings(GAME_ACTIVATION_TOKEN_MAX_AGE=-1):
+            with pytest.raises(signing.SignatureExpired):
+                decode_game_activation_token(data)
 
-        # tokens emitted before game scenarios existed are still valid, for games of default scenario
-        data = encryption.unicode_encrypt("oldinstance|oldlogin||en")
-        assert decode_game_activation_token(data) == ("oldinstance", "oldlogin", None, "en", "default")
-
-        data = encryption.unicode_encrypt("badinstance|badlogin||xx")
         with pytest.raises(ValueError):
-            decode_game_activation_token(data)
-
-        data = encryption.unicode_encrypt("badinstance|badlogin||fr|unknownscenario")
+            decode_game_activation_token(signing.dumps(["myinstance", "mylogin"], salt=GAME_ACTIVATION_TOKEN_SALT))
+        with pytest.raises(LookupError):
+            decode_game_activation_token(signing.dumps(dict(game_instance_id="a"), salt=GAME_ACTIVATION_TOKEN_SALT))
+        bad_language = dict(
+            game_instance_id="a", creator_login="b", creator_email=None, game_language="xx", game_scenario="default"
+        )
         with pytest.raises(ValueError):
-            decode_game_activation_token(data)
+            decode_game_activation_token(signing.dumps(bad_language, salt=GAME_ACTIVATION_TOKEN_SALT))
+        bad_scenario = dict(bad_language, game_language="fr", game_scenario="unknownscenario")
+        with pytest.raises(ValueError):
+            decode_game_activation_token(signing.dumps(bad_scenario, salt=GAME_ACTIVATION_TOKEN_SALT))
 
         with override_settings(
             GAME_SCENARIOS=dict(auction=(None, None), mindstorm=(None, None)), GAME_DEFAULT_SCENARIO="mindstorm"
         ):
             data = compute_game_activation_token("myinstance", "mylogin", None, "en", "auction")
             assert decode_game_activation_token(data) == ("myinstance", "mylogin", None, "en", "auction")
-            data = encryption.unicode_encrypt("oldinstance|oldlogin||en")
-            assert decode_game_activation_token(data) == ("oldinstance", "oldlogin", None, "en", "mindstorm")
 
     def test_game_language_of_instances(self):
 
@@ -4026,6 +4037,26 @@ class TestDatamanager(BaseGameTestCase):
         assert request.datamanager.user.username == username  # well auto-signed-in
         assert request.datamanager.user.is_observer
         assert not request.datamanager.user.has_write_access  # NO write, even for non-impersonated username
+
+        # an observer token can't be truncated, nor forged, into a read-write token
+        from django.core import signing
+        from pychronia_game.meta_administration_views import compute_game_activation_token
+
+        for forged_token in [
+            token[:-1],
+            token[:-16],
+            token[:-30],
+            token.split(":")[0],
+            "bb979152bcc0ad1d457ebdacf5b5cc5eedf4afe3",  # legacy AES token
+            signing.dumps(["DEMO", "master", "", "x"], salt=authentication.ENFORCED_LOGIN_TOKEN_SALT),  # malformed
+            signing.dumps(dict(i=self.dm.game_instance_id, l="master", o="observer"), salt="other.salt"),
+            compute_game_activation_token(self.dm.game_instance_id, "master", None, "fr", "default"),
+        ]:
+            forged_request = self.request_factory.post(home_url, data={request_var: forged_token})
+            forged_request.datamanager = self.dm
+            assert authentication._lookup_enforced_session_or_none(forged_request) is None
+            try_authenticating_with_session(forged_request)
+            assert forged_request.datamanager.user.is_anonymous  # the forged token was ignored
 
         request = self.request_factory.post(
             home_url,
