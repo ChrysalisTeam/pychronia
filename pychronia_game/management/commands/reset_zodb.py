@@ -45,4 +45,12 @@ class Command(BaseCommand):
             yaml_fixture=yaml_fixture,
             skip_randomizations=use_fixture,
         )
-        self.stdout.write(self.style.SUCCESS("ZODB reset, game instance 'DEMO' created"))
+        from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance
+
+        dm = retrieve_game_instance("DEMO", update_timestamp=False)
+        self.stdout.write(
+            self.style.SUCCESS(
+                "ZODB reset, game instance 'DEMO' created, game master credentials: %s / %s"
+                % (dm.get_global_parameter("master_login"), dm.get_global_parameter("master_password"))
+            )
+        )

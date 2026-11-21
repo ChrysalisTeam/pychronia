@@ -1,5 +1,6 @@
 import string
 import random
+import secrets
 from collections import OrderedDict
 
 from pychronia_game.common import *
@@ -804,6 +805,7 @@ class PlayerAuthentication(BaseDataManager):
         if not skip_randomizations:
             old_master_login = self.data["global_parameters"]["master_login"]
             self.randomize_passwords_for_players()  # basic security
+            self.randomize_master_password()  # else the password of the public scenario data would be kept
             assert (
                 self.data["global_parameters"]["master_login"] == old_master_login
             )  # later we might randomize master login too, for now it must NEVER change!
@@ -866,6 +868,16 @@ class PlayerAuthentication(BaseDataManager):
             if not character["is_npc"] and character["password"]:  # might be None==disabled
                 character["password"] = random.choice(choices)
                 choices.remove(character["password"])  # to avoid that, by miracle, two people get the same one...
+
+    @transaction_watcher(always_writable=True)
+    def randomize_master_password(self):
+        """
+        The game master can see and change his password in the admin dashboard.
+        """
+        alphabet = string.ascii_lowercase + string.digits
+        password = "".join(secrets.choice(alphabet) for _ in range(12))
+        self.data["global_parameters"]["master_password"] = password
+        return password
 
     @readonly_method
     def get_available_logins(self):

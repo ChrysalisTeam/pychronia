@@ -1008,6 +1008,13 @@ class TestMetaAdministration(unittest.TestCase):  # no django setup required ATM
         assert dm.is_initialized
         assert dm.data
 
+        # the master password of the scenario data mustn't be kept either
+        master_password = dm.get_global_parameter("master_password")
+        assert (master_password == "ultimate") == skip_randomizations
+        if not skip_randomizations:
+            assert len(master_password) == 12
+            assert dm.authenticate_with_credentials(dm.get_global_parameter("master_login"), master_password)
+
         assert (
             bool(dm.get_character_properties("guy1")["password"] == "elixir") == skip_randomizations
         )  # conditional reset of player passwords

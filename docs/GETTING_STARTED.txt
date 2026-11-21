@@ -103,7 +103,7 @@ Other tools: dump_initial_game_yaml (initial game data, eg. for murder-party she
 
 When dev server is launched, the test game instance (created by "reset_zodb") can be reached at "http://localhost:8000/DEMO/"
 
-**Game master credentials are the "master_login" and "master_password" fields of your game data "global_parameters". They are master/ultimate by default, in test fixtures.**
+**Game master credentials are the "master_login" and "master_password" fields of your game data "global_parameters". They are master/ultimate by default, in test fixtures; but new game instances get a random master password (printed by "reset_zodb", and visible in the admin dashboard of the game master).**
 
 ..note::
 
