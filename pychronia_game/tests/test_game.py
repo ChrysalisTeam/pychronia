@@ -268,6 +268,28 @@ class TestUtilities(BaseGameTestCase):
         assert delay1 > 10 * delay_cache_hits2
         assert delay2 > 10 * delay_cache_hits2
 
+    def test_rich_text_cache_is_per_game_instance(self):
+        from unittest import mock
+        from pychronia_game.templatetags import helpers as helpers_module
+
+        context = {"request": self.request}
+        content = "Some rich text with a [INSTANCE_ID] link"
+        dm = self.request.datamanager
+
+        with mock.patch.object(helpers_module.cache, "set", wraps=helpers_module.cache.set) as cache_set:
+            rich_text(context, content=content)
+            original_instance_id = dm.game_instance_id
+            dm.game_instance_id = original_instance_id + "_other"
+            try:
+                rich_text(context, content=content)
+            finally:
+                dm.game_instance_id = original_instance_id
+
+        # the second instance didn't get the html cached for the first one, with its links
+        keys = [call.args[0] for call in cache_set.call_args_list]
+        assert len(keys) == 2 and keys[0] != keys[1]
+        assert original_instance_id + "_other" in cache_set.call_args_list[1].args[1]
+
     def test_sphinx_publisher_settings(self):
         from django.utils.encoding import smart_str
         from docutils.core import publish_parts

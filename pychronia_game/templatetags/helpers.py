@@ -443,10 +443,13 @@ def rich_text(context, content, initial_header_level=None, report_level=None, ex
     # NOOOO too slow: content_hash = hashlib.md5(content.encode("ascii", "replace")).hexdigest()[:30]
     content_hash = abs(hash(content))
 
-    # IMPORTANT : datamanager.username may change site links and the likes, in the future!
-    fragment_cache_key = "%s_%s_%s_%s" % (
+    # IMPORTANT : the game instance (links, encyclopedia keywords), its language (typography),
+    # and datamanager.username may all change site links and the likes!
+    fragment_cache_key = "%s_%s_%s_%s_%s_%s" % (
         content_hash,
         len(content),
+        request.datamanager.game_instance_id,
+        request.datamanager.get_game_language(),
         request.datamanager.username,
         "_".join(str(x[1]) for x in sorted(extra_params.items())),
     )
